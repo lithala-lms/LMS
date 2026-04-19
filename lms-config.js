@@ -1,0 +1,327 @@
+// ============================================================
+// LITHALA LMS — Global Config
+// Edit SCRIPT_URL after deploying your Google Apps Script
+// ============================================================
+const LMS = {
+  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxaOdiL483GanWD5GpPcye_xO3M3_w2BX0peW88kNpBETxY65nCg9Gbg8tMduoWuUJ4/exec',
+  SHEET_ID:   '110-K93UME8_8z5pystKKc5yIsoAC1_OdKyt4KSs0oco/edit?usp=drivesdk',
+  SITE_URL:   'https://lithala-lms.github.io/LMS/',
+
+  // Real Lithala courses from lithala.com
+  COURSES: [
+    {
+      id: 'CS001',
+      title: 'Confined Space Entry',
+      subtitle: 'e-Learning Module',
+      category: 'Confined Space',
+      price: 1500,
+      image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80',
+      duration: '4 hours',
+      modules: 8,
+      rating: 4.8,
+      enrolled: 312,
+      badge: 'eLearning',
+      wa: true,
+      description: 'Comprehensive confined space entry training covering hazard identification, atmospheric testing, permit systems, rescue procedures and OHSA legal requirements.',
+      outcomes: [
+        'Identify confined space hazards and risks',
+        'Conduct atmospheric testing procedures',
+        'Implement confined space entry permits',
+        'Execute emergency rescue protocols',
+        'Comply with OHSA confined space regulations'
+      ],
+      modules_list: [
+        { id: 'CS001-M1', title: 'What is a Confined Space?', duration: '20 min' },
+        { id: 'CS001-M2', title: 'Hazard Identification', duration: '25 min' },
+        { id: 'CS001-M3', title: 'Atmospheric Testing', duration: '30 min' },
+        { id: 'CS001-M4', title: 'Entry Permits', duration: '25 min' },
+        { id: 'CS001-M5', title: 'PPE & Equipment', duration: '20 min' },
+        { id: 'CS001-M6', title: 'Rescue Procedures', duration: '30 min' },
+        { id: 'CS001-M7', title: 'Legal Requirements', duration: '20 min' },
+        { id: 'CS001-M8', title: 'Final Assessment', duration: '30 min', isAssessment: true }
+      ],
+      questions: [
+        { q: 'What is the primary hazard in a confined space?', options: ['Noise','Oxygen deficiency or enrichment','Slipping','Poor lighting'], answer: 1 },
+        { q: 'Before entering a confined space, you must:', options: ['Notify your supervisor only','Test the atmosphere and obtain a permit','Just check for visible hazards','Enter quickly and check inside'], answer: 1 },
+        { q: 'What percentage of oxygen is considered safe for entry?', options: ['15–16%','17–18%','19.5–23.5%','25%+'], answer: 2 },
+        { q: 'Who is responsible for issuing a confined space entry permit?', options: ['The entrant themselves','The rescue team','A competent authorised person','Any site manager'], answer: 2 },
+        { q: 'What does IDLH stand for?', options: ['Immediately Dangerous to Life or Health','Initial Detection Level Hazard','Internal Device Lockout Hazard','Incident Documentation and Logging Handbook'], answer: 0 }
+      ]
+    },
+    {
+      id: 'PTW001',
+      title: 'Permit to Work (PTW)',
+      subtitle: 'e-Learning Module',
+      category: 'Permit to Work',
+      price: 1599,
+      image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&q=80',
+      duration: '5 hours',
+      modules: 9,
+      rating: 4.9,
+      enrolled: 847,
+      badge: 'Bestseller',
+      wa: true,
+      description: 'Master the Permit to Work system — a critical safety control for high-risk activities. Covers hot work, confined space, electrical, height work and isolation permits.',
+      outcomes: [
+        'Understand the purpose and legal basis of PTW systems',
+        'Issue and receive permits for all high-risk work categories',
+        'Identify hazards and specify precautionary measures',
+        'Manage simultaneous operations safely',
+        'Conduct permit closeout and site restoration'
+      ],
+      modules_list: [
+        { id: 'PTW001-M1', title: 'Introduction to PTW Systems', duration: '20 min' },
+        { id: 'PTW001-M2', title: 'Legal Framework (OHS Act)', duration: '25 min' },
+        { id: 'PTW001-M3', title: 'Hot Work Permits', duration: '30 min' },
+        { id: 'PTW001-M4', title: 'Confined Space Permits', duration: '30 min' },
+        { id: 'PTW001-M5', title: 'Electrical Isolation Permits', duration: '25 min' },
+        { id: 'PTW001-M6', title: 'Working at Heights Permits', duration: '25 min' },
+        { id: 'PTW001-M7', title: 'Simultaneous Operations', duration: '20 min' },
+        { id: 'PTW001-M8', title: 'Permit Closeout Procedures', duration: '20 min' },
+        { id: 'PTW001-M9', title: 'Final Assessment', duration: '30 min', isAssessment: true }
+      ],
+      questions: [
+        { q: 'What is the primary purpose of a Permit to Work system?', options: ['To document work done','To control risks during hazardous activities','To speed up maintenance work','To replace risk assessments'], answer: 1 },
+        { q: 'Who has the authority to cancel a PTW?', options: ['Only the issuer','Any supervisor','The entrant','The safety rep'], answer: 0 },
+        { q: 'Hot work permits are required for:', options: ['Any work in the sun','Welding, cutting and grinding activities','Working near heaters','Cooking on site'], answer: 1 },
+        { q: 'A PTW must be displayed:', options: ['In the site office','At the location where work is being done','In the permit issuer\'s pocket','Online only'], answer: 1 },
+        { q: 'Simultaneous Operations (SIMOPS) refer to:', options: ['Working double shifts','Two or more hazardous activities occurring at the same time','Using two permits at once','Operating equipment simultaneously'], answer: 1 }
+      ]
+    },
+    {
+      id: 'WAH001',
+      title: 'Working at Heights (WAH)',
+      subtitle: 'Training Material',
+      category: 'Basic Work at Height',
+      price: 899,
+      image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80',
+      duration: '3 hours',
+      modules: 7,
+      rating: 4.7,
+      enrolled: 521,
+      badge: '',
+      wa: true,
+      description: 'Essential working at heights safety — fall hazards, fall protection planning, equipment inspection, rescue procedures and Construction Regulations compliance.',
+      outcomes: [
+        'Identify fall hazards and assess fall risk',
+        'Select appropriate fall protection equipment',
+        'Inspect and maintain fall arrest systems',
+        'Develop and implement a fall protection plan',
+        'Comply with Construction Regulations 2014'
+      ],
+      modules_list: [
+        { id: 'WAH001-M1', title: 'Fall Hazards & Statistics', duration: '20 min' },
+        { id: 'WAH001-M2', title: 'Fall Protection Hierarchy', duration: '25 min' },
+        { id: 'WAH001-M3', title: 'Equipment: Harnesses & Lanyards', duration: '25 min' },
+        { id: 'WAH001-M4', title: 'Scaffolding Safety', duration: '25 min' },
+        { id: 'WAH001-M5', title: 'Ladder Safety', duration: '20 min' },
+        { id: 'WAH001-M6', title: 'Rescue Procedures', duration: '20 min' },
+        { id: 'WAH001-M7', title: 'Final Assessment', duration: '25 min', isAssessment: true }
+      ],
+      questions: [
+        { q: 'At what height is fall protection legally required in South Africa?', options: ['1 metre','2 metres','3 metres','5 metres'], answer: 1 },
+        { q: 'A fall protection plan must be prepared by:', options: ['Any worker','A competent person','The site foreman','HR department'], answer: 1 },
+        { q: 'Before using a harness you must:', options: ['Adjust it once on the job','Inspect it before each use','Only inspect it monthly','Only inspect it if it looks damaged'], answer: 1 },
+        { q: 'Suspension trauma can occur when:', options: ['Working in the sun','A worker is suspended in a harness after a fall','Working on scaffolding','Climbing a ladder'], answer: 1 },
+        { q: 'Construction Regulations require a fall protection plan for any work at:', options: ['Any height','Heights above 3 metres','Heights above 5 metres','Heights above 10 metres'], answer: 0 }
+      ]
+    },
+    {
+      id: 'HW001',
+      title: 'Hot Work Safety',
+      subtitle: 'Training Material',
+      category: 'Hot Work',
+      price: 899,
+      image: 'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=600&q=80',
+      duration: '3 hours',
+      modules: 7,
+      rating: 4.8,
+      enrolled: 634,
+      badge: '',
+      wa: true,
+      description: 'Hot work safety covering welding, cutting and grinding hazards, fire prevention, permit procedures, fire watch requirements and emergency response.',
+      outcomes: [
+        'Identify hot work fire and explosion hazards',
+        'Implement pre-work area preparation',
+        'Complete hot work permits correctly',
+        'Maintain fire watch during and after hot work',
+        'Respond effectively to hot work emergencies'
+      ],
+      modules_list: [
+        { id: 'HW001-M1', title: 'Hot Work Hazards', duration: '20 min' },
+        { id: 'HW001-M2', title: 'Fire Triangle & Explosions', duration: '20 min' },
+        { id: 'HW001-M3', title: 'Area Preparation', duration: '25 min' },
+        { id: 'HW001-M4', title: 'Hot Work Permit Procedure', duration: '30 min' },
+        { id: 'HW001-M5', title: 'PPE for Hot Work', duration: '20 min' },
+        { id: 'HW001-M6', title: 'Fire Watch Requirements', duration: '20 min' },
+        { id: 'HW001-M7', title: 'Final Assessment', duration: '25 min', isAssessment: true }
+      ],
+      questions: [
+        { q: 'Hot work is defined as any work that:', options: ['Is done in summer','Produces heat, sparks or open flames','Involves hot liquids','Requires working in a boiler room'], answer: 1 },
+        { q: 'How long must a fire watch be maintained after hot work is complete?', options: ['15 minutes','30 minutes','60 minutes','Until the next day'], answer: 1 },
+        { q: 'Before starting hot work you must:', options: ['Just start working','Obtain a permit and prepare the area','Notify the safety officer by email only','Check the weather'], answer: 1 },
+        { q: 'Combustible materials near hot work must be:', options: ['Covered with a tarpaulin only','Removed or protected with fire blankets to at least 10 metres','Left in place','Wetted with water'], answer: 1 },
+        { q: 'A hot work permit is typically valid for:', options: ['The duration of the project','One shift only','One week','One month'], answer: 1 }
+      ]
+    },
+    {
+      id: 'LOTO001',
+      title: 'Lock Out Tag Out (LOTO)',
+      subtitle: 'Training Material',
+      category: 'Electrical Safety',
+      price: 1299,
+      image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=600&q=80',
+      duration: '4 hours',
+      modules: 8,
+      rating: 4.9,
+      enrolled: 445,
+      badge: 'Popular',
+      wa: true,
+      description: 'Control of hazardous energy through Lockout/Tagout procedures — electrical, mechanical, hydraulic, pneumatic and thermal energy isolation for safe maintenance.',
+      outcomes: [
+        'Identify all forms of hazardous energy',
+        'Apply lockout and tagout devices correctly',
+        'Follow the 6-step LOTO procedure',
+        'Manage group lockout for multiple workers',
+        'Verify zero energy state before work'
+      ],
+      modules_list: [
+        { id: 'LOTO001-M1', title: 'Hazardous Energy Types', duration: '25 min' },
+        { id: 'LOTO001-M2', title: 'LOTO Devices & Equipment', duration: '25 min' },
+        { id: 'LOTO001-M3', title: '6-Step LOTO Procedure', duration: '30 min' },
+        { id: 'LOTO001-M4', title: 'Electrical Isolation', duration: '30 min' },
+        { id: 'LOTO001-M5', title: 'Mechanical & Hydraulic Isolation', duration: '25 min' },
+        { id: 'LOTO001-M6', title: 'Group Lockout Procedures', duration: '20 min' },
+        { id: 'LOTO001-M7', title: 'Verification & Zero Energy', duration: '20 min' },
+        { id: 'LOTO001-M8', title: 'Final Assessment', duration: '30 min', isAssessment: true }
+      ],
+      questions: [
+        { q: 'What does LOTO stand for?', options: ['Lock Out Time Out','Lockout Tagout','Level Out Take Over','Lock Only Tag Only'], answer: 1 },
+        { q: 'The purpose of LOTO is to:', options: ['Speed up maintenance','Prevent accidental energisation during maintenance','Tag faulty equipment','Log out of computer systems'], answer: 1 },
+        { q: 'After applying a lockout, you must verify zero energy by:', options: ['Trusting the lockout device','Attempting to start the equipment','Checking the energy meter from the office','Asking a colleague'], answer: 1 },
+        { q: 'In group lockout, each worker must:', options: ['Share one lock','Apply their own personal lock','Sign the logbook only','Trust the primary lockout person'], answer: 1 },
+        { q: 'A tagout device alone (without lockout) should only be used when:', options: ['It is quicker','Equipment cannot be locked out','The lock is lost','It is preferred by the worker'], answer: 1 }
+      ]
+    },
+    {
+      id: 'RA001',
+      title: 'Risk Assessment',
+      subtitle: 'Training Material',
+      category: 'E-LEARNING MODULE',
+      price: 1500,
+      image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80',
+      duration: '5 hours',
+      modules: 9,
+      rating: 4.8,
+      enrolled: 678,
+      badge: 'Essential',
+      wa: true,
+      description: 'Comprehensive risk assessment training aligned with ISO 45001 and OHS Act — hazard identification, risk rating, control hierarchy and baseline/continuous/issue-based assessment types.',
+      outcomes: [
+        'Understand legal requirements for risk assessment',
+        'Conduct systematic hazard identification',
+        'Apply risk rating matrices accurately',
+        'Implement the hierarchy of controls',
+        'Compile baseline, continuous and issue-based assessments'
+      ],
+      modules_list: [
+        { id: 'RA001-M1', title: 'Risk Assessment Fundamentals', duration: '25 min' },
+        { id: 'RA001-M2', title: 'Legal Framework', duration: '20 min' },
+        { id: 'RA001-M3', title: 'Hazard Identification Methods', duration: '30 min' },
+        { id: 'RA001-M4', title: 'Risk Rating & Matrices', duration: '30 min' },
+        { id: 'RA001-M5', title: 'Hierarchy of Controls', duration: '25 min' },
+        { id: 'RA001-M6', title: 'Baseline Risk Assessment', duration: '25 min' },
+        { id: 'RA001-M7', title: 'Continuous & Issue-Based RA', duration: '25 min' },
+        { id: 'RA001-M8', title: 'Documentation & Review', duration: '20 min' },
+        { id: 'RA001-M9', title: 'Final Assessment', duration: '30 min', isAssessment: true }
+      ],
+      questions: [
+        { q: 'Risk is defined as:', options: ['A hazard that has caused injury','The likelihood of a hazard causing harm combined with its severity','Any dangerous activity','A near-miss incident'], answer: 1 },
+        { q: 'The highest level in the hierarchy of controls is:', options: ['Personal Protective Equipment','Administrative controls','Engineering controls','Elimination of the hazard'], answer: 3 },
+        { q: 'A baseline risk assessment must be conducted:', options: ['Only after an incident','Before work begins and when significant changes occur','Every 5 years','Only by external consultants'], answer: 1 },
+        { q: 'Under the OHS Act, who is responsible for ensuring risk assessments are conducted?', options: ['The safety officer only','The employer','The employees','The Department of Labour'], answer: 1 },
+        { q: 'What does the acronym HIRA stand for?', options: ['Health Inspection and Risk Analysis','Hazard Identification and Risk Assessment','High Impact Risk Activity','Hazard Investigation Report Action'], answer: 1 }
+      ]
+    },
+    {
+      id: 'ES001',
+      title: 'Electrical Safety',
+      subtitle: 'Training Material',
+      category: 'Electrical Safety',
+      price: 1799,
+      image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=600&q=80',
+      duration: '5 hours',
+      modules: 9,
+      rating: 4.9,
+      enrolled: 389,
+      badge: 'New',
+      wa: false,
+      description: 'Electrical safety fundamentals — electrical hazards, shock prevention, arc flash, safe isolation, electrical PPE and OHSA electrical regulations for all workers near electrical equipment.',
+      outcomes: [
+        'Identify electrical hazards in the workplace',
+        'Understand shock current and arc flash dangers',
+        'Apply safe isolation and LOTO for electrical work',
+        'Select appropriate electrical PPE',
+        'Comply with OHSA Electrical Installation Regulations'
+      ],
+      modules_list: [
+        { id: 'ES001-M1', title: 'Electrical Fundamentals', duration: '25 min' },
+        { id: 'ES001-M2', title: 'Electrical Shock Hazards', duration: '30 min' },
+        { id: 'ES001-M3', title: 'Arc Flash & Arc Blast', duration: '30 min' },
+        { id: 'ES001-M4', title: 'Safe Isolation Procedures', duration: '30 min' },
+        { id: 'ES001-M5', title: 'Electrical PPE', duration: '20 min' },
+        { id: 'ES001-M6', title: 'Electrical Installations', duration: '25 min' },
+        { id: 'ES001-M7', title: 'OHSA Electrical Regulations', duration: '20 min' },
+        { id: 'ES001-M8', title: 'Emergency Response', duration: '20 min' },
+        { id: 'ES001-M9', title: 'Final Assessment', duration: '30 min', isAssessment: true }
+      ],
+      questions: [
+        { q: 'At what current level can electrical shock be fatal?', options: ['100mA (0.1 Amps)','1 Amp','10 Amps','50mA (0.05 Amps)'], answer: 0 },
+        { q: 'Arc flash is primarily a hazard from:', options: ['Static electricity','An electrical fault creating intense heat and energy release','Old wiring','Low voltage systems'], answer: 1 },
+        { q: 'Before working on electrical equipment you must:', options: ['Wear rubber gloves only','Isolate, lock out, verify zero voltage','Switch off and trust it is safe','Work quickly to minimise risk'], answer: 1 },
+        { q: 'The voltage level considered safe to touch is:', options: ['Below 50V AC','Below 110V AC','Below 220V AC','No voltage is completely safe'], answer: 3 },
+        { q: 'Who may legally perform electrical work in South Africa?', options: ['Any competent worker','Only a registered electrician','Any person wearing PPE','The maintenance manager'], answer: 1 }
+      ]
+    },
+    {
+      id: 'CSM001',
+      title: 'Confined Space Entry',
+      subtitle: 'Training Material',
+      category: 'Confined Space',
+      price: 899,
+      image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80',
+      duration: '3 hours',
+      modules: 6,
+      rating: 4.7,
+      enrolled: 298,
+      badge: '',
+      wa: false,
+      description: 'Confined space entry training material package for facilitators — includes facilitator guide, learner workbook, assessment tools and legal compliance checklist.',
+      outcomes: [
+        'Define confined spaces and permit-required spaces',
+        'Identify physical and atmospheric hazards',
+        'Apply entry permit procedures',
+        'Use atmospheric testing equipment',
+        'Execute rescue without entering the space'
+      ],
+      modules_list: [
+        { id: 'CSM001-M1', title: 'Defining Confined Spaces', duration: '20 min' },
+        { id: 'CSM001-M2', title: 'Physical & Atmospheric Hazards', duration: '25 min' },
+        { id: 'CSM001-M3', title: 'Entry Permits in Practice', duration: '25 min' },
+        { id: 'CSM001-M4', title: 'Atmospheric Testing', duration: '25 min' },
+        { id: 'CSM001-M5', title: 'Non-Entry Rescue', duration: '20 min' },
+        { id: 'CSM001-M6', title: 'Assessment', duration: '25 min', isAssessment: true }
+      ],
+      questions: [
+        { q: 'A confined space is defined as a space that:', options: ['Is underground only','Is large enough to enter, has limited entry/exit and is not designed for continuous occupancy','Has only one door','Is smaller than 2 square metres'], answer: 1 },
+        { q: 'Non-entry rescue means:', options: ['Calling emergency services only','Rescuing a person from a confined space without the rescuer entering','Waiting outside for help','Only rescuing if safe'], answer: 1 },
+        { q: 'Oxygen enrichment (above 23.5%) creates a risk of:', options: ['Asphyxiation','Increased fire and explosion risk','Toxic gas buildup','None of the above'], answer: 1 },
+        { q: 'A confined space attendant must:', options: ['Enter the space periodically to check','Remain outside and monitor the entrant continuously','Only be present at the start','Go in with the entrant'], answer: 1 },
+        { q: 'Atmospheric testing must be done:', options: ['Once before entry','Before entry and continuously during work','Only if you smell something','After entry to confirm safety'], answer: 1 }
+      ]
+    }
+  ]
+};
+
+// Make available globally
+if (typeof window !== 'undefined') window.LMS = LMS;
