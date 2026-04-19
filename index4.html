@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Templates & Documents — Lithala LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--forest:#1a3a2a;--emerald:#2d6a4f;--lime:#52b788;--gold:#d4a017;--cream:#f8f4ec;--white:#fff;--mist:#e8f0eb;--ink:#2d3436;--charcoal:#1c1c1e;--amber:#f4a261}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+.ticker-wrap{background:var(--forest);color:var(--lime);padding:10px 0;overflow:hidden;position:sticky;top:0;z-index:1000;border-bottom:2px solid var(--lime)}
+.ticker-inner{display:flex;align-items:center;padding:0 5%}
+.ticker-label{background:var(--gold);color:var(--forest);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;padding:3px 12px;letter-spacing:1.5px;text-transform:uppercase;margin-right:20px;border-radius:3px;flex-shrink:0}
+.ticker-track{display:inline-flex;white-space:nowrap;animation:ticker 50s linear infinite;font-size:13px;gap:60px}
+.ticker-track span::before{content:"⚠ ";color:var(--amber)}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+nav{background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:72px;box-shadow:0 2px 20px rgba(0,0,0,.08);position:sticky;top:40px;z-index:999}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo img{height:42px;object-fit:contain}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--forest);line-height:1}
+.logo-text span{color:var(--lime)}
+.logo-sub{font-size:10px;color:var(--emerald);letter-spacing:1.5px;text-transform:uppercase}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{text-decoration:none;color:var(--ink);font-size:14px;font-weight:500}
+.nav-links a.active,.nav-links a:hover{color:var(--emerald)}
+.btn-p{background:var(--emerald);color:#fff;border:none;padding:10px 22px;border-radius:6px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;text-decoration:none}
+.page-hdr{background:linear-gradient(135deg,var(--forest),#152c1f);padding:72px 5% 56px;color:#fff;position:relative;overflow:hidden}
+.page-hdr::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:40px;background:var(--cream);clip-path:ellipse(55% 100% at 50% 100%)}
+.page-hdr h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,56px);font-weight:800;color:#fff;margin-bottom:14px}
+.page-hdr h1 span{color:var(--lime)}
+.page-hdr p{font-size:16px;color:rgba(255,255,255,.7);max-width:520px;line-height:1.6}
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;gap:36px;padding:56px 5%;align-items:start}
+.sidebar{position:sticky;top:160px}
+.sb-card{background:#fff;border-radius:14px;padding:24px;margin-bottom:18px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.sb-card h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--forest);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--mist)}
+.sb-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.sb-list li{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:#555;cursor:pointer;padding:6px 0;transition:color .2s}
+.sb-list li:hover,.sb-list li.active{color:var(--emerald);font-weight:600}
+.sb-count{background:var(--mist);color:var(--emerald);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}
+/* DOCS GRID */
+.docs-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.docs-count{font-size:14px;color:#888}
+.docs-count strong{color:var(--forest);font-family:'Syne',sans-serif}
+.docs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.doc-card{background:#fff;border-radius:14px;padding:24px;box-shadow:0 2px 16px rgba(0,0,0,.05);transition:all .3s;border:2px solid transparent;cursor:pointer}
+.doc-card:hover{border-color:var(--lime);transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.1)}
+.doc-icon{font-size:36px;margin-bottom:14px;display:block}
+.doc-type{font-size:10px;font-weight:700;color:var(--emerald);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.doc-card h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--forest);margin-bottom:8px;line-height:1.3}
+.doc-card p{font-size:13px;color:#777;line-height:1.6;margin-bottom:16px}
+.doc-meta{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--mist)}
+.doc-price{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--forest)}
+.doc-price small{font-size:11px;font-weight:400;color:#aaa;display:block;font-family:'DM Sans',sans-serif}
+.doc-format{background:var(--mist);color:var(--emerald);font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.5px}
+.btn-buy{background:var(--emerald);color:#fff;border:none;padding:8px 16px;border-radius:6px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:background .2s}
+.btn-buy:hover{background:var(--forest)}
+footer{background:var(--charcoal);color:#fff;padding:36px 5%;text-align:center}
+footer .fn{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px}
+footer .fn span{color:var(--lime)}
+footer p{font-size:13px;color:#888;margin-bottom:16px}
+footer .flinks{display:flex;gap:20px;justify-content:center}
+footer .flinks a{color:#888;text-decoration:none;font-size:13px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:relative;top:0}}
+</style>
+</head>
+<body>
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-label">HSE LIVE</span>
+    <div style="overflow:hidden;flex:1">
+      <div class="ticker-track" id="ticker">
+        <span>Updated Risk Assessment templates now include ISO 45001:2018 criteria</span>
+        <span>SANS 10085 confined space procedures template — updated March 2025</span>
+        <span>New: NEMA-compliant waste management plan template available</span>
+        <span>Legal register template updated with latest OHS Act amendments</span>
+        <span>Updated Risk Assessment templates now include ISO 45001:2018 criteria</span>
+        <span>SANS 10085 confined space procedures template — updated March 2025</span>
+        <span>New: NEMA-compliant waste management plan template available</span>
+        <span>Legal register template updated with latest OHS Act amendments</span>
+      </div>
+    </div>
+  </div>
+</div>
+<nav>
+  <a href="index.html" class="logo">
+    <img src="logo.png" alt="Lithala" onerror="this.style.display='none'">
+    <div><div class="logo-text">LITHALA <span>LMS</span></div><div class="logo-sub">Risk Solutions</div></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index3.html">Courses</a></li>
+    <li><a href="index4.html" class="active">Templates & Docs</a></li>
+    <li><a href="index5.html">WhatsApp Learning</a></li>
+    <li><a href="index6.html">About</a></li>
+  </ul>
+  <a href="dashboard3.html" class="btn-p">My Dashboard</a>
+</nav>
+
+<div class="page-hdr">
+  <h1>Templates &amp; <span>Documents</span></h1>
+  <p>Professionally drafted SOPs, risk assessment templates, safety policies and compliance checklists — instantly downloadable. South African law compliant.</p>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-card">
+      <h3>Categories</h3>
+      <ul class="sb-list">
+        <li class="active"><span>All Documents</span><span class="sb-count">42</span></li>
+        <li><span>📋 SOPs</span><span class="sb-count">10</span></li>
+        <li><span>⚠️ Risk Assessments</span><span class="sb-count">8</span></li>
+        <li><span>📜 Safety Policies</span><span class="sb-count">7</span></li>
+        <li><span>✅ Checklists</span><span class="sb-count">9</span></li>
+        <li><span>📊 Legal Registers</span><span class="sb-count">4</span></li>
+        <li><span>🏆 ISO Templates</span><span class="sb-count">4</span></li>
+      </ul>
+    </div>
+    <div class="sb-card">
+      <h3>Format</h3>
+      <ul class="sb-list">
+        <li><span>Word (.docx)</span><span class="sb-count">30</span></li>
+        <li><span>Excel (.xlsx)</span><span class="sb-count">8</span></li>
+        <li><span>PDF</span><span class="sb-count">4</span></li>
+      </ul>
+    </div>
+    <div class="sb-card" style="background:linear-gradient(135deg,var(--forest),var(--emerald));border:none">
+      <h3 style="color:var(--lime);border-color:rgba(255,255,255,.15)">Need Custom Templates?</h3>
+      <p style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.6;margin-bottom:16px">We create bespoke procedures and policies tailored to your specific operation and industry sector.</p>
+      <a href="index6.html" style="display:block;background:var(--lime);color:var(--forest);text-align:center;padding:10px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;text-decoration:none">Request Custom Doc</a>
+    </div>
+  </aside>
+  <main>
+    <div class="docs-toolbar">
+      <div class="docs-count">Showing <strong>12</strong> of 42 documents</div>
+    </div>
+    <div class="docs-grid">
+      <div class="doc-card" onclick="buyDoc('Permit-to-Work SOP')"><span class="doc-icon">📋</span><div class="doc-type">Standard Operating Procedure</div><h3>Permit-to-Work System SOP</h3><p>Complete PTW procedure covering hot work, confined space, electrical and height work permits. OHSA compliant.</p><div class="doc-meta"><div><div class="doc-price">R 290<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">DOCX</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('Hazard Identification Template')"><span class="doc-icon">⚠️</span><div class="doc-type">Risk Assessment</div><h3>Hazard Identification & Risk Assessment (HIRA)</h3><p>ISO 45001-aligned risk assessment matrix with severity/likelihood scoring and control hierarchy columns.</p><div class="doc-meta"><div><div class="doc-price">R 350<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">XLSX</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('OHS Policy Template')"><span class="doc-icon">📜</span><div class="doc-type">Safety Policy</div><h3>Occupational Health & Safety Policy</h3><p>Fully customisable OHS Policy template aligned with OHS Act Section 7 requirements. Includes signature blocks.</p><div class="doc-meta"><div><div class="doc-price">R 220<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">DOCX</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('Section 16.2 Appointment')"><span class="doc-icon">✍️</span><div class="doc-type">Legal Appointment</div><h3>Section 16.2 Appointment Letter</h3><p>Legally compliant letter of appointment for Section 16.2 designated persons under the OHS Act.</p><div class="doc-meta"><div><div class="doc-price">R 180<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">DOCX</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('Legal Register')"><span class="doc-icon">📊</span><div class="doc-type">Legal Register</div><h3>OHS Legal Register — South Africa</h3><p>Comprehensive register of all applicable OHS legislation, regulations and standards. Updated 2024.</p><div class="doc-meta"><div><div class="doc-price">R 490<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">XLSX</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('Incident Report Form')"><span class="doc-icon">🔍</span><div class="doc-type">Incident Management</div><h3>Incident Investigation Report Form</h3><p>Root cause analysis template with 5-Why, corrective action tracking and DoL notification sections.</p><div class="doc-meta"><div><div class="doc-price">R 240<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">DOCX</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('Fire Evacuation Plan')"><span class="doc-icon">🔥</span><div class="doc-type">Emergency Procedures</div><h3>Fire Evacuation Plan Template</h3><p>Complete evacuation plan with assembly point diagrams, warden duties and drill record sheets.</p><div class="doc-meta"><div><div class="doc-price">R 260<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">DOCX</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('Waste Management Plan')"><span class="doc-icon">♻️</span><div class="doc-type">Environmental</div><h3>Site Waste Management Plan</h3><p>NEMA-compliant waste management plan covering classification, storage, disposal and waste minimisation.</p><div class="doc-meta"><div><div class="doc-price">R 320<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">DOCX</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('ISO 45001 Gap Analysis')"><span class="doc-icon">🏆</span><div class="doc-type">ISO Template</div><h3>ISO 45001 Gap Analysis Tool</h3><p>Clause-by-clause gap analysis spreadsheet with traffic light scoring and action planning columns.</p><div class="doc-meta"><div><div class="doc-price">R 580<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">XLSX</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('PPE Register')"><span class="doc-icon">🦺</span><div class="doc-type">Checklist</div><h3>PPE Issue & Inspection Register</h3><p>Track PPE issued to each employee, inspection dates, replacement schedule and acknowledgement signatures.</p><div class="doc-meta"><div><div class="doc-price">R 190<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">XLSX</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('Contractor Safety Pack')"><span class="doc-icon">🏗️</span><div class="doc-type">Bundle</div><h3>Contractor Safety Induction Pack</h3><p>Complete contractor management pack: induction register, risk acknowledgement, SWMS template and site rules.</p><div class="doc-meta"><div><div class="doc-price">R 680<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format" style="background:#fff8e1;color:var(--gold)">BUNDLE</span><button class="btn-buy">Buy Now</button></div></div></div>
+
+      <div class="doc-card" onclick="buyDoc('Chemical SDS Register')"><span class="doc-icon">☢️</span><div class="doc-type">Hazardous Materials</div><h3>Chemical SDS Register & Tracker</h3><p>Maintain your Safety Data Sheet library, chemical inventory, storage locations and review dates in one spreadsheet.</p><div class="doc-meta"><div><div class="doc-price">R 290<small>incl. VAT</small></div></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end"><span class="doc-format">XLSX</span><button class="btn-buy">Buy Now</button></div></div></div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <div class="fn">LITHALA <span>LMS</span></div>
+  <p>© 2025 Lithala Risk Solutions (Pty) Ltd · <a href="https://www.lithala.com" style="color:var(--lime);text-decoration:none">lithala.com</a></p>
+  <div class="flinks"><a href="index.html">Home</a><a href="index3.html">Courses</a><a href="index5.html">WhatsApp</a><a href="index6.html">Contact</a></div>
+</footer>
+<script>
+const t=document.getElementById('ticker');t.innerHTML+=t.innerHTML;
+function buyDoc(name){alert('🛒 "'+name+'" — In the live system this opens the payment flow (PayFast/Stripe SA). After payment, the document downloads instantly.');}
+</script>
+</body>
+</html>
