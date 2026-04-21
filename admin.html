@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Admin Panel — Lithala LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<script src="lms-config.js"></script>
+<script src="auth.js"></script>
+<style>
+:root{--navy:#0d2b52;--ocean:#1565c0;--sky:#2196f3;--forest:#1a3a2a;--lime:#52b788;--gold:#d4a017;--cream:#f5f7f5;--mist:#e0eae4;--ink:#1e2d26;--danger:#e63946}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#eef2f7;color:var(--ink);min-height:100vh}
+@keyframes mIn{from{opacity:0;transform:scale(.92) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+/* LOGIN */
+#loginScreen{display:flex;min-height:100vh;background:linear-gradient(135deg,#0d2b52,#1a3a2a);align-items:center;justify-content:center;padding:20px}
+.login-box{background:white;border-radius:22px;width:100%;max-width:380px;padding:40px 34px;text-align:center;animation:mIn .3s ease}
+.login-box h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#0d2b52;margin-bottom:4px}
+.login-box p{font-size:13px;color:#aaa;margin-bottom:24px}
+.login-box input{width:100%;padding:12px 14px;border:2px solid var(--mist);border-radius:9px;font-size:14px;background:var(--cream);outline:none;margin-bottom:12px;font-family:'DM Sans',sans-serif;transition:border-color .2s}
+.login-box input:focus{border-color:#2196f3;background:white}
+.btn-full{width:100%;background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:13px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer}
+
+/* LAYOUT */
+#adminApp{display:none}
+.admin-wrap{display:flex;min-height:100vh}
+.admin-side{width:240px;background:linear-gradient(180deg,#0d2b52,#1a3a2a);flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.side-hdr{padding:22px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.side-hdr .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:white}
+.side-hdr .logo em{color:#64b5f6;font-style:normal}
+.side-hdr .tag{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.side-nav{flex:1;padding:12px 0}
+.snav-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);padding:10px 18px 4px}
+.snav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;color:rgba(255,255,255,.65);font-size:13px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;text-decoration:none}
+.snav-item:hover,.snav-item.active{background:rgba(255,255,255,.08);color:white;border-left-color:#64b5f6}
+.snav-icon{font-size:17px;width:20px;text-align:center;flex-shrink:0}
+.side-bottom{padding:16px 18px;border-top:1px solid rgba(255,255,255,.08)}
+.admin-main{flex:1;display:flex;flex-direction:column;min-width:0}
+.admin-topbar{background:white;padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,.06);flex-shrink:0;border-bottom:1px solid #f0f4f8}
+.admin-topbar h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#0d2b52}
+.admin-content{flex:1;padding:28px;overflow-y:auto}
+
+/* PANELS */
+.panel{display:none}
+.panel.active{display:block}
+
+/* CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-c{background:white;border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04);transition:all .2s}
+.stat-c:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(13,43,82,.1)}
+.stat-c .num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#0d2b52}
+.stat-c .lbl{font-size:12px;color:#888;margin-top:4px}
+.card{background:white;border-radius:16px;padding:24px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04);margin-bottom:22px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.card-hdr h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#0d2b52}
+
+/* BUTTONS */
+.btn{padding:9px 18px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;box-shadow:0 3px 10px rgba(21,101,192,.3)}
+.btn-green{background:linear-gradient(135deg,#2d6a4f,#52b788);color:white}
+.btn-outline{background:transparent;border:2px solid #e0eae4;color:#555}
+.btn-outline:hover{border-color:#1565c0;color:#1565c0}
+.btn-danger{background:transparent;border:2px solid #e63946;color:#e63946}
+.btn-danger:hover{background:#e63946;color:white}
+.btn-gold{background:linear-gradient(135deg,#d4a017,#f4c430);color:#0d2b52}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;font-size:13px}
+.data-table th{text-align:left;padding:10px 14px;background:#f5f7f5;color:#0d2b52;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.data-table th:first-child{border-radius:8px 0 0 8px}
+.data-table th:last-child{border-radius:0 8px 8px 0}
+.data-table td{padding:13px 14px;border-bottom:1px solid #f0f4f8;color:#555;vertical-align:middle}
+.data-table tr:hover td{background:#fafbfc}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px}
+.tag-pass{background:rgba(82,183,136,.12);color:#2d6a4f}
+.tag-fail{background:rgba(230,57,70,.1);color:#c62828}
+.tag-active{background:#e3f2fd;color:#1565c0}
+.tag-pending{background:#fff8e1;color:#d4a017}
+
+/* COURSE EDITOR */
+.course-list{display:grid;gap:14px}
+.course-row{background:var(--cream);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;border:1px solid var(--mist);transition:all .2s}
+.course-row:hover{border-color:#2196f3;background:#f0f7ff}
+.course-row img{width:64px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.course-row-info{flex:1;min-width:0}
+.course-row-info h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#0d2b52;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.course-row-info p{font-size:12px;color:#888;margin-top:2px}
+.course-row-price{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:#0d2b52;flex-shrink:0}
+.course-row-actions{display:flex;gap:8px;flex-shrink:0}
+
+/* EDIT FORM */
+.edit-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;align-items:flex-start;justify-content:center;backdrop-filter:blur(5px);padding:20px;overflow-y:auto}
+.edit-overlay.open{display:flex}
+.edit-box{background:white;border-radius:20px;width:100%;max-width:680px;padding:0;overflow:hidden;animation:mIn .3s ease;margin:auto}
+.edit-hdr{background:linear-gradient(135deg,#0d2b52,#1565c0);padding:22px 28px;color:white;display:flex;align-items:center;justify-content:space-between}
+.edit-hdr h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
+.edit-body{padding:28px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:11.5px;font-weight:600;color:#1a3a2a;margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 13px;border:2px solid var(--mist);border-radius:8px;font-size:13px;background:var(--cream);outline:none;transition:border-color .2s;font-family:'DM Sans',sans-serif}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#2196f3;background:white}
+.fg textarea{resize:vertical;min-height:80px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.section-divider{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;padding:10px 0 6px;border-top:2px solid #f0f4f8;margin-top:8px}
+.module-editor{display:flex;flex-direction:column;gap:8px}
+.mod-edit-row{display:flex;gap:8px;align-items:center;background:var(--cream);border-radius:8px;padding:8px 10px;border:1px solid var(--mist)}
+.mod-edit-row input{flex:1;border:none;background:transparent;font-size:13px;outline:none;font-family:'DM Sans',sans-serif}
+.mod-edit-row select{border:none;background:transparent;font-size:12px;outline:none;color:#888;font-family:'DM Sans',sans-serif}
+.mod-drag{cursor:grab;color:#ccc;font-size:16px;flex-shrink:0}
+.btn-add-mod{background:none;border:2px dashed var(--mist);width:100%;padding:10px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:600;font-size:13px;color:#888;cursor:pointer;transition:all .2s}
+.btn-add-mod:hover{border-color:#2196f3;color:#1565c0}
+
+/* SHEET VIEWER */
+.sheet-tabs{display:flex;gap:4px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none}
+.sheet-tab{padding:8px 18px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;background:var(--cream);border:none;color:#888;white-space:nowrap;transition:all .2s}
+.sheet-tab.active{background:linear-gradient(135deg,#1565c0,#2196f3);color:white}
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #f0f4f8}
+
+/* CONFIG FORM */
+.config-section{background:var(--cream);border-radius:12px;padding:22px;margin-bottom:18px;border:1px solid var(--mist)}
+.config-section h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#0d2b52;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--mist);display:flex;align-items:center;gap:8px}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot-ok{background:#52b788}
+.dot-warn{background:#d4a017}
+.dot-err{background:#e63946}
+
+@media(max-width:900px){
+  .admin-side{display:none}
+  .stat-row{grid-template-columns:1fr 1fr}
+  .r2,.r3{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .stat-row{grid-template-columns:1fr}
+  .course-row{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<!-- TICKER -->
+<div style="background:#1a3a2a;color:#52b788;padding:9px 0;overflow:hidden;border-bottom:2px solid #52b788">
+  <div style="display:flex;align-items:center;padding:0 3%">
+    <span style="background:#d4a017;color:#1a3a2a;font-family:Syne,sans-serif;font-weight:700;font-size:10px;padding:3px 10px;letter-spacing:1.5px;text-transform:uppercase;margin-right:14px;border-radius:3px;flex-shrink:0">HSE LIVE</span>
+    <div style="overflow:hidden;flex:1">
+      <div style="display:inline-flex;white-space:nowrap;animation:tkr 55s linear infinite;font-size:11.5px;gap:50px">
+        <span style="margin-right:50px">⚠ Admin Panel — Lithala LMS · Manage courses, view learner data, approve deletions · info@lithala.com</span>
+        <span style="margin-right:50px">⚠ All changes to courses take effect immediately across the site · Export data to CSV from each sheet tab</span>
+        <span style="margin-right:50px">⚠ POPIA reminder: process deletion requests within 5 business days of receipt</span>
+        <span style="margin-right:50px">⚠ Admin Panel — Lithala LMS · Manage courses, view learner data, approve deletions · info@lithala.com</span>
+        <span style="margin-right:50px">⚠ All changes to courses take effect immediately across the site · Export data to CSV from each sheet tab</span>
+        <span style="margin-right:50px">⚠ POPIA reminder: process deletion requests within 5 business days of receipt</span>
+      </div>
+    </div>
+  </div>
+</div>
+<style>@keyframes tkr{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}</style>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div style="font-size:40px;margin-bottom:10px">🛡️</div>
+    <h1>LITHALA LMS</h1>
+    <p>Admin Panel — Authorised Access Only</p>
+    <input type="password" id="adminPwd" placeholder="Admin Password" onkeypress="if(event.key==='Enter')adminLogin()">
+    <button class="btn-full" onclick="adminLogin()">Sign In to Admin Panel →</button>
+    <p style="font-size:11px;color:#ccc;margin-top:14px">Default password is set in <code>lms-config.js</code></p>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp" class="admin-wrap">
+  <!-- SIDEBAR -->
+  <aside class="admin-side">
+    <div class="side-hdr">
+      <div class="logo">LITHALA <em>LMS</em></div>
+      <div class="tag">Admin Panel</div>
+    </div>
+    <nav class="side-nav">
+      <div class="snav-label">Overview</div>
+      <a class="snav-item active" onclick="showPanel('overview')"><span class="snav-icon">📊</span> Dashboard</a>
+      <div class="snav-label">Content</div>
+      <a class="snav-item" onclick="showPanel('courses')"><span class="snav-icon">📚</span> Manage Courses</a>
+      <a class="snav-item" onclick="showPanel('add-course')"><span class="snav-icon">➕</span> Add New Course</a>
+      <div class="snav-label">Data</div>
+      <a class="snav-item" onclick="showPanel('learners')"><span class="snav-icon">👥</span> Learners</a>
+      <a class="snav-item" onclick="showPanel('results')"><span class="snav-icon">📈</span> Results</a>
+      <a class="snav-item" onclick="showPanel('purchases')"><span class="snav-icon">💳</span> Purchases</a>
+      <a class="snav-item" onclick="showPanel('deletions')"><span class="snav-icon">🗑️</span> Deletion Requests</a>
+      <div class="snav-label">Settings</div>
+      <a class="snav-item" onclick="showPanel('config')"><span class="snav-icon">⚙️</span> Configuration</a>
+    </nav>
+    <div class="side-bottom">
+      <button onclick="adminLogout()" style="background:none;border:none;color:rgba(255,255,255,.45);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px">🚪 Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h2 id="adminPanelTitle">Dashboard</h2>
+      <div style="display:flex;gap:10px;align-items:center">
+        <a href="index.html" style="font-size:12px;color:#1565c0;text-decoration:none;font-weight:600">← View Site</a>
+        <a href="dashboard3.html" style="font-size:12px;color:#1565c0;text-decoration:none;font-weight:600">Learner Dashboard →</a>
+      </div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- OVERVIEW -->
+      <div class="panel active" id="panel-overview">
+        <div class="stat-row">
+          <div class="stat-c"><div class="num" id="stat-learners">—</div><div class="lbl">👥 Total Learners</div></div>
+          <div class="stat-c"><div class="num" id="stat-purchases">—</div><div class="lbl">💳 Total Purchases</div></div>
+          <div class="stat-c"><div class="num" id="stat-passes">—</div><div class="lbl">✅ Certificates Issued</div></div>
+          <div class="stat-c"><div class="num" id="stat-revenue">—</div><div class="lbl">💰 Est. Revenue</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="card">
+            <div class="card-hdr"><h3>📋 Recent Registrations</h3><button class="btn btn-outline" onclick="showPanel('learners')">View All</button></div>
+            <div id="recentLearners" style="color:#aaa;font-size:13px;text-align:center;padding:20px">Loading from Google Sheet...</div>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><h3>📊 Latest Results</h3><button class="btn btn-outline" onclick="showPanel('results')">View All</button></div>
+            <div id="recentResults" style="color:#aaa;font-size:13px;text-align:center;padding:20px">Loading from Google Sheet...</div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:0">
+          <div class="card-hdr"><h3>🗑️ Pending Deletion Requests</h3><span id="deletionBadge" style="background:#e63946;color:white;font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;display:none">0</span></div>
+          <div id="deletionPreview" style="color:#aaa;font-size:13px;text-align:center;padding:16px">No pending deletion requests.</div>
+        </div>
+      </div>
+
+      <!-- MANAGE COURSES -->
+      <div class="panel" id="panel-courses">
+        <div class="card">
+          <div class="card-hdr">
+            <h3>📚 All Courses (8)</h3>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-green" onclick="showPanel('add-course')">➕ Add New Course</button>
+              <button class="btn btn-outline" onclick="exportCourses()">⬇ Export JSON</button>
+            </div>
+          </div>
+          <div class="course-list" id="courseList"></div>
+        </div>
+      </div>
+
+      <!-- ADD / EDIT COURSE -->
+      <div class="panel" id="panel-add-course">
+        <div class="card">
+          <div class="card-hdr">
+            <h3 id="courseFormTitle">➕ Add New Course</h3>
+            <div style="font-size:12px;color:#aaa">All fields marked * are required</div>
+          </div>
+          <div id="courseForm">
+
+            <div class="section-divider">📋 Basic Information</div>
+            <div class="r2">
+              <div class="fg"><label>Course ID * <small style="color:#aaa;font-weight:400">(e.g. CS002, no spaces)</small></label><input id="cf-id" placeholder="e.g. MYCS001"></div>
+              <div class="fg"><label>Category *</label>
+                <select id="cf-cat">
+                  <option>Confined Space</option>
+                  <option>Permit to Work</option>
+                  <option>Basic Work at Height</option>
+                  <option>Hot Work</option>
+                  <option>Electrical Safety</option>
+                  <option>E-LEARNING MODULE</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg"><label>Course Title *</label><input id="cf-title" placeholder="e.g. Confined Space Rescue Operations"></div>
+            <div class="fg"><label>Subtitle * <small style="color:#aaa;font-weight:400">(e.g. "e-Learning Module" or "Training Material")</small></label><input id="cf-sub" placeholder="e.g. e-Learning Module"></div>
+            <div class="fg"><label>Description * <small style="color:#aaa;font-weight:400">(2-3 sentences about what the course covers)</small></label><textarea id="cf-desc" placeholder="This course covers..."></textarea></div>
+            <div class="fg"><label>Cover Image URL <small style="color:#aaa;font-weight:400">(paste an Unsplash URL or your own image link)</small></label>
+              <input id="cf-img" placeholder="https://images.unsplash.com/photo-..." oninput="updateImgPreview()">
+              <div style="margin-top:8px;display:flex;align-items:center;gap:10px">
+                <img id="cf-img-preview" src="" style="width:80px;height:60px;object-fit:cover;border-radius:6px;display:none;border:1px solid #e0eae4">
+                <span style="font-size:11px;color:#aaa">Preview will appear here</span>
+              </div>
+            </div>
+
+            <div class="section-divider">💰 Pricing & Details</div>
+            <div class="r3">
+              <div class="fg"><label>Price (Rands, incl. VAT) *</label><input id="cf-price" type="number" placeholder="1500" min="0"></div>
+              <div class="fg"><label>Duration</label><input id="cf-dur" placeholder="4 hours"></div>
+              <div class="fg"><label>Badge <small style="color:#aaa;font-weight:400">(optional)</small></label>
+                <select id="cf-badge">
+                  <option value="">None</option>
+                  <option value="Bestseller">Bestseller</option>
+                  <option value="New">New</option>
+                  <option value="Popular">Popular</option>
+                  <option value="Essential">Essential</option>
+                  <option value="elearning">eLearning</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg" style="display:flex;align-items:center;gap:12px">
+              <input type="checkbox" id="cf-wa" style="width:18px;height:18px;cursor:pointer">
+              <label for="cf-wa" style="font-size:14px;color:#1e2d26;cursor:pointer;font-weight:500">💬 This course is available via WhatsApp delivery</label>
+            </div>
+
+            <div class="section-divider">✅ Learning Outcomes <small style="color:#aaa;font-weight:400;font-family:'DM Sans',sans-serif">(what learners will be able to do — one per line)</small></div>
+            <div class="fg"><textarea id="cf-outcomes" rows="5" placeholder="Identify confined space hazards&#10;Conduct atmospheric testing&#10;Apply entry permit procedures&#10;Execute rescue protocols&#10;Comply with OHSA regulations"></textarea></div>
+
+            <div class="section-divider">📋 Course Modules</div>
+            <p style="font-size:12px;color:#888;margin-bottom:12px">Add modules in order. Mark the last one as "Assessment" — this will trigger the quiz on completion.</p>
+            <div class="module-editor" id="moduleEditor"></div>
+            <button class="btn-add-mod" onclick="addModuleRow()">+ Add Module</button>
+
+            <div class="section-divider">📝 Assessment Questions <small style="color:#aaa;font-weight:400;font-family:'DM Sans',sans-serif">(minimum 5, recommended 10)</small></div>
+            <p style="font-size:12px;color:#888;margin-bottom:12px">Add multiple-choice questions. Mark the correct answer (A=0, B=1, C=2, D=3).</p>
+            <div id="questionsEditor"></div>
+            <button onclick="addQuestionRow()" style="background:none;border:2px dashed #e0eae4;width:100%;padding:10px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:600;font-size:13px;color:#888;cursor:pointer;margin-top:8px;transition:all .2s">+ Add Question</button>
+
+            <div style="display:flex;gap:12px;margin-top:28px;padding-top:20px;border-top:2px solid #f0f4f8">
+              <button class="btn btn-primary" onclick="saveCourse()" style="flex:2;padding:13px;font-size:14px">💾 Save Course to LMS</button>
+              <button class="btn btn-outline" onclick="showPanel('courses')" style="flex:1;padding:13px">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEARNERS -->
+      <div class="panel" id="panel-learners">
+        <div class="card">
+          <div class="card-hdr">
+            <h3>👥 Registered Learners</h3>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-outline" onclick="loadSheetData('Users')">🔄 Refresh</button>
+              <button class="btn btn-outline" onclick="exportSheet('Users')">⬇ Export CSV</button>
+            </div>
+          </div>
+          <div class="table-wrap"><div id="learnersTable" style="padding:20px;color:#aaa;text-align:center">Click Refresh to load from Google Sheet.</div></div>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="panel" id="panel-results">
+        <div class="card">
+          <div class="card-hdr">
+            <h3>📈 Assessment Results</h3>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-outline" onclick="loadSheetData('Results')">🔄 Refresh</button>
+              <button class="btn btn-outline" onclick="exportSheet('Results')">⬇ Export CSV</button>
+            </div>
+          </div>
+          <div class="table-wrap"><div id="resultsTable" style="padding:20px;color:#aaa;text-align:center">Click Refresh to load from Google Sheet.</div></div>
+        </div>
+      </div>
+
+      <!-- PURCHASES -->
+      <div class="panel" id="panel-purchases">
+        <div class="card">
+          <div class="card-hdr">
+            <h3>💳 Purchases</h3>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-outline" onclick="loadSheetData('Purchases')">🔄 Refresh</button>
+              <button class="btn btn-outline" onclick="exportSheet('Purchases')">⬇ Export CSV</button>
+            </div>
+          </div>
+          <div class="table-wrap"><div id="purchasesTable" style="padding:20px;color:#aaa;text-align:center">Click Refresh to load from Google Sheet.</div></div>
+        </div>
+      </div>
+
+      <!-- DELETION REQUESTS -->
+      <div class="panel" id="panel-deletions">
+        <div class="card">
+          <div class="card-hdr"><h3>🗑️ Data Deletion Requests (POPIA)</h3><button class="btn btn-outline" onclick="loadSheetData('DeletionRequests')">🔄 Refresh</button></div>
+          <p style="font-size:13px;color:#888;margin-bottom:16px">Review each request carefully before approving. Approving will remove all learner data from the Google Sheet. This action cannot be undone.</p>
+          <div id="deletionsTable" style="padding:20px;color:#aaa;text-align:center">Click Refresh to load requests.</div>
+        </div>
+      </div>
+
+      <!-- CONFIGURATION -->
+      <div class="panel" id="panel-config">
+        <div class="config-section">
+          <h4>🔧 System Status</h4>
+          <div style="display:flex;flex-direction:column;gap:10px" id="configStatus"></div>
+        </div>
+        <div class="config-section">
+          <h4>📋 How to Edit Configuration</h4>
+          <p style="font-size:13px;color:#666;line-height:1.7;margin-bottom:12px">Open <code style="background:#f0f4f8;padding:2px 6px;border-radius:4px">lms-config.js</code> in a text editor (or on GitHub) and update these values:</p>
+          <div style="background:#0a0a0a;border-radius:10px;padding:20px;font-family:monospace;font-size:13px;line-height:2;color:#e2e8f0;overflow-x:auto">
+            <div><span style="color:#94a3b8">// In lms-config.js:</span></div>
+            <div><span style="color:#52b788">SCRIPT_URL:</span> <span style="color:#fbbf24">'your-apps-script-url'</span>,</div>
+            <div><span style="color:#52b788">GOOGLE_CLIENT_ID:</span> <span style="color:#fbbf24">'your-google-client-id'</span>,</div>
+            <div><span style="color:#52b788">ADMIN_PASSWORD:</span> <span style="color:#fbbf24">'your-new-password'</span>,</div>
+            <div><span style="color:#52b788">PAYFAST.MERCHANT_ID:</span> <span style="color:#fbbf24">'your-payfast-id'</span>,</div>
+            <div><span style="color:#52b788">PAYFAST.SANDBOX:</span> <span style="color:#fbbf24">false</span>, <span style="color:#94a3b8">// Set false to go live</span></div>
+          </div>
+        </div>
+        <div class="config-section">
+          <h4>📧 Admin Email Notifications</h4>
+          <p style="font-size:13px;color:#666;line-height:1.7">Results and registrations are currently emailed to:</p>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px" id="adminEmailList"></div>
+          <p style="font-size:12px;color:#aaa;margin-top:10px">To change, edit <code>ADMIN_EMAILS</code> in <code>lms-config.js</code> and <code>google-apps-script.js</code>.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- EDIT COURSE OVERLAY -->
+<div class="edit-overlay" id="editOverlay">
+  <div class="edit-box">
+    <div class="edit-hdr">
+      <h3 id="editOverlayTitle">Edit Course</h3>
+      <button onclick="document.getElementById('editOverlay').classList.remove('open')" style="background:rgba(255,255,255,.15);border:none;color:white;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer">✕</button>
+    </div>
+    <div class="edit-body" id="editOverlayBody">
+      <p style="color:#aaa;font-size:13px">Loading editor...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────
+function adminLogin() {
+  const pwd = document.getElementById('adminPwd').value;
+  if (pwd === LMS.ADMIN_PASSWORD) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'flex';
+    initAdmin();
+  } else {
+    document.getElementById('adminPwd').style.borderColor = '#e63946';
+    setTimeout(() => document.getElementById('adminPwd').style.borderColor = '', 1500);
+    lmsToast('Incorrect password.', 'error');
+  }
+}
+document.getElementById('adminPwd').addEventListener('keypress', e => { if(e.key==='Enter') adminLogin(); });
+function adminLogout() { window.location.href = 'index.html'; }
+
+// ── PANELS ────────────────────────────────────────────────────
+const PANEL_TITLES = {
+  'overview':'Dashboard','courses':'Manage Courses','add-course':'Add New Course',
+  'learners':'Registered Learners','results':'Assessment Results',
+  'purchases':'Purchases','deletions':'Deletion Requests (POPIA)','config':'Configuration'
+};
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.snav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.getElementById('adminPanelTitle').textContent = PANEL_TITLES[id] || id;
+  if (id === 'courses') renderCourseList();
+  if (id === 'add-course') initCourseForm();
+  if (id === 'config') renderConfig();
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+function initAdmin() {
+  renderOverviewStats();
+  loadSheetDataPreview();
+}
+
+function renderOverviewStats() {
+  // From localStorage (demo) + Google Sheet (live)
+  const purchases = JSON.parse(localStorage.getItem('lms_purchases') || '[]');
+  const results   = JSON.parse(localStorage.getItem('lms_results')   || '[]');
+  const passed    = results.filter(r => r.passed);
+  const revenue   = LMS.COURSES.reduce((sum, c) => {
+    const count = purchases.filter(p => p.courseId === c.id).length;
+    return sum + (count * c.price);
+  }, 0);
+
+  document.getElementById('stat-learners').textContent  = '—';
+  document.getElementById('stat-purchases').textContent = purchases.length || '—';
+  document.getElementById('stat-passes').textContent    = passed.length   || '—';
+  document.getElementById('stat-revenue').textContent   = revenue > 0 ? `R${revenue.toLocaleString()}` : '—';
+
+  // Try to get real counts from sheet
+  lmsFetch({ action: 'getSheetCounts' })
+    .then(data => {
+      if (data && data.success && data.counts) {
+        document.getElementById('stat-learners').textContent  = data.counts.users || '—';
+        document.getElementById('stat-purchases').textContent = data.counts.purchases || purchases.length;
+        document.getElementById('stat-passes').textContent    = data.counts.passes || passed.length;
+      }
+    }).catch(() => {});
+
+  // Recent registrations preview
+  document.getElementById('recentLearners').innerHTML = `
+    <p style="font-size:13px;color:#555;margin-bottom:12px">Local learner data (demo). <button onclick="loadSheetData('Users')" class="btn btn-outline" style="padding:5px 12px;font-size:11px">Load from Google Sheet</button></p>
+    <p style="font-size:12px;color:#aaa">Real learner data will appear here once your Apps Script is deployed and learners start registering.</p>`;
+
+  document.getElementById('recentResults').innerHTML = `
+    ${results.length > 0
+      ? `<div style="overflow-x:auto">${renderResultsTable(results.slice(0,5))}</div>`
+      : `<p style="font-size:13px;color:#aaa">No results yet. <button onclick="loadSheetData('Results')" class="btn btn-outline" style="padding:5px 12px;font-size:11px">Load from Sheet</button></p>`}`;
+}
+
+function renderResultsTable(data) {
+  if (!data.length) return '<p style="color:#aaa;font-size:13px;text-align:center;padding:16px">No data.</p>';
+  return `<table class="data-table" style="width:100%">
+    <thead><tr><th>Email</th><th>Course</th><th>Score</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>${data.map(r => {
+      const c = LMS.COURSES.find(x => x.id === r.courseId);
+      return `<tr>
+        <td>${r.email || (lmsGetUser() ? lmsGetUser().email : '—')}</td>
+        <td>${c ? c.title : r.courseId}</td>
+        <td>${r.score}/${r.total} (${r.pct}%)</td>
+        <td><span class="tag ${r.passed?'tag-pass':'tag-fail'}">${r.passed?'✅ Passed':'❌ Failed'}</span></td>
+        <td>${new Date(r.date).toLocaleDateString('en-ZA')}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+async function loadSheetDataPreview() {
+  // Just try to ping Apps Script
+  if (!LMS.SCRIPT_URL || LMS.SCRIPT_URL.includes('YOUR_')) return;
+  try {
+    const data = await lmsFetch({ action: 'getSheetCounts' });
+    if (data && data.success) {
+      lmsToast('✅ Google Sheet connected!', 'success');
+    }
+  } catch(e) {}
+}
+
+async function loadSheetData(sheetName) {
+  const containers = { Users:'learnersTable', Results:'resultsTable', Purchases:'purchasesTable', DeletionRequests:'deletionsTable' };
+  const id = containers[sheetName];
+  if (!id) return;
+  const el = document.getElementById(id);
+  el.innerHTML = '<p style="color:#aaa;text-align:center;padding:20px">⏳ Loading from Google Sheet...</p>';
+
+  if (!LMS.SCRIPT_URL || LMS.SCRIPT_URL.includes('YOUR_')) {
+    el.innerHTML = '<p style="color:#d4a017;text-align:center;padding:20px">⚠️ Apps Script URL not configured yet. Update SCRIPT_URL in lms-config.js.</p>';
+    return;
+  }
+  try {
+    const data = await lmsFetch({ action: 'getSheetData', sheetName });
+    if (!data.success || !data.rows || data.rows.length === 0) {
+      el.innerHTML = '<p style="color:#aaa;text-align:center;padding:20px">No data in this sheet yet.</p>';
+      return;
+    }
+    const headers = data.headers || Object.keys(data.rows[0]);
+    el.innerHTML = `<table class="data-table" style="width:100%">
+      <thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}${sheetName==='DeletionRequests'?'<th>Action</th>':''}</tr></thead>
+      <tbody>${data.rows.map((row, ri) => `<tr>${headers.map(h => `<td>${row[h]||'—'}</td>`).join('')}${sheetName==='DeletionRequests'?`<td><button class="btn btn-danger" style="padding:5px 12px;font-size:10px" onclick="approveDeletion(${ri})">Approve &amp; Delete</button></td>`:''}</tr>`).join('')}</tbody>
+    </table>`;
+  } catch(e) {
+    el.innerHTML = `<p style="color:#e63946;text-align:center;padding:20px">❌ Error: ${e.message}</p>`;
+  }
+}
+
+function approveDeletion(rowIndex) {
+  if (!confirm('Are you sure you want to permanently delete this learner\'s data? This cannot be undone.')) return;
+  lmsFetch({ action: 'approveDeletion', rowIndex })
+    .then(() => { lmsToast('✅ Data deletion approved and processed.', 'success'); loadSheetData('DeletionRequests'); })
+    .catch(() => lmsToast('Error processing deletion request.', 'error'));
+}
+
+// ── COURSE LIST ───────────────────────────────────────────────
+function renderCourseList() {
+  const list = document.getElementById('courseList');
+  const courses = getCourses();
+  list.innerHTML = courses.map(c => `
+    <div class="course-row">
+      <img src="${c.image}" alt="${c.title}" onerror="this.src='https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=200&q=60'">
+      <div class="course-row-info">
+        <h4>${c.title}</h4>
+        <p>${c.subtitle} · ${c.category} · ⏱ ${c.duration} · 📋 ${c.modules} modules</p>
+      </div>
+      <div class="course-row-price">R ${c.price.toLocaleString()}</div>
+      <div class="course-row-actions">
+        <button class="btn btn-outline" onclick="editCourse('${c.id}')">✏️ Edit</button>
+        <button class="btn btn-danger" onclick="deleteCourse('${c.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── COURSE FORM ───────────────────────────────────────────────
+let editingCourseId = null;
+
+function initCourseForm(courseId) {
+  editingCourseId = courseId || null;
+  document.getElementById('courseFormTitle').textContent = courseId ? '✏️ Edit Course' : '➕ Add New Course';
+  const course = courseId ? getCourses().find(c => c.id === courseId) : null;
+
+  if (course) {
+    document.getElementById('cf-id').value      = course.id;
+    document.getElementById('cf-id').disabled   = true;
+    document.getElementById('cf-title').value   = course.title;
+    document.getElementById('cf-sub').value     = course.subtitle;
+    document.getElementById('cf-cat').value     = course.category;
+    document.getElementById('cf-desc').value    = course.description;
+    document.getElementById('cf-img').value     = course.image;
+    document.getElementById('cf-price').value   = course.price;
+    document.getElementById('cf-dur').value     = course.duration;
+    document.getElementById('cf-badge').value   = course.badge || '';
+    document.getElementById('cf-wa').checked    = course.wa;
+    document.getElementById('cf-outcomes').value = (course.outcomes || []).join('\n');
+    updateImgPreview();
+    renderModuleEditor(course.modules_list || []);
+    renderQuestionEditor(course.questions  || []);
+  } else {
+    document.getElementById('cf-id').disabled = false;
+    ['cf-id','cf-title','cf-sub','cf-desc','cf-img','cf-price','cf-dur','cf-outcomes'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('cf-badge').value  = '';
+    document.getElementById('cf-wa').checked   = true;
+    document.getElementById('cf-cat').value    = 'Confined Space';
+    renderModuleEditor([]);
+    renderQuestionEditor([]);
+  }
+}
+
+function updateImgPreview() {
+  const url = document.getElementById('cf-img').value;
+  const prev = document.getElementById('cf-img-preview');
+  if (url) { prev.src = url; prev.style.display = 'block'; }
+  else prev.style.display = 'none';
+}
+
+function renderModuleEditor(modules) {
+  const ed = document.getElementById('moduleEditor');
+  ed.innerHTML = modules.map((m, i) => makeModuleRow(m, i)).join('');
+  if (!modules.length) addModuleRow();
+}
+
+function makeModuleRow(m, i) {
+  return `<div class="mod-edit-row" id="modrow-${i}">
+    <span class="mod-drag" title="Drag to reorder">⋮⋮</span>
+    <span style="background:#1565c0;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</span>
+    <input value="${m.title||''}" placeholder="Module title" style="flex:2">
+    <input value="${m.duration||''}" placeholder="Duration" style="flex:1;max-width:90px">
+    <select style="flex:1;max-width:130px;padding:6px 8px;border:1.5px solid #e0eae4;border-radius:6px;font-size:12px">
+      <option ${!m.isAssessment?'selected':''} value="">Content</option>
+      <option ${m.isAssessment?'selected':''} value="assessment">Assessment</option>
+    </select>
+    <button onclick="this.closest('.mod-edit-row').remove()" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;padding:0 4px">✕</button>
+  </div>`;
+}
+
+function addModuleRow() {
+  const ed = document.getElementById('moduleEditor');
+  const i = ed.children.length;
+  const div = document.createElement('div');
+  div.innerHTML = makeModuleRow({title:'',duration:'30 min',isAssessment:false}, i);
+  ed.appendChild(div.firstChild);
+}
+
+function renderQuestionEditor(questions) {
+  const ed = document.getElementById('questionsEditor');
+  ed.innerHTML = questions.map((q, qi) => makeQuestionRow(q, qi)).join('');
+  if (!questions.length) { for(let i=0;i<3;i++) addQuestionRow(); }
+}
+
+function makeQuestionRow(q, qi) {
+  return `<div style="background:var(--cream);border:1px solid var(--mist);border-radius:10px;padding:14px;margin-bottom:10px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <span style="background:#1565c0;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">Q${qi+1}</span>
+      <input value="${(q.q||'').replace(/'/g,"&#39;")}" placeholder="Question text..." style="flex:1;padding:8px 12px;border:2px solid var(--mist);border-radius:8px;font-size:13px;background:white;outline:none">
+      <button onclick="this.closest('div[style]').remove()" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+      ${(q.options||['','','','']).map((opt,oi)=>`<input value="${(opt||'').replace(/'/g,"&#39;")}" placeholder="Option ${String.fromCharCode(65+oi)}" style="padding:7px 11px;border:2px solid var(--mist);border-radius:6px;font-size:12px;background:white;outline:none">`).join('')}
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <label style="font-size:12px;font-weight:600;color:#555">Correct Answer:</label>
+      <select style="padding:6px 10px;border:2px solid var(--mist);border-radius:6px;font-size:12px;outline:none">
+        <option ${q.answer===0?'selected':''} value="0">A</option>
+        <option ${q.answer===1?'selected':''} value="1">B</option>
+        <option ${q.answer===2?'selected':''} value="2">C</option>
+        <option ${q.answer===3?'selected':''} value="3">D</option>
+      </select>
+    </div>
+  </div>`;
+}
+
+function addQuestionRow() {
+  const ed = document.getElementById('questionsEditor');
+  const qi = ed.children.length;
+  const div = document.createElement('div');
+  div.innerHTML = makeQuestionRow({q:'',options:['','','',''],answer:0}, qi);
+  ed.appendChild(div.firstChild);
+}
+
+function saveCourse() {
+  const id    = document.getElementById('cf-id').value.trim().replace(/\s/g,'').toUpperCase();
+  const title = document.getElementById('cf-title').value.trim();
+  const price = parseInt(document.getElementById('cf-price').value);
+  if (!id || !title || !price) { lmsToast('Please fill in Course ID, Title and Price.', 'error'); return; }
+
+  // Collect modules
+  const modRows = document.querySelectorAll('#moduleEditor .mod-edit-row');
+  const modules_list = Array.from(modRows).map((row, i) => {
+    const inputs = row.querySelectorAll('input');
+    const sel    = row.querySelector('select');
+    return { id: `${id}-M${i+1}`, title: inputs[0].value.trim(), duration: inputs[1].value.trim() || '30 min', isAssessment: sel && sel.value === 'assessment' };
+  }).filter(m => m.title);
+
+  // Collect questions
+  const qBlocks = document.querySelectorAll('#questionsEditor > div');
+  const questions = Array.from(qBlocks).map(block => {
+    const qText   = block.querySelector('input').value.trim();
+    const opts    = Array.from(block.querySelectorAll('div:nth-child(2) input')).map(inp => inp.value.trim());
+    const answer  = parseInt(block.querySelector('select').value);
+    return { q: qText, options: opts.filter(Boolean), answer };
+  }).filter(q => q.q && q.options.length >= 2);
+
+  const course = {
+    id, title,
+    subtitle:    document.getElementById('cf-sub').value.trim()   || 'Training Material',
+    category:    document.getElementById('cf-cat').value,
+    price,
+    image:       document.getElementById('cf-img').value.trim()   || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80',
+    duration:    document.getElementById('cf-dur').value.trim()   || '4 hours',
+    modules:     modules_list.length,
+    rating:      4.8,
+    enrolled:    0,
+    badge:       document.getElementById('cf-badge').value        || '',
+    wa:          document.getElementById('cf-wa').checked,
+    description: document.getElementById('cf-desc').value.trim(),
+    outcomes:    document.getElementById('cf-outcomes').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    modules_list,
+    questions,
+  };
+
+  // Save to localStorage override (persists across page loads)
+  const overrides = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  overrides[id] = course;
+  localStorage.setItem('lms_course_overrides', JSON.stringify(overrides));
+
+  // Also save to Google Sheet for persistence
+  lmsFetch({ action: 'saveCourse', course }).catch(() => {});
+
+  lmsToast(`✅ Course "${title}" saved! It will appear in the catalogue immediately.`, 'success');
+  setTimeout(() => showPanel('courses'), 1200);
+}
+
+function editCourse(id) {
+  showPanel('add-course');
+  setTimeout(() => initCourseForm(id), 100);
+}
+
+function deleteCourse(id) {
+  if (!confirm(`Delete course "${id}"? This will remove it from the catalogue.`)) return;
+  const overrides = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  delete overrides[id];
+  if (overrides[id + '_deleted'] !== undefined) delete overrides[id + '_deleted'];
+  overrides[id + '_deleted'] = true;
+  localStorage.setItem('lms_course_overrides', JSON.stringify(overrides));
+  lmsFetch({ action: 'deleteCourse', courseId: id }).catch(() => {});
+  lmsToast(`Course "${id}" removed from catalogue.`, 'success');
+  renderCourseList();
+}
+
+function exportCourses() {
+  const blob = new Blob([JSON.stringify(getCourses(), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'lithala-courses.json';
+  a.click();
+}
+
+function exportSheet(name) {
+  lmsFetch({ action: 'exportCSV', sheetName: name }).then(data => {
+    if (data.csv) {
+      const blob = new Blob([data.csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `lithala-${name.toLowerCase()}-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    }
+  }).catch(() => lmsToast('Export requires Apps Script connection.', 'warning'));
+}
+
+// ── GET COURSES (with overrides) ─────────────────────────────
+function getCourses() {
+  const overrides = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  const base = [...(LMS.COURSES || [])];
+  // Apply deletions
+  const active = base.filter(c => !overrides[c.id + '_deleted']);
+  // Apply edits
+  const edited = active.map(c => overrides[c.id] ? { ...c, ...overrides[c.id] } : c);
+  // Add new courses
+  Object.entries(overrides).forEach(([id, course]) => {
+    if (!id.endsWith('_deleted') && !edited.find(c => c.id === id)) {
+      edited.push(course);
+    }
+  });
+  return edited;
+}
+
+// ── CONFIG PANEL ──────────────────────────────────────────────
+function renderConfig() {
+  const checks = [
+    { label:'Apps Script URL',    ok: !LMS.SCRIPT_URL.includes('YOUR_'),       hint:'Update SCRIPT_URL in lms-config.js after deploying' },
+    { label:'Google Client ID',   ok: !LMS.GOOGLE_CLIENT_ID.includes('YOUR_'), hint:'Update GOOGLE_CLIENT_ID in lms-config.js for real Google login' },
+    { label:'PayFast Merchant ID',ok: !LMS.PAYFAST.MERCHANT_ID.includes('YOUR_'), hint:'Update PAYFAST.MERCHANT_ID in lms-config.js' },
+    { label:'PayFast Mode',       ok: !LMS.PAYFAST.SANDBOX,                    hint:'Set PAYFAST.SANDBOX: false in lms-config.js to go live', isWarning:LMS.PAYFAST.SANDBOX },
+    { label:'Admin Password',     ok: LMS.ADMIN_PASSWORD !== 'LithalaAdmin2025', hint:'Change ADMIN_PASSWORD in lms-config.js for security' },
+  ];
+  document.getElementById('configStatus').innerHTML = checks.map(c => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:${c.ok?'rgba(82,183,136,.08)':c.isWarning?'rgba(212,160,23,.08)':'rgba(230,57,70,.06)'};border-radius:8px;border:1px solid ${c.ok?'rgba(82,183,136,.2)':c.isWarning?'rgba(212,160,23,.25)':'rgba(230,57,70,.15)'}">
+      <div class="status-dot ${c.ok?'dot-ok':c.isWarning?'dot-warn':'dot-err'}"></div>
+      <div style="flex:1"><div style="font-weight:600;font-size:13px;color:#0d2b52">${c.label}</div><div style="font-size:11px;color:#888;margin-top:1px">${c.ok?'✓ Configured':'⚠ '+c.hint}</div></div>
+    </div>`).join('');
+
+  document.getElementById('adminEmailList').innerHTML = (LMS.ADMIN_EMAILS || []).map(e =>
+    `<span style="background:#e3f2fd;color:#1565c0;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600">✉️ ${e}</span>`
+  ).join('');
+}
+</script>
+</body>
+</html>

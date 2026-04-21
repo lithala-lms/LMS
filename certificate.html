@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate — Lithala LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="lms-config.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f0ece0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:30px 20px}
+.actions{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;justify-content:center}
+.btn{padding:11px 24px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;border:none;transition:all .2s;display:flex;align-items:center;gap:7px;text-decoration:none}
+.btn-print{background:#1a3a2a;color:white}
+.btn-print:hover{background:#0d2b52}
+.btn-linkedin{background:#0077b5;color:white}
+.btn-linkedin:hover{background:#005885}
+.btn-close{background:white;color:#555;border:2px solid #e0e0e0}
+.btn-close:hover{background:#f5f5f5}
+
+/* CERTIFICATE */
+.cert-page{
+  width:100%;max-width:860px;
+  background:white;
+  border:12px solid #1a3a2a;
+  outline:4px solid #d4a017;
+  outline-offset:-20px;
+  border-radius:4px;
+  padding:60px 70px;
+  position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+  text-align:center;
+}
+/* Corner ornaments */
+.cert-page::before,.cert-page::after{
+  content:'❧';font-size:32px;color:#d4a017;
+  position:absolute;
+}
+.cert-page::before{top:24px;left:30px}
+.cert-page::after{bottom:24px;right:30px}
+.cert-corner-tl{position:absolute;top:24px;right:30px;font-size:32px;color:#d4a017}
+.cert-corner-bl{position:absolute;bottom:24px;left:30px;font-size:32px;color:#d4a017}
+
+.cert-logo-row{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:10px}
+.cert-logo-row img{height:56px;object-fit:contain}
+.cert-org{font-family:'Cinzel',serif;font-size:28px;font-weight:700;color:#1a3a2a;letter-spacing:2px}
+.cert-org-sub{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#2d6a4f;letter-spacing:4px;text-transform:uppercase;margin-top:2px}
+.cert-divider{display:flex;align-items:center;gap:16px;margin:18px 0}
+.cert-divider::before,.cert-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,#d4a017,transparent)}
+.cert-divider span{color:#d4a017;font-size:20px}
+.cert-presented{font-family:'DM Sans',sans-serif;font-size:13px;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.cert-name{font-family:'Cinzel',serif;font-size:44px;font-weight:600;color:#0d2b52;line-height:1.1;margin-bottom:8px;border-bottom:2px solid rgba(212,160,23,.4);padding-bottom:14px;display:inline-block;width:100%}
+.cert-completed{font-family:'DM Sans',sans-serif;font-size:13px;color:#888;letter-spacing:2px;text-transform:uppercase;margin:14px 0 8px}
+.cert-course{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#1a3a2a;margin-bottom:6px}
+.cert-score-row{display:inline-flex;align-items:center;gap:20px;background:#f0f7f0;border:1px solid rgba(45,106,79,.2);border-radius:50px;padding:8px 24px;margin:14px 0}
+.cert-score-item{text-align:center}
+.cert-score-item .val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#0d2b52}
+.cert-score-item .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.cert-footer{display:flex;align-items:flex-end;justify-content:space-between;margin-top:40px;padding-top:20px;border-top:1px solid rgba(212,160,23,.3)}
+.cert-sig{text-align:center}
+.cert-sig .sig-line{width:160px;border-top:2px solid #1a3a2a;margin:0 auto 6px}
+.cert-sig .sig-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#1a3a2a}
+.cert-sig .sig-title{font-size:10px;color:#888;margin-top:2px}
+.cert-seal{text-align:center}
+.cert-seal .seal-icon{font-size:60px;line-height:1}
+.cert-seal .seal-text{font-size:10px;color:#888;margin-top:4px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.cert-info{text-align:right;font-size:11px;color:#888;line-height:1.8}
+.cert-info strong{color:#1a3a2a}
+
+@media print{
+  body{background:white;padding:0}
+  .actions{display:none}
+  .cert-page{box-shadow:none;border-radius:0;max-width:100%;page-break-inside:avoid}
+}
+@media(max-width:600px){
+  .cert-page{padding:30px 24px;border-width:8px}
+  .cert-name{font-size:28px}
+  .cert-org{font-size:20px}
+  .cert-course{font-size:16px}
+  .cert-footer{flex-direction:column;gap:20px;align-items:center}
+}
+</style>
+</head>
+<body>
+
+<div class="actions" id="certActions">
+  <button class="btn btn-print" onclick="window.print()">🖨️ Download / Print PDF</button>
+  <a class="btn btn-linkedin" id="linkedinBtn" href="#" target="_blank">💼 Share on LinkedIn</a>
+  <button class="btn btn-close" onclick="window.close()">✕ Close</button>
+</div>
+
+<div class="cert-page" id="certPage">
+  <span class="cert-corner-tl">❧</span>
+  <span class="cert-corner-bl">❧</span>
+
+  <div class="cert-logo-row">
+    <img src="logo.png" alt="Lithala" onerror="this.style.display='none'">
+    <div>
+      <div class="cert-org">LITHALA RISK SOLUTIONS</div>
+      <div class="cert-org-sub">Learning Management System</div>
+    </div>
+  </div>
+
+  <div class="cert-divider"><span>✦</span></div>
+
+  <div style="font-family:'Cinzel',serif;font-size:14px;color:#888;letter-spacing:3px;text-transform:uppercase;margin-bottom:16px">
+    Certificate of Competence
+  </div>
+
+  <div class="cert-presented">This is to certify that</div>
+  <div class="cert-name" id="certName">Learner Name</div>
+
+  <div class="cert-completed">has successfully completed</div>
+  <div class="cert-course" id="certCourse">Course Title</div>
+  <div style="font-size:13px;color:#888;margin-top:4px" id="certSubtitle">Subtitle</div>
+
+  <div class="cert-score-row">
+    <div class="cert-score-item"><div class="val" id="certScore">—%</div><div class="lbl">Final Score</div></div>
+    <div style="width:1px;height:36px;background:#e0eae4"></div>
+    <div class="cert-score-item"><div class="val" id="certDate">—</div><div class="lbl">Issue Date</div></div>
+    <div style="width:1px;height:36px;background:#e0eae4"></div>
+    <div class="cert-score-item"><div class="val" id="certExpiry">—</div><div class="lbl">Valid Until</div></div>
+    <div style="width:1px;height:36px;background:#e0eae4"></div>
+    <div class="cert-score-item"><div class="val" id="certNum" style="font-size:13px">—</div><div class="lbl">Cert. No.</div></div>
+  </div>
+
+  <div style="font-size:12px;color:#888;margin-top:10px" id="certOutcomes"></div>
+
+  <div class="cert-footer">
+    <div class="cert-sig">
+      <div class="cert-sig-name" style="font-family:'Cinzel',serif;font-size:18px;font-weight:600;color:#1a3a2a;margin-bottom:8px">Lithala Risk Solutions</div>
+      <div class="cert-sig-line" style="width:160px;border-top:2px solid #1a3a2a;margin:0 auto 6px"></div>
+      <div class="cert-sig" style="font-size:11px;color:#888">Director, Lithala Risk Solutions</div>
+      <div style="font-size:10px;color:#aaa;margin-top:3px">info@lithala.com · lithala.com</div>
+    </div>
+    <div class="cert-seal">
+      <div class="cert-seal-icon" style="font-size:68px;line-height:1">🛡️</div>
+      <div style="font-size:9px;color:#888;margin-top:6px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">Verified Digital Certificate</div>
+      <div style="font-size:9px;color:#aaa;margin-top:2px" id="certQR">Scan QR to verify</div>
+    </div>
+    <div class="cert-info" id="certInfoBlock">
+      <div><strong>Certificate No.</strong><br><span id="certNumRight">—</span></div>
+      <div style="margin-top:8px"><strong>Level 1 B-BBEE</strong><br>Accredited Provider</div>
+      <div style="margin-top:8px"><strong>lithala.com</strong><br>+27 (0) 82 421 4001</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Read cert data from URL params
+const p   = new URLSearchParams(window.location.search);
+const name    = decodeURIComponent(p.get('name')    || 'Learner');
+const course  = decodeURIComponent(p.get('course')  || 'Course');
+const sub     = decodeURIComponent(p.get('sub')     || '');
+const score   = decodeURIComponent(p.get('score')   || '0');
+const certNo  = decodeURIComponent(p.get('cert')    || 'LTH-2025-0000');
+const issued  = p.get('issued') ? new Date(p.get('issued')).toLocaleDateString('en-ZA') : new Date().toLocaleDateString('en-ZA');
+const expiry  = p.get('issued') ? new Date(new Date(p.get('issued')).getTime() + 2*365*24*60*60*1000).toLocaleDateString('en-ZA') : '—';
+const email   = decodeURIComponent(p.get('email')   || '');
+
+document.getElementById('certName').textContent    = name;
+document.getElementById('certCourse').textContent  = course;
+document.getElementById('certSubtitle').textContent= sub;
+document.getElementById('certScore').textContent   = score + '%';
+document.getElementById('certDate').textContent    = issued;
+document.getElementById('certExpiry').textContent  = expiry;
+document.getElementById('certNum').textContent     = certNo;
+document.getElementById('certNumRight').textContent= certNo;
+document.title = 'Certificate — ' + course + ' | Lithala LMS';
+
+// LinkedIn share
+const certUrl = window.location.href;
+const liUrl   = 'https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME'
+  + '&name=' + encodeURIComponent(course + ' — Lithala LMS')
+  + '&organizationName=' + encodeURIComponent('Lithala Risk Solutions')
+  + '&issueYear=' + new Date().getFullYear()
+  + '&issueMonth=' + (new Date().getMonth() + 1)
+  + '&certUrl=' + encodeURIComponent(certUrl)
+  + '&certId=' + encodeURIComponent(certNo);
+document.getElementById('linkedinBtn').href = liUrl;
+
+// Also open print dialog if ?print=1
+if (p.get('print') === '1') setTimeout(() => window.print(), 800);
+</script>
+</body>
+</html>
