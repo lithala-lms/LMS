@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Add / Edit Courses — Lithala LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<script src="lms-config.js"></script>
+<style>
+:root{--navy:#0d2b52;--ocean:#1565c0;--forest:#1a3a2a;--lime:#52b788;--gold:#d4a017;--cream:#f5f7f5;--mist:#e0eae4;--ink:#1e2d26;--danger:#e63946}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'DM Sans',sans-serif;background:#eef2f7;color:var(--ink);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LOGIN ─────────────────────────────────────────────────── */
+#loginScreen{
+  display:flex;min-height:100vh;
+  background:linear-gradient(135deg,#0d2b52 0%,#1a3a2a 100%);
+  align-items:center;justify-content:center;padding:20px;
+}
+.login-card{
+  background:white;border-radius:22px;
+  width:100%;max-width:380px;
+  padding:44px 36px;text-align:center;
+  animation:fadeUp .3s ease;
+  box-shadow:0 24px 56px rgba(0,0,0,.3);
+}
+.login-card .icon{font-size:48px;margin-bottom:12px}
+.login-card h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#0d2b52;margin-bottom:4px}
+.login-card p{font-size:13px;color:#aaa;margin-bottom:28px;line-height:1.5}
+.login-card input{
+  width:100%;padding:12px 14px;
+  border:2px solid #e0eae4;border-radius:10px;
+  font-size:14px;background:#f5f7f5;outline:none;
+  margin-bottom:12px;font-family:'DM Sans',sans-serif;
+  transition:border-color .2s;
+}
+.login-card input:focus{border-color:#1565c0;background:white}
+.btn-login{
+  width:100%;background:linear-gradient(135deg,#1565c0,#2196f3);
+  color:white;border:none;padding:13px;border-radius:10px;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:14px;
+  cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 14px rgba(21,101,192,.35);
+}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(21,101,192,.4)}
+.login-error{color:#e63946;font-size:12px;margin-top:8px;display:none}
+
+/* ── APP SHELL ─────────────────────────────────────────────── */
+#app{display:none}
+
+/* TOP BAR */
+.topbar{
+  background:white;border-bottom:1px solid #f0f4f8;
+  padding:0 4%;height:62px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+  position:sticky;top:0;z-index:200;
+}
+.tb-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#0d2b52}
+.tb-logo em{color:#1565c0;font-style:normal}
+.tb-logo span{font-size:11px;color:#aaa;font-family:'DM Sans',sans-serif;font-weight:400;margin-left:7px;background:#f0f4f8;padding:3px 9px;border-radius:4px}
+.tb-nav{display:flex;gap:8px;align-items:center}
+.tb-link{padding:7px 14px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;text-decoration:none;transition:all .2s;border:2px solid #e0eae4;color:#555;background:white}
+.tb-link:hover{border-color:#1565c0;color:#1565c0}
+.tb-link.primary{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border-color:#1565c0}
+
+/* MAIN LAYOUT */
+.app-layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 62px)}
+
+/* ── SIDEBAR — COURSE LIST ─────────────────────────────────── */
+.sidebar{
+  background:white;border-right:1px solid #f0f4f8;
+  display:flex;flex-direction:column;
+  position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto;
+}
+.sb-top{
+  padding:18px 16px 12px;border-bottom:1px solid #f0f4f8;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.sb-top h2{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#0d2b52}
+.btn-new{
+  background:linear-gradient(135deg,#2d6a4f,#52b788);
+  color:white;border:none;padding:7px 13px;border-radius:7px;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:11px;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.btn-new:hover{transform:scale(1.03)}
+.sb-search{padding:10px 16px;border-bottom:1px solid #f0f4f8;flex-shrink:0}
+.sb-search input{
+  width:100%;padding:8px 12px;border:2px solid #e0eae4;border-radius:8px;
+  font-size:12.5px;background:#f5f7f5;outline:none;font-family:'DM Sans',sans-serif;
+  transition:border-color .2s;
+}
+.sb-search input:focus{border-color:#1565c0;background:white}
+.course-list{flex:1;overflow-y:auto;padding:6px 0}
+.ci{
+  padding:11px 16px;display:flex;align-items:center;gap:10px;
+  cursor:pointer;transition:background .15s;border-left:3px solid transparent;
+}
+.ci:hover{background:#f5f7f5}
+.ci.active{background:#e3f2fd;border-left-color:#1565c0}
+.ci-thumb{width:44px;height:34px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#f0f4f8;display:block}
+.ci-info{flex:1;min-width:0}
+.ci-info h4{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:#0d2b52;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;margin-bottom:2px}
+.ci-info p{font-size:11px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-price{font-family:'Syne',sans-serif;font-weight:800;font-size:12.5px;color:#1565c0;flex-shrink:0}
+.sb-empty{padding:28px 16px;text-align:center;color:#aaa;font-size:13px}
+
+/* ── EDITOR AREA ───────────────────────────────────────────── */
+.editor-area{
+  padding:28px 32px;overflow-y:auto;
+  max-height:calc(100vh - 62px);
+}
+.editor-welcome{
+  text-align:center;padding:80px 24px;
+  background:white;border-radius:18px;
+  box-shadow:0 2px 12px rgba(13,43,82,.06);
+  border:1px solid rgba(13,43,82,.04);
+}
+.editor-welcome .wi{font-size:56px;margin-bottom:16px}
+.editor-welcome h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#0d2b52;margin-bottom:8px}
+.editor-welcome p{font-size:14px;color:#888;line-height:1.6;max-width:380px;margin:0 auto 22px}
+.editor-welcome .steps{
+  display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:24px;
+}
+.editor-welcome .step{
+  background:#f0f7ff;border-radius:12px;padding:14px 18px;text-align:left;width:160px;
+}
+.editor-welcome .step .sn{font-family:'Syne',sans-serif;font-weight:800;color:#1565c0;font-size:13px;margin-bottom:5px}
+.editor-welcome .step p{font-size:12px;color:#666;line-height:1.5;margin:0}
+
+/* SECTION CARDS */
+.sc{
+  background:white;border-radius:16px;padding:24px 26px;
+  margin-bottom:18px;box-shadow:0 2px 10px rgba(13,43,82,.06);
+  border:1px solid rgba(13,43,82,.04);
+  animation:fadeUp .25s ease;
+}
+.sc-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;padding-bottom:12px;
+  border-bottom:2px solid #f0f4f8;
+}
+.sc-hdr h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#0d2b52;display:flex;align-items:center;gap:7px}
+.sc-hdr .hint{font-size:11px;color:#aaa;font-weight:400;margin-left:3px;font-family:'DM Sans',sans-serif}
+.sc-hdr .id-badge{font-size:11px;font-weight:700;background:#e3f2fd;color:#1565c0;padding:3px 10px;border-radius:12px}
+
+/* FORM FIELDS */
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:11.5px;font-weight:600;color:#1a3a2a;margin-bottom:5px}
+.fg label .tip{font-size:10.5px;font-weight:400;color:#aaa;margin-left:4px}
+.fg input,.fg select,.fg textarea{
+  width:100%;padding:10px 13px;
+  border:2px solid #e0eae4;border-radius:9px;
+  font-size:13.5px;background:#f5f7f5;outline:none;
+  transition:border-color .2s;font-family:'DM Sans',sans-serif;color:#1e2d26;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#1565c0;background:white}
+.fg textarea{resize:vertical;min-height:76px;line-height:1.55}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.toggle-field{
+  display:flex;align-items:center;gap:10px;
+  background:#f5f7f5;border:2px solid #e0eae4;border-radius:9px;
+  padding:11px 14px;cursor:pointer;transition:border-color .2s;
+}
+.toggle-field:hover{border-color:#1565c0}
+.toggle-field input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:#1565c0;flex-shrink:0}
+.toggle-field label{font-size:13.5px;color:#1e2d26;cursor:pointer}
+
+/* IMAGE PREVIEW */
+.img-preview-wrap{margin-top:8px;border-radius:9px;overflow:hidden;height:130px;background:#f0f4f8;display:none;position:relative}
+.img-preview-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.img-preview-wrap .img-ov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent,rgba(0,0,0,.3));display:flex;align-items:flex-end;padding:8px 10px}
+.img-preview-wrap .img-ov span{color:white;font-size:11px;font-weight:600}
+
+/* PDF VIEWER */
+.pdf-section{
+  background:linear-gradient(145deg,#f0f7ff,#e8f5e9);
+  border:2px dashed rgba(21,101,192,.22);border-radius:12px;
+  padding:20px;margin-top:6px;
+}
+.pdf-section h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.pdf-input-row{display:flex;gap:9px;align-items:center;margin-bottom:10px}
+.pdf-input-row input{flex:1;padding:9px 12px;border:2px solid #e0eae4;border-radius:8px;font-size:13px;background:white;outline:none;font-family:'DM Sans',sans-serif;transition:border-color .2s}
+.pdf-input-row input:focus{border-color:#1565c0}
+.btn-load-pdf{
+  background:linear-gradient(135deg,#1565c0,#2196f3);color:white;
+  border:none;padding:9px 18px;border-radius:8px;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:12.5px;
+  cursor:pointer;white-space:nowrap;transition:all .2s;
+}
+.btn-load-pdf:hover{transform:scale(1.03)}
+.pdf-frame-wrap{
+  background:white;border-radius:9px;overflow:hidden;
+  border:1px solid rgba(21,101,192,.15);
+  display:none;position:relative;
+}
+.pdf-frame-wrap.visible{display:block}
+.pdf-frame-toolbar{
+  background:#0d2b52;padding:8px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.pdf-frame-toolbar span{color:rgba(255,255,255,.8);font-size:12px;font-weight:600}
+.pdf-frame-toolbar .pft-btns{display:flex;gap:7px}
+.pft-btn{background:rgba(255,255,255,.12);color:white;border:none;padding:5px 11px;border-radius:5px;font-size:11px;cursor:pointer;transition:background .2s;font-family:'Syne',sans-serif;font-weight:700}
+.pft-btn:hover{background:rgba(255,255,255,.22)}
+.pdf-frame-wrap iframe{width:100%;height:500px;border:none;display:block}
+.pdf-hint{font-size:12px;color:#888;margin-top:8px;line-height:1.5}
+
+/* MODULES */
+.mods-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.mod-item{
+  background:#f5f7f5;border:1px solid #e0eae4;border-radius:9px;
+  padding:10px 12px;display:flex;align-items:center;gap:9px;
+  transition:border-color .15s;
+}
+.mod-item:hover{border-color:#2196f3}
+.mod-item.is-assess{background:linear-gradient(135deg,#f0f7ff,#f3e5f5);border-color:rgba(123,31,162,.18)}
+.mod-drag{cursor:grab;color:#ccc;font-size:15px;flex-shrink:0;user-select:none}
+.mod-badge{
+  background:#1565c0;color:white;font-family:'Syne',sans-serif;
+  font-weight:700;font-size:10px;width:22px;height:22px;
+  border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.mod-item.is-assess .mod-badge{background:#7b1fa2}
+.mod-inp{flex:2;border:none;background:transparent;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;color:#1e2d26}
+.mod-dur{flex:0 0 80px;border:none;background:transparent;font-size:12px;outline:none;font-family:'DM Sans',sans-serif;color:#888;text-align:right}
+.mod-type{border:none;background:transparent;font-size:11.5px;color:#888;outline:none;cursor:pointer;font-family:'DM Sans',sans-serif}
+.mod-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:15px;flex-shrink:0;transition:color .15s}
+.mod-del:hover{color:#e63946}
+.btn-add-row{
+  width:100%;padding:9px;border-radius:8px;border:2px dashed #e0eae4;
+  background:none;font-family:'Syne',sans-serif;font-weight:600;font-size:12.5px;
+  color:#aaa;cursor:pointer;transition:all .2s;
+}
+.btn-add-row:hover{border-color:#1565c0;color:#1565c0}
+
+/* QUESTIONS */
+.q-list{display:flex;flex-direction:column;gap:12px;margin-bottom:10px}
+.q-card{background:#f5f7f5;border:1px solid #e0eae4;border-radius:10px;padding:14px 14px 10px}
+.q-card-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:9px}
+.q-nbadge{background:#1565c0;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.q-text-inp{flex:1;padding:9px 12px;border:2px solid #e0eae4;border-radius:8px;font-size:13px;background:white;outline:none;font-family:'DM Sans',sans-serif;color:#1e2d26;transition:border-color .2s}
+.q-text-inp:focus{border-color:#1565c0}
+.q-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:15px;flex-shrink:0;transition:color .15s;margin-top:2px}
+.q-del:hover{color:#e63946}
+.q-opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}
+.q-opt-row{display:flex;align-items:center;gap:6px;background:white;border:1px solid #e0eae4;border-radius:7px;padding:6px 10px}
+.q-opt-lbl{font-family:'Syne',sans-serif;font-weight:700;font-size:10px;color:#888;width:14px;flex-shrink:0}
+.q-opt-inp{flex:1;border:none;background:transparent;font-size:12.5px;outline:none;font-family:'DM Sans',sans-serif;color:#1e2d26}
+.q-answer-row{display:flex;align-items:center;gap:9px}
+.q-answer-row label{font-size:11.5px;font-weight:600;color:#1a3a2a}
+.q-answer-sel{padding:5px 10px;border:1.5px solid #e0eae4;border-radius:7px;font-size:12.5px;background:white;outline:none;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ACTION BAR */
+.action-bar{
+  display:flex;gap:10px;flex-wrap:wrap;
+  padding-bottom:48px;margin-top:4px;
+}
+.btn-save{
+  background:linear-gradient(135deg,#1565c0,#2196f3);color:white;
+  border:none;padding:13px 32px;border-radius:10px;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:14px;
+  cursor:pointer;box-shadow:0 4px 14px rgba(21,101,192,.3);transition:all .2s;
+}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 7px 22px rgba(21,101,192,.4)}
+.btn-outline-action{
+  background:white;border:2px solid #e0eae4;color:#555;
+  padding:12px 22px;border-radius:10px;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:13px;
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .2s;
+}
+.btn-outline-action:hover{border-color:#1565c0;color:#1565c0}
+.btn-del-course{
+  background:transparent;border:2px solid #e63946;color:#e63946;
+  padding:12px 22px;border-radius:10px;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:13px;
+  cursor:pointer;transition:all .2s;
+}
+.btn-del-course:hover{background:#e63946;color:white}
+
+/* TOAST */
+.toast{
+  display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:#2d6a4f;color:white;padding:13px 22px;border-radius:10px;
+  font-size:14px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.2);
+  animation:fadeUp .3s ease;max-width:90vw;text-align:center;
+}
+
+@media(max-width:900px){
+  .app-layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0;height:auto;max-height:none;border-right:none;border-bottom:1px solid #f0f4f8}
+  .editor-area{padding:18px 16px}
+  .r2,.r3{grid-template-columns:1fr}
+  .q-opts-grid{grid-template-columns:1fr}
+  .tb-nav{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ──────────────────────────────────────────────── -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="icon">🎓</div>
+    <h1>Course Manager</h1>
+    <p>Lithala LMS — Site Owner Access<br>Add, edit and publish your own courses.</p>
+    <input type="password" id="pwd" placeholder="Enter admin password" onkeypress="if(event.key==='Enter')login()">
+    <button class="btn-login" onclick="login()">Sign In →</button>
+    <div class="login-error" id="loginErr">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<!-- ── APP ────────────────────────────────────────────────── -->
+<div id="app">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="tb-logo">LITHALA <em>LMS</em> <span>Course Manager</span></div>
+    <div class="tb-nav">
+      <a href="index3.html" class="tb-link" target="_blank">👁 View Live Courses</a>
+      <a href="dashboard3.html" class="tb-link">📊 Dashboard</a>
+      <a href="admin.html" class="tb-link">⚙️ Admin Panel</a>
+      <a href="index.html" class="tb-link">🏠 Home</a>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sb-top">
+        <h2>📚 Your Courses</h2>
+        <button class="btn-new" onclick="startNewCourse()">+ New Course</button>
+      </div>
+      <div class="sb-search">
+        <input type="text" placeholder="🔍 Search courses..." oninput="filterSidebar(this.value)">
+      </div>
+      <div class="course-list" id="courseList"></div>
+    </aside>
+
+    <!-- EDITOR -->
+    <main class="editor-area" id="editorArea">
+      <!-- WELCOME STATE -->
+      <div class="editor-welcome" id="editorWelcome">
+        <div class="wi">✏️</div>
+        <h2>Welcome to Course Manager</h2>
+        <p>Click any course on the left to edit it, or click <strong>+ New Course</strong> to create one from scratch. No coding needed.</p>
+        <div class="steps">
+          <div class="step"><div class="sn">Step 1</div><p>Click + New Course</p></div>
+          <div class="step"><div class="sn">Step 2</div><p>Fill in the form fields</p></div>
+          <div class="step"><div class="sn">Step 3</div><p>Add modules &amp; quiz questions</div></div>
+          <div class="step"><div class="sn">Step 4</div><p>Click Save — course goes live instantly</p></div>
+        </div>
+      </div>
+      <!-- FORM (rendered by JS) -->
+      <div id="editorForm" style="display:none"></div>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── AUTH ─────────────────────────────────────────────────────
+function login() {
+  const pwd = document.getElementById('pwd').value;
+  if (pwd === LMS.ADMIN_PASSWORD) {
+    sessionStorage.setItem('cm_auth', '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    buildSidebar();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('pwd').style.borderColor = '#e63946';
+    setTimeout(() => {
+      document.getElementById('loginErr').style.display = 'none';
+      document.getElementById('pwd').style.borderColor = '';
+    }, 2500);
+  }
+}
+document.getElementById('pwd').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+if (sessionStorage.getItem('cm_auth') === '1') {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  setTimeout(buildSidebar, 0);
+}
+
+// ── DATA ──────────────────────────────────────────────────────
+function getAllCourses() {
+  const ov   = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  const base = (LMS.COURSES || []).filter(c => !ov[c.id + '_deleted']);
+  const edited = base.map(c => ov[c.id] ? { ...c, ...ov[c.id] } : c);
+  Object.entries(ov).forEach(([id, v]) => {
+    if (!id.endsWith('_deleted') && typeof v === 'object' && !edited.find(c => c.id === id))
+      edited.push(v);
+  });
+  return edited;
+}
+function saveCourseData(course) {
+  const ov = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  ov[course.id] = course;
+  localStorage.setItem('lms_course_overrides', JSON.stringify(ov));
+  // Sync to Google Sheet
+  if (typeof lmsFetch === 'function') lmsFetch({ action: 'saveCourse', course }).catch(() => {});
+}
+function deleteCourseData(id) {
+  const ov = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  ov[id + '_deleted'] = true;
+  delete ov[id];
+  localStorage.setItem('lms_course_overrides', JSON.stringify(ov));
+  if (typeof lmsFetch === 'function') lmsFetch({ action: 'deleteCourse', courseId: id }).catch(() => {});
+}
+
+// ── SIDEBAR ───────────────────────────────────────────────────
+let activeId = null;
+function buildSidebar(filter) {
+  const list = document.getElementById('courseList');
+  const all  = getAllCourses().filter(c => !filter || c.title.toLowerCase().includes(filter.toLowerCase()));
+  if (!all.length) { list.innerHTML = '<div class="sb-empty">No courses yet.<br>Click + New Course to add one.</div>'; return; }
+  list.innerHTML = all.map(c => `
+    <div class="ci${c.id === activeId ? ' active' : ''}" onclick="openEditor('${c.id}')">
+      <img class="ci-thumb" src="${c.image || ''}" onerror="this.style.background='#e3f2fd';this.style.display='block'" alt="">
+      <div class="ci-info">
+        <h4>${c.title}</h4>
+        <p>${c.subtitle || ''} · ${c.modules || 0} modules</p>
+      </div>
+      <div class="ci-price">R${(c.price || 0).toLocaleString()}</div>
+    </div>`).join('');
+}
+function filterSidebar(val) { buildSidebar(val); }
+
+// ── OPEN EDITOR ───────────────────────────────────────────────
+let isNew = false;
+function openEditor(id) {
+  activeId = id;
+  isNew    = false;
+  buildSidebar();
+  const c = getAllCourses().find(x => x.id === id);
+  renderForm(c);
+}
+function startNewCourse() {
+  activeId = null;
+  isNew    = true;
+  buildSidebar();
+  renderForm(null);
+}
+
+// ── RENDER FORM ───────────────────────────────────────────────
+function renderForm(c) {
+  document.getElementById('editorWelcome').style.display = 'none';
+  const f = document.getElementById('editorForm');
+  f.style.display = 'block';
+
+  const mods = c ? (c.modules_list || []) : [
+    { title: 'Introduction', duration: '20 min', isAssessment: false },
+    { title: 'Final Assessment', duration: '30 min', isAssessment: true },
+  ];
+  const qs   = c ? (c.questions   || []) : [{ q: '', options: ['', '', '', ''], answer: 0 }];
+  const outs = c ? (c.outcomes    || []).join('\n') : '';
+  const pdfUrl = c ? (c.pdfUrl || '') : '';
+  const img    = c ? (c.image  || '') : '';
+
+  f.innerHTML = `
+    <!-- BASIC INFO -->
+    <div class="sc">
+      <div class="sc-hdr">
+        <h3>📋 Course Details ${c ? `<span class="id-badge">${c.id}</span>` : '<span class="id-badge" style="background:#fff3e0;color:#d4a017">New Course</span>'}</h3>
+      </div>
+
+      ${!c ? `
+      <div class="fg">
+        <label>Course ID <span class="tip">Short unique code, no spaces — e.g. FIRE001, ENV002</span></label>
+        <input id="f-id" placeholder="e.g. FIRE001" maxlength="20"
+          style="text-transform:uppercase;font-family:monospace"
+          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+      </div>` : `<input type="hidden" id="f-id" value="${c.id}">`}
+
+      <div class="r2">
+        <div class="fg">
+          <label>Course Title</label>
+          <input id="f-title" placeholder="e.g. Fire Safety Awareness" value="${c ? c.title : ''}">
+        </div>
+        <div class="fg">
+          <label>Subtitle <span class="tip">"e-Learning Module" or "Training Material"</span></label>
+          <input id="f-sub" placeholder="e-Learning Module" value="${c ? (c.subtitle || '') : ''}">
+        </div>
+      </div>
+
+      <div class="r2">
+        <div class="fg">
+          <label>Category</label>
+          <select id="f-cat">
+            ${['Confined Space','Permit to Work','Basic Work at Height','Hot Work','Electrical Safety','E-LEARNING MODULE','Fire Safety','Environmental','Chemical Safety','General Safety','Other'].map(cat =>
+              `<option${c && c.category === cat ? ' selected' : ''}>${cat}</option>`).join('')}
+          </select>
+        </div>
+        <div class="fg">
+          <label>Badge <span class="tip">Shown on course card</span></label>
+          <select id="f-badge">
+            <option value="">None</option>
+            ${['Bestseller', 'New', 'Popular', 'Essential', 'eLearning'].map(b =>
+              `<option value="${b}"${c && c.badge === b ? ' selected' : ''}>${b}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>Description <span class="tip">Shown to learners on the course card and detail modal</span></label>
+        <textarea id="f-desc" rows="3" placeholder="This course covers...">${c ? (c.description || '') : ''}</textarea>
+      </div>
+    </div>
+
+    <!-- PRICING -->
+    <div class="sc">
+      <div class="sc-hdr"><h3>💰 Pricing &amp; Settings</h3></div>
+      <div class="r3">
+        <div class="fg">
+          <label>Price (Rands, incl. VAT)</label>
+          <input id="f-price" type="number" min="0" placeholder="1500" value="${c ? c.price : ''}">
+        </div>
+        <div class="fg">
+          <label>Duration</label>
+          <input id="f-dur" placeholder="e.g. 4 hours" value="${c ? (c.duration || '') : ''}">
+        </div>
+        <div class="fg">
+          <label>Rating <span class="tip">4.0 – 5.0</span></label>
+          <input id="f-rating" type="number" min="4" max="5" step="0.1" placeholder="4.8" value="${c ? (c.rating || 4.8) : 4.8}">
+        </div>
+      </div>
+      <div class="toggle-field" onclick="document.getElementById('f-wa').click()">
+        <input type="checkbox" id="f-wa" ${c && c.wa ? 'checked' : ''}>
+        <label for="f-wa">💬 Available via WhatsApp learning delivery</label>
+      </div>
+    </div>
+
+    <!-- COVER IMAGE -->
+    <div class="sc">
+      <div class="sc-hdr"><h3>🖼️ Cover Image</h3></div>
+      <div class="fg">
+        <label>Image URL <span class="tip">Paste a link from Unsplash, Google Drive (public), or your own server</span></label>
+        <input id="f-img" placeholder="https://images.unsplash.com/photo-..." value="${img}" oninput="previewImg()">
+        <div class="img-preview-wrap" id="imgPrev" style="${img ? 'display:block' : ''}">
+          <img id="imgPrevEl" src="${img}" onerror="document.getElementById('imgPrev').style.display='none'" alt="Preview">
+          <div class="img-ov"><span>Cover image preview</span></div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:#aaa;line-height:1.5">
+        💡 <strong>Free photos:</strong> Visit <a href="https://unsplash.com" target="_blank" style="color:#1565c0">unsplash.com</a> → find a photo → right-click the photo → <em>Copy Image Address</em> → paste above.
+      </p>
+    </div>
+
+    <!-- PDF VIEWER -->
+    <div class="sc">
+      <div class="sc-hdr">
+        <h3>📄 Course PDF Document <span class="hint">Optional — viewable inside the course player</span></h3>
+      </div>
+      <div class="pdf-section">
+        <h4>📎 Attach a PDF</h4>
+        <p style="font-size:12.5px;color:#666;margin-bottom:10px;line-height:1.5">
+          Learners can browse your PDF directly inside the course. Paste a link to a publicly accessible PDF (Google Drive "anyone with link can view", Dropbox, your website, etc.)
+        </p>
+        <div class="pdf-input-row">
+          <input type="text" id="f-pdf" placeholder="https://drive.google.com/file/d/YOUR_ID/preview" value="${pdfUrl}">
+          <button class="btn-load-pdf" onclick="loadPdfPreview()">👁 Preview PDF</button>
+        </div>
+        <div class="pdf-frame-wrap${pdfUrl ? ' visible' : ''}" id="pdfFrameWrap">
+          <div class="pdf-frame-toolbar">
+            <span id="pdfFrameLabel">📄 PDF Preview</span>
+            <div class="pft-btns">
+              <button class="pft-btn" onclick="document.getElementById('pdfFrame').contentWindow && document.getElementById('pdfFrame').contentWindow.history.go(-1)">◀</button>
+              <button class="pft-btn" onclick="document.getElementById('pdfFrame').contentWindow && document.getElementById('pdfFrame').contentWindow.history.go(1)">▶</button>
+              <button class="pft-btn" onclick="document.getElementById('pdfFrameWrap').classList.remove('visible')">✕ Close</button>
+            </div>
+          </div>
+          <iframe id="pdfFrame" src="${pdfUrl}" allowfullscreen></iframe>
+        </div>
+        <p class="pdf-hint">
+          ✅ <strong>Google Drive tip:</strong> Open your PDF → Share → "Anyone with the link" → Change the URL end from <code>/view?usp=sharing</code> to <code>/preview</code> → paste that URL here.
+        </p>
+      </div>
+    </div>
+
+    <!-- LEARNING OUTCOMES -->
+    <div class="sc">
+      <div class="sc-hdr">
+        <h3>✅ Learning Outcomes <span class="hint">What learners can do after completing this course</span></h3>
+      </div>
+      <div class="fg">
+        <label>One outcome per line <span class="tip">Aim for 5–8 outcomes</span></label>
+        <textarea id="f-outcomes" rows="7"
+          placeholder="Identify confined space hazards and risks&#10;Conduct atmospheric testing procedures&#10;Implement confined space entry permits&#10;Execute emergency rescue protocols&#10;Comply with OHSA confined space regulations">${outs}</textarea>
+      </div>
+    </div>
+
+    <!-- MODULES -->
+    <div class="sc">
+      <div class="sc-hdr">
+        <h3>📋 Course Modules <span class="hint">Add learning modules and mark the final one as "Assessment"</span></h3>
+      </div>
+      <div class="mods-list" id="modsList">
+        ${mods.map((m, i) => modHTML(m, i)).join('')}
+      </div>
+      <button class="btn-add-row" onclick="addMod()">+ Add Module</button>
+    </div>
+
+    <!-- ASSESSMENT QUESTIONS -->
+    <div class="sc">
+      <div class="sc-hdr">
+        <h3>📝 Assessment Questions <span class="hint">Learners need 80% to pass and earn a certificate</span></h3>
+      </div>
+      <div class="q-list" id="qList">
+        ${qs.map((q, i) => qHTML(q, i)).join('')}
+      </div>
+      <button class="btn-add-row" onclick="addQ()">+ Add Question</button>
+    </div>
+
+    <!-- SAVE BAR -->
+    <div class="action-bar">
+      <button class="btn-save" onclick="saveForm()">💾 Save &amp; Publish Course</button>
+      <a href="index3.html" class="btn-outline-action" target="_blank">👁 Preview Live Catalogue</a>
+      <button class="btn-outline-action" onclick="startNewCourse()">+ New Course</button>
+      ${c ? `<button class="btn-del-course" onclick="confirmDelete('${c.id}','${(c.title||'').replace(/'/g,"\\'")}')">🗑 Delete This Course</button>` : ''}
+    </div>
+  `;
+}
+
+// ── MODULE ROW HTML ───────────────────────────────────────────
+function modHTML(m, i) {
+  return `<div class="mod-item${m.isAssessment ? ' is-assess' : ''}" id="mod-${i}">
+    <span class="mod-drag" title="drag to reorder">⋮⋮</span>
+    <div class="mod-badge">${String(i + 1).padStart(2, '0')}</div>
+    <input class="mod-inp" value="${(m.title || '').replace(/"/g, '&quot;')}" placeholder="Module title…" oninput="renumberMods()">
+    <input class="mod-dur" value="${m.duration || '30 min'}" placeholder="30 min">
+    <select class="mod-type" onchange="this.closest('.mod-item').classList.toggle('is-assess',this.value==='assessment')">
+      <option value="content"${!m.isAssessment ? ' selected' : ''}>Content</option>
+      <option value="assessment"${m.isAssessment ? ' selected' : ''}>Assessment</option>
+    </select>
+    <button class="mod-del" onclick="this.closest('.mod-item').remove();renumberMods()" title="Remove">✕</button>
+  </div>`;
+}
+
+// ── QUESTION BLOCK HTML ───────────────────────────────────────
+function qHTML(q, i) {
+  const opts = (q.options || ['', '', '', '']).concat(['', '', '', '']).slice(0, 4);
+  return `<div class="q-card" id="q-${i}">
+    <div class="q-card-top">
+      <div class="q-nbadge">Q${i + 1}</div>
+      <input class="q-text-inp" style="flex:1;margin-left:8px" value="${(q.q || '').replace(/"/g, '&quot;')}" placeholder="Type the question here…">
+      <button class="q-del" onclick="this.closest('.q-card').remove();renumberQs()" title="Remove">✕</button>
+    </div>
+    <div class="q-opts-grid">
+      ${opts.map((o, oi) => `<div class="q-opt-row"><span class="q-opt-lbl">${'ABCD'[oi]}</span><input class="q-opt-inp" value="${(o || '').replace(/"/g, '&quot;')}" placeholder="Option ${'ABCD'[oi]}"></div>`).join('')}
+    </div>
+    <div class="q-answer-row">
+      <label>✅ Correct answer:</label>
+      <select class="q-answer-sel">
+        ${['A — first option', 'B — second option', 'C — third option', 'D — fourth option'].map((l, li) =>
+          `<option value="${li}"${q.answer === li ? ' selected' : ''}>${l}</option>`).join('')}
+      </select>
+    </div>
+  </div>`;
+}
+
+function addMod() {
+  const list = document.getElementById('modsList');
+  const i    = list.querySelectorAll('.mod-item').length;
+  const div  = document.createElement('div');
+  div.innerHTML = modHTML({ title: '', duration: '30 min', isAssessment: false }, i);
+  list.appendChild(div.firstElementChild);
+  renumberMods();
+}
+function addQ() {
+  const list = document.getElementById('qList');
+  const i    = list.querySelectorAll('.q-card').length;
+  const div  = document.createElement('div');
+  div.innerHTML = qHTML({ q: '', options: ['', '', '', ''], answer: 0 }, i);
+  list.appendChild(div.firstElementChild);
+  renumberQs();
+}
+function renumberMods() {
+  document.querySelectorAll('#modsList .mod-item .mod-badge').forEach((b, i) => {
+    b.textContent = String(i + 1).padStart(2, '0');
+  });
+}
+function renumberQs() {
+  document.querySelectorAll('#qList .q-card .q-nbadge').forEach((b, i) => {
+    b.textContent = 'Q' + (i + 1);
+  });
+}
+
+// ── IMAGE PREVIEW ─────────────────────────────────────────────
+function previewImg() {
+  const url  = document.getElementById('f-img').value.trim();
+  const wrap = document.getElementById('imgPrev');
+  const img  = document.getElementById('imgPrevEl');
+  if (url) { img.src = url; wrap.style.display = 'block'; }
+  else      { wrap.style.display = 'none'; }
+}
+
+// ── PDF PREVIEW ───────────────────────────────────────────────
+function loadPdfPreview() {
+  const url   = document.getElementById('f-pdf').value.trim();
+  const wrap  = document.getElementById('pdfFrameWrap');
+  const frame = document.getElementById('pdfFrame');
+  if (!url) { showToast('Please paste a PDF URL first.', 'error'); return; }
+  frame.src = url;
+  wrap.classList.add('visible');
+  document.getElementById('pdfFrameLabel').textContent = '📄 ' + url.split('/').pop().split('?')[0];
+  showToast('Loading PDF…', 'info');
+}
+
+// ── SAVE FORM ─────────────────────────────────────────────────
+function saveForm() {
+  const id    = (document.getElementById('f-id').value || '').trim().replace(/\s/g, '').toUpperCase();
+  const title = (document.getElementById('f-title').value || '').trim();
+  const price = parseInt(document.getElementById('f-price').value) || 0;
+  if (!id)    { showToast('Please enter a Course ID.', 'error');    return; }
+  if (!title) { showToast('Please enter a Course Title.', 'error'); return; }
+  if (!price) { showToast('Please enter a price (can be 0 for free).', 'error'); return; }
+
+  // Collect modules
+  const modRows = document.querySelectorAll('#modsList .mod-item');
+  const modules_list = Array.from(modRows).map((row, i) => {
+    const inps = row.querySelectorAll('input');
+    const sel  = row.querySelector('select');
+    return { id: id + '-M' + (i + 1), title: inps[1].value.trim(), duration: inps[2].value.trim() || '30 min', isAssessment: sel && sel.value === 'assessment' };
+  }).filter(m => m.title);
+
+  // Collect questions
+  const qCards    = document.querySelectorAll('#qList .q-card');
+  const questions = Array.from(qCards).map(card => {
+    const qText = card.querySelector('.q-text-inp').value.trim();
+    const opts  = Array.from(card.querySelectorAll('.q-opt-inp')).map(i => i.value.trim());
+    const ans   = parseInt(card.querySelector('.q-answer-sel').value) || 0;
+    return { q: qText, options: opts, answer: ans };
+  }).filter(q => q.q && q.options.filter(Boolean).length >= 2);
+
+  // Collect outcomes
+  const outcomes = (document.getElementById('f-outcomes').value || '').split('\n').map(s => s.trim()).filter(Boolean);
+
+  const course = {
+    id,
+    title,
+    subtitle:    (document.getElementById('f-sub').value    || '').trim() || 'Training Material',
+    category:     document.getElementById('f-cat').value,
+    price,
+    image:       (document.getElementById('f-img').value    || '').trim() || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80',
+    pdfUrl:      (document.getElementById('f-pdf').value    || '').trim(),
+    duration:    (document.getElementById('f-dur').value    || '').trim() || '4 hours',
+    modules:      modules_list.length,
+    rating:       parseFloat(document.getElementById('f-rating').value) || 4.8,
+    enrolled:    (getAllCourses().find(c => c.id === id) || {}).enrolled  || 0,
+    badge:        document.getElementById('f-badge').value  || '',
+    wa:           document.getElementById('f-wa').checked,
+    description: (document.getElementById('f-desc').value   || '').trim(),
+    outcomes,
+    modules_list,
+    questions,
+  };
+
+  saveCourseData(course);
+  activeId = course.id;
+  buildSidebar();
+  showToast('✅ "' + title + '" saved! Visit the Courses page to see it live.', 'success');
+}
+
+// ── DELETE ────────────────────────────────────────────────────
+function confirmDelete(id, title) {
+  if (!confirm('Delete "' + title + '"?\n\nThis removes it from the courses page immediately. This cannot be undone.')) return;
+  deleteCourseData(id);
+  activeId = null;
+  buildSidebar();
+  document.getElementById('editorWelcome').style.display = 'block';
+  document.getElementById('editorForm').style.display    = 'none';
+  showToast('"' + title + '" deleted.', 'info');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = type === 'error' ? '#c62828' : type === 'info' ? '#1565c0' : '#2d6a4f';
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display = 'none'; }, 3500);
+}
+</script>
+</body>
+</html>
