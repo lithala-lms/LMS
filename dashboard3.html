@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>My Dashboard — Lithala LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="lms-config.js"></script>
+<script src="wa-learning.js"></script>
+<script src="auth.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{--navy:#0d2b52;--ocean:#1565c0;--sky:#2196f3;--forest:#1a3a2a;--lime:#52b788;--gold:#d4a017;--cream:#f5f7f5;--mist:#e0eae4;--ink:#1e2d26;--danger:#e63946}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden;max-width:100vw;background:#eef2f7}
+body{font-family:'DM Sans',sans-serif;color:var(--ink)}
+@keyframes mIn{from{opacity:0;transform:scale(.92) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+/* TICKER */
+.ticker-wrap{background:#1a3a2a;color:#52b788;padding:9px 0;overflow:hidden;border-bottom:2px solid #52b788}
+.ticker-inner{display:flex;align-items:center;padding:0 3%}
+.ticker-label{background:#d4a017;color:#1a3a2a;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;padding:3px 10px;letter-spacing:1.5px;text-transform:uppercase;margin-right:14px;border-radius:3px;flex-shrink:0}
+.ticker-overflow{overflow:hidden;flex:1;min-width:0}
+.ticker-track{display:inline-flex;white-space:nowrap;animation:tkr 55s linear infinite;font-size:11.5px;gap:50px}
+.ticker-track span::before{content:"⚠ ";color:#f4a261}
+@keyframes tkr{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* LAYOUT */
+.dash-wrap{display:flex;min-height:calc(100vh - 36px)}
+
+/* SIDEBAR */
+.dash-side{width:248px;background:linear-gradient(180deg,#0d2b52 0%,#1a3a2a 100%);flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:36px;height:calc(100vh - 36px);overflow-y:auto}
+.side-logo{padding:22px 18px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.side-logo img{height:30px;object-fit:contain;flex-shrink:0}
+.side-logo .lt{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:white;line-height:1}
+.side-logo .lt em{color:#64b5f6;font-style:normal}
+.side-logo .ls{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.side-user{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.user-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#52b788,#2d6a4f);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#0d2b52;flex-shrink:0;overflow:hidden}
+.user-av img{width:100%;height:100%;object-fit:cover}
+.user-name{font-size:13px;font-weight:600;color:white;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-email{font-size:10.5px;color:rgba(255,255,255,.5);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-nav{flex:1;padding:10px 0}
+.nav-section{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.28);padding:10px 18px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;color:rgba(255,255,255,.62);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;text-decoration:none;border-left:3px solid transparent}
+.nav-item:hover,.nav-item.active{background:rgba(255,255,255,.07);color:white;border-left-color:#64b5f6}
+.nav-item .ni{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--danger);color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;min-width:18px;text-align:center}
+.side-bottom{padding:14px 18px;border-top:1px solid rgba(255,255,255,.08)}
+.logout-btn{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.42);font-size:12.5px;cursor:pointer;background:none;border:none;width:100%;padding:0;transition:color .2s}
+.logout-btn:hover{color:white}
+
+/* MAIN */
+.dash-main{flex:1;display:flex;flex-direction:column;min-width:0}
+.dash-topbar{background:white;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,.06);flex-shrink:0;border-bottom:1px solid #f0f4f8}
+.topbar-title h2{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#0d2b52}
+.topbar-title p{font-size:11.5px;color:#aaa;margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-btn{width:36px;height:36px;background:#f5f7f5;border:none;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;position:relative;transition:background .2s}
+.topbar-btn:hover{background:#e3f2fd}
+.notif-dot{position:absolute;top:7px;right:7px;width:7px;height:7px;background:var(--danger);border-radius:50%;border:2px solid white}
+.topbar-av{width:34px;height:34px;background:linear-gradient(135deg,#52b788,#2d6a4f);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:#0d2b52;cursor:pointer;overflow:hidden;flex-shrink:0}
+.topbar-av img{width:100%;height:100%;object-fit:cover}
+
+/* NOTIFICATIONS DROPDOWN */
+.notif-panel{display:none;position:absolute;top:50px;right:0;width:320px;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:1000;overflow:hidden;animation:slideDown .2s ease}
+.notif-panel.open{display:block}
+.notif-header{padding:14px 18px;border-bottom:1px solid #f0f4f8;display:flex;align-items:center;justify-content:space-between}
+.notif-header h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#0d2b52}
+.notif-mark{font-size:11px;color:#1565c0;cursor:pointer;font-weight:600;background:none;border:none}
+.notif-item{padding:13px 18px;border-bottom:1px solid #f8f9fa;display:flex;gap:11px;align-items:flex-start;cursor:pointer;transition:background .15s}
+.notif-item:hover{background:#f8f9fa}
+.notif-item.unread{background:#f0f7ff}
+.notif-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.notif-text h4{font-size:13px;font-weight:600;color:#0d2b52;margin-bottom:2px}
+.notif-text p{font-size:11.5px;color:#888;line-height:1.4}
+.notif-time{font-size:10px;color:#bbb;margin-top:4px}
+
+.dash-content{flex:1;padding:24px;overflow-y:auto}
+.panel{display:none}
+.panel.active{display:block}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.stat-card{background:white;border-radius:14px;padding:18px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04);transition:all .2s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(13,43,82,.1)}
+.stat-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.si-blue{background:linear-gradient(135deg,rgba(21,101,192,.1),rgba(33,150,243,.16))}
+.si-green{background:linear-gradient(135deg,rgba(45,106,79,.1),rgba(82,183,136,.16))}
+.si-gold{background:linear-gradient(135deg,rgba(212,160,23,.1),rgba(244,162,97,.16))}
+.stat-num{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#0d2b52;line-height:1}
+.stat-lbl{font-size:11px;color:#888;margin-top:3px}
+
+/* CARD */
+.card{background:white;border-radius:16px;padding:22px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04);margin-bottom:20px}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-hdr h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0d2b52;display:flex;align-items:center;gap:7px}
+.sec-link{font-size:12px;color:#1565c0;font-weight:600;cursor:pointer;background:none;border:none;text-decoration:none}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+
+/* ENROLLED COURSE CARDS */
+.enrolled-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:20px}
+.ec-card{background:white;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(13,43,82,.06);transition:all .2s;border:1px solid transparent}
+.ec-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(13,43,82,.11);border-color:rgba(21,101,192,.14)}
+.ec-thumb{height:120px;position:relative;overflow:hidden}
+.ec-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.ec-thumb-ov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(13,43,82,.65))}
+.ec-pct{position:absolute;bottom:9px;right:9px;background:rgba(13,43,82,.8);backdrop-filter:blur(4px);color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;padding:3px 9px;border-radius:16px}
+.ec-body{padding:14px}
+.ec-cat{font-size:9px;font-weight:700;color:#1565c0;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.ec-body h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin-bottom:9px;line-height:1.3}
+.prog-bar{background:#eef2f7;border-radius:50px;height:6px;margin-bottom:7px;overflow:hidden}
+.prog-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,#1565c0,#2196f3);transition:width .6s ease}
+.prog-fill.done{background:linear-gradient(90deg,#2d6a4f,#52b788)}
+.ec-meta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#aaa}
+.status-pill{font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px}
+.s-new{background:#f5f7f5;color:#888}
+.s-progress{background:rgba(33,150,243,.1);color:#1565c0}
+.s-complete{background:rgba(82,183,136,.1);color:#2d6a4f}
+.ec-actions{display:flex;gap:7px;margin-top:10px}
+.btn-ec{flex:1;padding:8px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;border:none;transition:all .2s;text-align:center}
+.btn-ec-primary{background:linear-gradient(135deg,#1565c0,#2196f3);color:white}
+.btn-ec-gold{background:linear-gradient(135deg,#d4a017,#f4c430);color:#0d2b52}
+.btn-ec-wa{background:#25d366;color:white}
+.btn-ec-outline{background:transparent;border:2px solid #e0eae4;color:#666}
+.btn-ec-outline:hover{border-color:#1565c0;color:#1565c0}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:44px 20px;background:linear-gradient(145deg,#f0f7ff,#e8f5e9);border-radius:14px;border:1px solid rgba(21,101,192,.1)}
+.empty-state .ei{font-size:52px;margin-bottom:14px}
+.empty-state h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#0d2b52;margin-bottom:8px}
+.empty-state p{font-size:13px;color:#666;margin-bottom:20px;max-width:360px;margin-left:auto;margin-right:auto;line-height:1.6}
+.empty-state-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-empty-primary{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:12px 24px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;text-decoration:none}
+.btn-empty-wa{background:#25d366;color:white;border:none;padding:12px 20px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none}
+
+/* QUICK BUY GRID */
+.quick-buy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
+.qb-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(13,43,82,.06);cursor:pointer;transition:all .2s;border:1px solid transparent}
+.qb-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(13,43,82,.1);border-color:rgba(21,101,192,.15)}
+.qb-card img{width:100%;height:100px;object-fit:cover;display:block}
+.qb-body{padding:11px 13px}
+.qb-body h4{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:#0d2b52;margin-bottom:7px;line-height:1.3}
+.qb-foot{display:flex;align-items:center;justify-content:space-between}
+.qb-price{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#0d2b52}
+.btn-qb{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:5px 11px;border-radius:5px;font-family:'Syne',sans-serif;font-weight:700;font-size:10.5px;cursor:pointer}
+
+/* COURSE PLAYER */
+.player-wrap{background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 18px rgba(13,43,82,.08);margin-bottom:20px}
+.player-top{display:grid;grid-template-columns:1fr 280px}
+.player-video{background:linear-gradient(135deg,#0d2b52,#1a3a2a);min-height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.player-video img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.18;display:block}
+.player-center{position:relative;z-index:2;text-align:center;padding:20px}
+.play-btn{width:68px;height:68px;background:rgba(255,255,255,.18);backdrop-filter:blur(8px);border:2px solid rgba(255,255,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;margin:0 auto 12px;transition:all .2s}
+.play-btn:hover{background:rgba(33,150,243,.35);border-color:#2196f3;transform:scale(1.07)}
+.player-mod-title{color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;max-width:260px;line-height:1.3;margin:0 auto}
+.player-course-tag{color:rgba(255,255,255,.58);font-size:11px;margin-top:5px}
+.player-controls{padding:16px 20px;border-bottom:1px solid #f0f4f8;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.player-prog-wrap{flex:1}
+.player-prog-bar{height:5px;background:#eef2f7;border-radius:50px;overflow:hidden;margin-top:7px}
+.player-prog-fill{height:100%;background:linear-gradient(90deg,#1565c0,#2196f3);border-radius:50px;transition:width .5s}
+.player-pct{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#1565c0;flex-shrink:0}
+.player-body{padding:18px 20px}
+.player-body p{font-size:13.5px;color:#5a7060;line-height:1.8}
+.player-btn-row{display:flex;gap:9px;margin-top:16px}
+.btn-prev{flex:1;background:#f5f7f5;border:2px solid #e0eae4;color:#666;padding:10px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer}
+.btn-next{flex:2;background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:10px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer}
+.mod-sidebar{border-left:1px solid #f0f4f8;overflow-y:auto;max-height:380px}
+.mod-sidebar-hdr{padding:14px 16px;font-family:'Syne',sans-serif;font-weight:700;font-size:12.5px;color:#0d2b52;border-bottom:1px solid #f0f4f8;background:white;position:sticky;top:0;z-index:1}
+.mod-sidebar-item{padding:11px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid #f8f9fa;cursor:pointer;transition:background .15s;font-size:12.5px;color:#666}
+.mod-sidebar-item:hover{background:#f5f7f5}
+.mod-sidebar-item.active{background:#e3f2fd;color:#0d2b52;font-weight:600}
+.mod-sidebar-item.done{color:#2d6a4f}
+.mod-check{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.mc-done{background:rgba(82,183,136,.12);color:#2d6a4f}
+.mc-active{background:linear-gradient(135deg,#1565c0,#2196f3);color:white}
+.mc-lock{background:#f0f4f8;color:#ccc}
+
+/* ASSESSMENT */
+.assess-wrap{background:white;border-radius:16px;padding:28px;box-shadow:0 4px 18px rgba(13,43,82,.08);margin-bottom:20px}
+.q-dots{display:flex;gap:5px;margin-bottom:24px;flex-wrap:wrap}
+.q-dot{width:26px;height:5px;border-radius:3px;background:#e0eae4;transition:background .3s}
+.q-dot.answered{background:#1565c0}
+.q-dot.current{background:#2196f3}
+.q-num{font-size:10.5px;font-weight:700;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px}
+.q-text{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#0d2b52;margin-bottom:22px;line-height:1.4}
+.q-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:24px}
+.q-opt{padding:13px 16px;border:2px solid #e0eae4;border-radius:11px;cursor:pointer;transition:all .2s;font-size:13.5px;color:#555;display:flex;align-items:center;gap:10px;background:white}
+.q-opt:hover{border-color:#2196f3;background:#f0f7ff;color:#0d2b52}
+.q-opt.selected{border-color:#1565c0;background:#e3f2fd;color:#0d2b52;font-weight:600}
+.q-opt.correct{border-color:#52b788;background:rgba(82,183,136,.08);color:#1a3a2a}
+.q-opt.wrong{border-color:#e63946;background:rgba(230,57,70,.05);color:#c62828}
+.q-opt-ltr{width:27px;height:27px;border-radius:7px;background:#f0f4f8;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;flex-shrink:0}
+.q-actions{display:flex;gap:10px}
+
+/* RESULTS TABLE */
+.results-table{width:100%;border-collapse:collapse;font-size:13px}
+.results-table th{text-align:left;padding:9px 13px;background:#f5f7f5;color:#0d2b52;font-family:'Syne',sans-serif;font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px}
+.results-table th:first-child{border-radius:7px 0 0 7px}
+.results-table th:last-child{border-radius:0 7px 7px 0}
+.results-table td{padding:12px 13px;border-bottom:1px solid #f0f4f8;color:#555;vertical-align:middle}
+.results-table tr:hover td{background:#fafbfc}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px}
+.tag-pass{background:rgba(82,183,136,.1);color:#2d6a4f}
+.tag-fail{background:rgba(230,57,70,.08);color:#c62828}
+
+/* CERTIFICATES */
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.cert-card{background:linear-gradient(145deg,#fffde7,#fff8d0);border:2px solid #d4a017;border-radius:16px;padding:24px;text-align:center;position:relative;box-shadow:0 4px 18px rgba(212,160,23,.12)}
+.cert-card::before{content:'';position:absolute;inset:8px;border:1px solid rgba(212,160,23,.22);border-radius:10px;pointer-events:none}
+.cert-org{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#0d2b52;margin-bottom:4px}
+.cert-issued{font-size:11px;color:#aaa;margin-bottom:5px}
+.cert-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:#2d6a4f;border-bottom:1px solid rgba(212,160,23,.3);padding-bottom:6px;margin-bottom:8px}
+.cert-course{font-size:13px;font-weight:600;color:#555;margin-bottom:4px}
+.cert-meta{font-size:11px;color:#aaa;margin-bottom:16px}
+.cert-btns{display:flex;gap:7px}
+.btn-cert-dl{flex:1;background:#d4a017;color:#1a2a00;border:none;padding:9px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:all .2s}
+.btn-cert-dl:hover{background:#c49000}
+.btn-cert-li{flex:1;background:#0077b5;color:white;border:none;padding:9px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:all .2s}
+.btn-cert-li:hover{background:#005885}
+.btn-cert-email{flex:1;background:#1565c0;color:white;border:none;padding:9px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer}
+
+/* AI PANEL */
+.ai-grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
+.ai-chat-wrap{display:flex;flex-direction:column;height:480px}
+.ai-msgs{flex:1;overflow-y:auto;padding-bottom:8px;display:flex;flex-direction:column;gap:10px;padding-right:4px}
+.ai-msg{max-width:86%;padding:11px 15px;border-radius:13px;font-size:13px;line-height:1.6}
+.ai-msg.bot{background:#f0f7ff;border:1px solid rgba(21,101,192,.1);color:#1e2d26;align-self:flex-start;border-radius:0 13px 13px 13px}
+.ai-msg.user{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;align-self:flex-end;border-radius:13px 0 13px 13px}
+.ai-typing{display:none;align-self:flex-start;padding:11px 15px;background:#f0f7ff;border-radius:0 13px 13px 13px;border:1px solid rgba(21,101,192,.1)}
+.ai-typing span{display:inline-block;width:7px;height:7px;background:#2196f3;border-radius:50%;animation:bounce 1.4s infinite;margin:0 2px}
+.ai-typing span:nth-child(2){animation-delay:.2s}
+.ai-typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+.ai-quick-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.ai-qbtn{background:#f0f7ff;border:1px solid rgba(21,101,192,.18);color:#1565c0;padding:5px 11px;border-radius:18px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.ai-qbtn:hover{background:#1565c0;color:white;border-color:#1565c0}
+.ai-input-row{display:flex;gap:8px;margin-top:12px}
+.ai-inp{flex:1;padding:10px 13px;border:2px solid #e0eae4;border-radius:9px;font-size:13px;outline:none;background:#f5f7f5;transition:border-color .2s;font-family:'DM Sans',sans-serif}
+.ai-inp:focus{border-color:#2196f3;background:white}
+.ai-send{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:10px 14px;border-radius:9px;cursor:pointer;font-size:16px;transition:all .2s}
+.ai-send:hover{transform:scale(1.05)}
+.news-feed{display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:480px}
+.news-item{padding:13px;border-radius:11px;background:#f5f7f5;border-left:3px solid #1565c0;cursor:pointer;transition:background .2s}
+.news-item:hover{background:#e3f2fd}
+.news-item.alert{border-left-color:#e63946}
+.news-item.update{border-left-color:#52b788}
+.news-item.incident{border-left-color:#d4a017}
+.news-tag{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;color:#1565c0}
+.news-item.alert .news-tag{color:#e63946}
+.news-item.update .news-tag{color:#2d6a4f}
+.news-item.incident .news-tag{color:#d4a017}
+.news-item h4{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:#0d2b52;margin-bottom:3px;line-height:1.3}
+.news-item p{font-size:11.5px;color:#666;line-height:1.5;margin-bottom:4px}
+.news-time{font-size:10px;color:#bbb}
+
+/* WHATSAPP PANEL */
+.wa-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.wa-enroll-card{background:linear-gradient(135deg,#075e54,#0a4a42);border-radius:16px;padding:24px;color:white;margin-bottom:16px}
+.wa-enroll-card h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:8px}
+.wa-enroll-card p{font-size:13px;color:rgba(255,255,255,.72);line-height:1.6;margin-bottom:18px}
+select.wa-sel{width:100%;padding:10px 13px;border:none;border-radius:9px;font-size:13px;background:rgba(255,255,255,.14);color:white;margin-bottom:11px;outline:none;font-family:'DM Sans',sans-serif}
+select.wa-sel option{background:#075e54;color:white}
+.btn-wa-activate{width:100%;background:#25d366;color:white;border:none;padding:13px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s}
+.btn-wa-activate:hover{background:#128c7e}
+.wa-steps{background:white;border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(13,43,82,.06)}
+.wa-steps h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#0d2b52;margin-bottom:16px}
+.wa-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.wa-step-num{width:30px;height:30px;background:linear-gradient(135deg,#075e54,#25d366);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;color:white;flex-shrink:0}
+.wa-step h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin-bottom:2px}
+.wa-step p{font-size:12px;color:#888;line-height:1.5}
+/* WA PHONE MOCKUP */
+.wa-phone-outer{background:#111;border-radius:36px;padding:12px;box-shadow:0 28px 56px rgba(0,0,0,.35);max-width:280px;margin:0 auto}
+.wa-screen{background:#ece5dd;border-radius:26px;overflow:hidden}
+.wa-hd{background:#075e54;padding:11px 14px;display:flex;align-items:center;gap:9px}
+.wa-av-sm{width:34px;height:34px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.wa-hd h5{color:white;font-size:12.5px;font-weight:600}
+.wa-hd p{color:rgba(255,255,255,.6);font-size:9.5px}
+.wa-chat-body{padding:10px;display:flex;flex-direction:column;gap:7px;min-height:280px;max-height:280px;overflow-y:auto}
+.wm{max-width:84%}
+.wm.bot{background:white;border-radius:0 9px 9px 9px;padding:8px 11px;align-self:flex-start;box-shadow:0 1px 2px rgba(0,0,0,.07)}
+.wm.user{background:#d9fdd3;border-radius:9px 0 9px 9px;padding:8px 11px;align-self:flex-end}
+.wm p{font-size:12px;color:#111;line-height:1.5}
+.wm time{font-size:9px;color:#999;display:block;text-align:right;margin-top:2px}
+.wa-opts-row{padding:5px 9px 9px;display:flex;flex-direction:column;gap:4px}
+.wa-opt-pill{background:white;border:1.5px solid #25d366;color:#075e54;padding:7px 11px;border-radius:16px;font-size:11px;font-weight:600;text-align:center;cursor:pointer;transition:all .2s}
+.wa-opt-pill:hover{background:#25d366;color:white}
+.wa-input-bar{background:white;padding:9px 11px;display:flex;align-items:center;gap:7px;border-top:1px solid rgba(0,0,0,.05)}
+.wa-input-bar input{flex:1;border:none;font-size:12.5px;outline:none;background:none;color:#111}
+.wa-send-btn{width:32px;height:32px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:white}
+
+/* SETTINGS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:13px;background:#f5f7f5;border-radius:9px;margin-bottom:9px}
+.toggle-row h4{font-size:13.5px;font-weight:600;color:#0d2b52}
+.toggle-row p{font-size:11px;color:#aaa;margin-top:2px}
+.toggle{width:40px;height:22px;border-radius:11px;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.toggle.on{background:#1565c0}
+.toggle.off{background:#e0eae4}
+.toggle-thumb{position:absolute;top:3px;width:16px;height:16px;background:white;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on .toggle-thumb{left:21px}
+.toggle.off .toggle-thumb{left:3px}
+.danger-zone{background:rgba(230,57,70,.04);border:2px solid rgba(230,57,70,.13);border-radius:14px;padding:22px;margin-top:18px}
+.danger-zone h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#c62828;margin-bottom:7px}
+.danger-zone p{font-size:13px;color:#666;line-height:1.6;margin-bottom:14px}
+.btn-danger-req{background:transparent;border:2px solid #e63946;color:#e63946;padding:9px 20px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
+.btn-danger-req:hover{background:#e63946;color:white}
+
+/* MOBILE */
+.mob-nav-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #e0eae4;z-index:500;padding:7px 0 10px}
+.mob-nav-items{display:flex;justify-content:space-around}
+.mob-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 10px;border-radius:8px;color:#aaa;font-size:10px;font-weight:600;background:none;border:none;transition:color .2s}
+.mob-nav-btn.active{color:#1565c0}
+.mob-nav-btn .mni{font-size:20px}
+
+/* LOGIN SCREEN */
+#loginScreen{display:none;min-height:calc(100vh - 36px);background:linear-gradient(135deg,#0d2b52,#1a3a2a);align-items:center;justify-content:center;padding:22px}
+.login-box{background:white;border-radius:22px;width:100%;max-width:420px;padding:40px 34px;text-align:center;animation:mIn .3s ease}
+.login-box h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#0d2b52;margin-bottom:5px}
+.login-box .sub{font-size:13px;color:#aaa;margin-bottom:26px}
+.google-btn{width:100%;background:white;border:2px solid #e0eae4;color:#333;padding:13px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;transition:all .2s}
+.google-btn:hover{border-color:#4285f4;box-shadow:0 2px 8px rgba(66,133,244,.2)}
+.divider{display:flex;align-items:center;gap:10px;margin-bottom:12px;color:#aaa;font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e0eae4}
+.login-inp{width:100%;padding:11px 13px;border:2px solid #e0eae4;border-radius:9px;font-size:14px;background:#f5f7f5;outline:none;margin-bottom:10px;font-family:'DM Sans',sans-serif;transition:border-color .2s}
+.login-inp:focus{border-color:#2196f3;background:white}
+.btn-login-main{width:100%;background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:13px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer}
+
+@media(max-width:900px){
+  .dash-side{display:none}
+  .mob-nav-bar{display:block}
+  .dash-content{padding:14px;padding-bottom:80px}
+  .stats-row{grid-template-columns:1fr 1fr;gap:10px}
+  .two-col{grid-template-columns:1fr}
+  .player-top{grid-template-columns:1fr}
+  .mod-sidebar{display:none}
+  .ai-grid{grid-template-columns:1fr}
+  .wa-layout{grid-template-columns:1fr}
+  .settings-grid{grid-template-columns:1fr}
+  .certs-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){.stats-row{grid-template-columns:1fr}.enrolled-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-label">HSE LIVE</span>
+    <div class="ticker-overflow">
+      <div class="ticker-track">
+        <span>DoL Section 8 compliance check — keep your safety file updated and available at all times</span>
+        <span>New OHS Amendment Act 2024 — hazard identification now required in writing for all workplaces</span>
+        <span>Confined Space fatality Gauteng Q1 2025 — ensure all teams are trained and certified</span>
+        <span>ISO 45001 revision scheduled 2026 — start your readiness assessment with Lithala now</span>
+        <span>NEMA updated waste thresholds March 2025 — review your disposal procedures immediately</span>
+        <span>DoL Section 8 compliance check — keep your safety file updated and available at all times</span>
+        <span>New OHS Amendment Act 2024 — hazard identification now required in writing for all workplaces</span>
+        <span>Confined Space fatality Gauteng Q1 2025 — ensure all teams are trained and certified</span>
+        <span>ISO 45001 revision scheduled 2026 — start your readiness assessment with Lithala now</span>
+        <span>NEMA updated waste thresholds March 2025 — review your disposal procedures immediately</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <img src="logo.png" style="height:42px;object-fit:contain;margin:0 auto 10px;display:block" onerror="this.style.display='none'" alt="">
+    <h1>LITHALA LMS</h1>
+    <div class="sub">Sign in to access your courses, track progress<br>and earn certificates</div>
+    <div id="googleBtnTarget"></div>
+    <button class="google-btn" onclick="triggerGoogleSignIn()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:20px" alt="G">
+      Continue with Google (Gmail)
+    </button>
+    <div class="divider">or with email</div>
+    <input class="login-inp" type="email" id="loginEmailInp" placeholder="Email address" onkeypress="if(event.key==='Enter')doEmailLogin()">
+    <input class="login-inp" type="password" id="loginPwdInp" placeholder="Password" onkeypress="if(event.key==='Enter')doEmailLogin()">
+    <button class="btn-login-main" onclick="doEmailLogin()">Sign In to My Dashboard →</button>
+    <p style="font-size:12px;color:#aaa;margin-top:12px">No account? <a href="index3.html" style="color:#1565c0;font-weight:600">Browse courses first</a> then sign up on purchase.</p>
+  </div>
+</div>
+
+<!-- DASHBOARD APP -->
+<div id="dashApp" class="dash-wrap" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="dash-side">
+    <div class="side-logo">
+      <img src="logo.png" onerror="this.style.display='none'" alt="">
+      <div><div class="lt">LITHALA <em>LMS</em></div><div class="ls">Risk Solutions</div></div>
+    </div>
+    <div class="side-user">
+      <div class="user-av" id="sideAvatar">TN</div>
+      <div style="min-width:0">
+        <div class="user-name" id="sideName">Learner</div>
+        <div class="user-email" id="sideEmail">—</div>
+      </div>
+    </div>
+    <nav class="side-nav">
+      <div class="nav-section">Learning</div>
+      <a class="nav-item active" onclick="showPanel('dashboard')"><span class="ni">📊</span> Dashboard</a>
+      <a class="nav-item" onclick="showPanel('courses')"><span class="ni">📚</span> My Courses <span class="nav-badge" id="coursesBadge">0</span></a>
+      <a class="nav-item" onclick="showPanel('player')"><span class="ni">▶️</span> Continue Learning</a>
+      <a class="nav-item" onclick="showPanel('assessment')"><span class="ni">📝</span> Take Assessment</a>
+      <a class="nav-item" onclick="showPanel('certs')"><span class="ni">🏆</span> Certificates</a>
+      <div class="nav-section">Insights</div>
+      <a class="nav-item" onclick="showPanel('results')"><span class="ni">📈</span> My Results</a>
+      <a class="nav-item" onclick="showPanel('ai')"><span class="ni">🤖</span> AI Assistant</a>
+      <a class="nav-item" onclick="showPanel('whatsapp')"><span class="ni">💬</span> WhatsApp Learning</a>
+      <div class="nav-section">Account</div>
+      <a class="nav-item" onclick="showPanel('settings')"><span class="ni">⚙️</span> Settings</a>
+      <a class="nav-item" href="index3.html"><span class="ni">🛒</span> Browse Courses</a>
+      <a class="nav-item" href="index.html"><span class="ni">🏠</span> Home</a>
+    </nav>
+    <div class="side-bottom">
+      <button class="logout-btn" onclick="doLogout()">🚪 Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <div class="topbar-title">
+        <h2 id="panelTitle">Dashboard</h2>
+        <p id="panelSub">Welcome back</p>
+      </div>
+      <div class="topbar-right">
+        <!-- NOTIFICATIONS BUTTON -->
+        <div style="position:relative">
+          <button class="topbar-btn" id="notifBtn" onclick="toggleNotifications()">🔔<div class="notif-dot" id="notifDot"></div></button>
+          <div class="notif-panel" id="notifPanel">
+            <div class="notif-header">
+              <h3>Notifications</h3>
+              <button class="notif-mark" onclick="markAllRead()">Mark all read</button>
+            </div>
+            <div id="notifList"></div>
+          </div>
+        </div>
+        <!-- MESSAGE BUTTON — opens WhatsApp to Lithala -->
+        <button class="topbar-btn" title="Message Lithala on WhatsApp" onclick="window.open('https://wa.me/27824214001?text=Hi+Lithala+LMS+Team!+I+need+help+with+my+course.','_blank')">💬</button>
+        <div class="topbar-av" id="topbarAvatar" onclick="showPanel('settings')"></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+
+      <!-- DASHBOARD OVERVIEW -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-row">
+          <div class="stat-card" onclick="showPanel('courses')"><div class="stat-icon si-blue">📚</div><div><div class="stat-num" id="statCourses">0</div><div class="stat-lbl">Enrolled Courses</div></div></div>
+          <div class="stat-card" onclick="showPanel('certs')"><div class="stat-icon si-gold">🏆</div><div><div class="stat-num" id="statCerts">0</div><div class="stat-lbl">Certificates</div></div></div>
+          <div class="stat-card" onclick="showPanel('results')"><div class="stat-icon si-blue">📊</div><div><div class="stat-num" id="statScore">—</div><div class="stat-lbl">Avg. Score</div></div></div>
+          <div class="stat-card" onclick="showPanel('courses')"><div class="stat-icon si-green">⏱</div><div><div class="stat-num" id="statTime">0h</div><div class="stat-lbl">Study Time</div></div></div>
+        </div>
+        <div class="sec-hdr"><h3>📚 My Courses</h3><a class="sec-link" onclick="showPanel('courses')">View all →</a></div>
+        <div id="dashCourseList"></div>
+        <div class="two-col" style="margin-top:0">
+          <div class="card">
+            <div class="sec-hdr"><h3>🏆 Certificates</h3><a class="sec-link" onclick="showPanel('certs')">View all →</a></div>
+            <div id="dashCertPreview"><p style="font-size:13px;color:#aaa;text-align:center;padding:16px">Complete a course assessment to earn certificates.</p></div>
+          </div>
+          <div class="card">
+            <div class="sec-hdr"><h3>📰 HSE News</h3></div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <div class="news-item alert"><div class="news-tag">⚠ ALERT · DoL</div><h4>Increased OHSA Inspections Q1 2025</h4><p>Unannounced factory inspections — Section 8 compliance required.</p><div class="news-time">2 days ago</div></div>
+              <div class="news-item update"><div class="news-tag">✅ UPDATE · ISO</div><h4>ISO 45001 Revision Scheduled 2026</h4><p>Start readiness assessment now.</p><div class="news-time">5 days ago</div></div>
+              <div class="news-item incident"><div class="news-tag">🔶 INCIDENT · Gauteng</div><h4>Confined Space Fatality — Vaal Triangle</h4><p>Ensure all teams have valid certificates.</p><div class="news-time">1 week ago</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY COURSES -->
+      <div class="panel" id="panel-courses">
+        <div id="fullCourseList"></div>
+      </div>
+
+      <!-- PLAYER -->
+      <div class="panel" id="panel-player">
+        <div class="player-wrap">
+          <div class="player-top">
+            <div>
+              <div class="player-video">
+                <img id="playerBg" src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=70" alt="">
+                <div class="player-center">
+                  <div class="play-btn" onclick="playModule()">▶</div>
+                  <div class="player-mod-title" id="playerModTitle">Select a module to start</div>
+                  <div class="player-course-tag" id="playerCourseTag">Choose from My Courses</div>
+                </div>
+              </div>
+              <div class="player-controls">
+                <div class="player-prog-wrap">
+                  <div style="display:flex;justify-content:space-between;font-size:11px;color:#888">
+                    <span id="playerModLabel">Select a course</span>
+                    <span id="playerPct">0%</span>
+                  </div>
+                  <div class="player-prog-bar"><div class="player-prog-fill" id="playerProgBar" style="width:0%"></div></div>
+                </div>
+              </div>
+              <div class="player-body">
+                <p id="playerContent">Select a course from <strong>My Courses</strong> and click any module to start learning. Your progress is automatically saved.</p>
+                <div class="player-btn-row">
+                  <button class="btn-prev" onclick="prevModule()">← Previous</button>
+                  <button class="btn-next" onclick="nextModule()">Next Module →</button>
+                </div>
+              </div>
+            </div>
+            <div class="mod-sidebar">
+              <div class="mod-sidebar-hdr" id="modSidebarHdr">📋 Modules</div>
+              <div id="modSidebarList" style="padding:12px;text-align:center;color:#aaa;font-size:12.5px">No course selected</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSESSMENT -->
+      <div class="panel" id="panel-assessment">
+        <div class="assess-wrap">
+          <div id="assessPicker">
+            <div style="text-align:center;padding:10px 0 20px">
+              <div style="font-size:44px;margin-bottom:12px">📝</div>
+              <h3 style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#0d2b52;margin-bottom:6px">Course Assessment</h3>
+              <p style="font-size:13.5px;color:#666;margin-bottom:22px">You need 80% to pass. Select a course you've enrolled in.</p>
+              <select id="assessSelect" style="padding:11px 15px;border:2px solid #e0eae4;border-radius:10px;font-size:13.5px;background:#f5f7f5;outline:none;width:100%;max-width:340px;margin-bottom:14px;font-family:'DM Sans',sans-serif;display:block;margin-left:auto;margin-right:auto"></select>
+              <button onclick="startAssessment()" style="background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:13px 32px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer">Start Assessment →</button>
+            </div>
+          </div>
+          <div id="assessQuiz" style="display:none">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+              <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0d2b52" id="qCourseTitle"></div>
+              <div style="font-size:12.5px;color:#888" id="qCounter">Q1 of 5</div>
+            </div>
+            <div class="q-dots" id="qDots"></div>
+            <div class="q-num" id="qNum">QUESTION 1</div>
+            <div class="q-text" id="qText"></div>
+            <div class="q-opts" id="qOpts"></div>
+            <div class="q-actions">
+              <button id="btnSubmitQ" onclick="submitAnswer()" style="flex:1;background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:13px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer">Submit Answer</button>
+              <button id="btnNextQ" onclick="nextQuestion()" style="flex:1;background:#52b788;color:white;border:none;padding:13px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;display:none">Next →</button>
+            </div>
+          </div>
+          <div id="assessResult" style="display:none;text-align:center;padding:10px 0">
+            <div style="font-size:60px;margin-bottom:12px" id="resultEmoji">🏆</div>
+            <div style="font-family:'Syne',sans-serif;font-size:38px;font-weight:800;color:#0d2b52" id="resultPct"></div>
+            <div style="font-size:19px;font-weight:700;margin:8px 0" id="resultStatus"></div>
+            <p style="font-size:13.5px;color:#666;margin-bottom:22px;max-width:460px;margin-left:auto;margin-right:auto;line-height:1.6" id="resultMsg"></p>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+              <button onclick="showPanel('certs')" id="viewCertBtn" style="display:none;background:linear-gradient(135deg,#d4a017,#f4c430);color:#0d2b52;border:none;padding:12px 26px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer">🏆 View My Certificate</button>
+              <button onclick="resetAssessment()" style="background:#f5f7f5;border:2px solid #e0eae4;color:#555;padding:12px 26px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer">📝 Take Another Course</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CERTIFICATES -->
+      <div class="panel" id="panel-certs">
+        <div class="certs-grid" id="certsGrid">
+          <div style="grid-column:1/-1;text-align:center;padding:44px;color:#aaa">
+            <div style="font-size:52px;margin-bottom:12px">🏆</div>
+            <p style="font-size:14px;font-weight:600;color:#555;margin-bottom:5px">No certificates yet</p>
+            <p style="font-size:13px">Complete a course assessment with 80%+ to earn your certificate.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="panel" id="panel-results">
+        <div class="card">
+          <div class="sec-hdr">
+            <h3>📈 Assessment History</h3>
+            <button onclick="exportResultsPDF()" style="background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:7px 16px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer">⬇ Export</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="results-table">
+              <thead><tr><th>Course</th><th>Score</th><th>%</th><th>Status</th><th>Date</th><th>Certificate</th></tr></thead>
+              <tbody id="resultsBody"><tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa">No results yet.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI ASSISTANT -->
+      <div class="panel" id="panel-ai">
+        <div class="ai-grid">
+          <div class="card">
+            <div class="sec-hdr"><h3>🤖 AI Safety Assistant</h3></div>
+            <div class="ai-quick-btns">
+              <span class="ai-qbtn" onclick="askAI('Latest OHSA updates South Africa?')">OHSA Updates</span>
+              <span class="ai-qbtn" onclick="askAI('Explain confined space hazards')">Confined Space</span>
+              <span class="ai-qbtn" onclick="askAI('ISO 45001 key requirements?')">ISO 45001</span>
+              <span class="ai-qbtn" onclick="askAI('Permit to Work best practices?')">PTW Tips</span>
+              <span class="ai-qbtn" onclick="askAI('HSE trends South Africa 2025?')">HSE Trends</span>
+            </div>
+            <div class="ai-chat-wrap">
+              <div class="ai-msgs" id="aiMsgs">
+                <div class="ai-msg bot">👋 Hi! I'm your AI Safety Assistant.<br><br>Ask me about:<br>• OHSA &amp; SA HSE regulations<br>• Course content &amp; concepts<br>• Incident investigation guidance<br>• Industry trends &amp; benchmarks<br><br>What would you like to know today?</div>
+              </div>
+              <div class="ai-typing" id="aiTyping"><span></span><span></span><span></span></div>
+              <div class="ai-input-row">
+                <input class="ai-inp" id="aiInp" placeholder="Ask about safety regulations, incidents, courses..." onkeypress="if(event.key==='Enter')sendAI()">
+                <button class="ai-send" onclick="sendAI()">➤</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="sec-hdr"><h3>📰 HSE News Feed</h3></div>
+            <div class="news-feed">
+              <div class="news-item alert"><div class="news-tag">⚠ ALERT · DoL</div><h4>Increased OHSA Inspections Q1 2025</h4><p>Unannounced factory inspections targeting Section 8 compliance documentation.</p><div class="news-time">2 days ago · South Africa</div></div>
+              <div class="news-item update"><div class="news-tag">✅ UPDATE · ISO</div><h4>ISO 45001 Revision Scheduled 2026</h4><p>ISO TC confirms review — readiness assessments recommended now.</p><div class="news-time">5 days ago · International</div></div>
+              <div class="news-item incident"><div class="news-tag">🔶 INCIDENT · Gauteng</div><h4>Chemical Release — Vaal Triangle</h4><p>Emergency response activated. Review your MSDS compliance procedures.</p><div class="news-time">1 week ago · Gauteng</div></div>
+              <div class="news-item"><div class="news-tag" style="color:#1565c0">📋 REGULATION · NEMA</div><h4>Updated Waste Classification Thresholds</h4><p>New hazardous waste disposal thresholds — review by March 2025.</p><div class="news-time">2 weeks ago · South Africa</div></div>
+              <div class="news-item update"><div class="news-tag">🛡 SAFETY TIP</div><h4>Confined Space Pre-Entry Checklist</h4><p>Always test: O₂ 19.5–23.5%, flammable gas &lt;10% LEL, toxic contaminants below PEL.</p><div class="news-time">Training tip</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WHATSAPP LEARNING -->
+      <div class="panel" id="panel-whatsapp">
+        <div class="wa-layout">
+          <div>
+            <div class="wa-enroll-card">
+              <h3>💬 Learn on WhatsApp</h3>
+              <p>Complete HSE courses through WhatsApp. Daily modules, quizzes and your certificate — all without leaving the app. Works on any phone.</p>
+              <select class="wa-sel" id="waCourseSelect"></select>
+              <button class="btn-wa-activate" onclick="activateWhatsApp()">💬 Open WhatsApp to Activate</button>
+            </div>
+            <div class="wa-steps">
+              <h3>How WhatsApp Learning Works</h3>
+              <div class="wa-step"><div class="wa-step-num">1</div><div><h4>Purchase a WhatsApp-enabled course</h4><p>Courses marked 💬 include WhatsApp delivery.</p></div></div>
+              <div class="wa-step"><div class="wa-step-num">2</div><div><h4>Click Activate above</h4><p>Opens WhatsApp with a pre-filled activation message to our team.</p></div></div>
+              <div class="wa-step"><div class="wa-step-num">3</div><div><h4>Receive activation within 2 business hours</h4><p>Our team replies on WhatsApp with your course activation link. Daily modules and quizzes are delivered directly to your WhatsApp — no app needed beyond WhatsApp itself.</p></div></div>
+              <div class="wa-step" style="margin-bottom:0"><div class="wa-step-num">4</div><div><h4>Earn your certificate</h4><p>Pass the final assessment and receive your certificate as PDF directly on WhatsApp.</p></div></div>
+            </div>
+          </div>
+          <div>
+            <div class="wa-phone-outer">
+              <div class="wa-screen">
+                <div class="wa-hd"><div class="wa-av-sm">🛡️</div><div><h5>Lithala LMS Bot</h5><p>🟢 Online · HSE Training</p></div></div>
+                <div class="wa-chat-body" id="waChatBody">
+                  <div class="wm bot"><p>👋 Welcome to <strong>Lithala LMS!</strong><br><br>Reply with your course number:<br><br>1️⃣ Confined Space Entry<br>2️⃣ Permit to Work<br>3️⃣ Work at Heights<br>4️⃣ Hot Work Safety<br>5️⃣ LOTO<br>6️⃣ Risk Assessment</p><time>09:00</time></div>
+                </div>
+                <div class="wa-opts-row" id="waOpts">
+                  <div class="wa-opt-pill" onclick="waDemo(1)">1️⃣ Confined Space</div>
+                  <div class="wa-opt-pill" onclick="waDemo(2)">2️⃣ Permit to Work</div>
+                  <div class="wa-opt-pill" onclick="waDemo(3)">3️⃣ Heights</div>
+                  <div class="wa-opt-pill" onclick="waDemo(4)">4️⃣ Hot Work</div>
+                  <div class="wa-opt-pill" onclick="waDemo(5)">5️⃣ LOTO</div>
+                  <div class="wa-opt-pill" onclick="waDemo(6)">6️⃣ Risk Assessment</div>
+                </div>
+                <div class="wa-input-bar">
+                  <input type="text" id="waTextInp" placeholder="Type a reply..." onkeypress="if(event.key==='Enter')waSendText()">
+                  <div class="wa-send-btn" onclick="waSendText()">➤</div>
+                </div>
+              </div>
+            </div>
+            <p style="font-size:11px;color:#aaa;text-align:center;margin-top:12px">👆 Interactive preview — not real WhatsApp</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <div class="settings-grid">
+          <div class="card">
+            <h3 style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0d2b52;margin-bottom:18px">👤 Profile</h3>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <div><label style="display:block;font-size:11px;font-weight:600;color:#1a3a2a;margin-bottom:4px">Full Name</label><input id="settName" type="text" style="width:100%;padding:10px 13px;border:2px solid #e0eae4;border-radius:8px;font-size:13.5px;background:#f5f7f5;outline:none;font-family:'DM Sans',sans-serif"></div>
+              <div><label style="display:block;font-size:11px;font-weight:600;color:#1a3a2a;margin-bottom:4px">Email</label><input id="settEmail" type="email" style="width:100%;padding:10px 13px;border:2px solid #e0eae4;border-radius:8px;font-size:13.5px;background:#f5f7f5;outline:none;font-family:'DM Sans',sans-serif"></div>
+              <div><label style="display:block;font-size:11px;font-weight:600;color:#1a3a2a;margin-bottom:4px">WhatsApp Number</label><input id="settWA" type="tel" placeholder="+27 82 000 0000" style="width:100%;padding:10px 13px;border:2px solid #e0eae4;border-radius:8px;font-size:13.5px;background:#f5f7f5;outline:none;font-family:'DM Sans',sans-serif"></div>
+              <div><label style="display:block;font-size:11px;font-weight:600;color:#1a3a2a;margin-bottom:4px">Company</label><input id="settCompany" type="text" placeholder="Your organisation" style="width:100%;padding:10px 13px;border:2px solid #e0eae4;border-radius:8px;font-size:13.5px;background:#f5f7f5;outline:none;font-family:'DM Sans',sans-serif"></div>
+              <button onclick="saveProfile()" style="background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:12px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer">Save Changes</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0d2b52;margin-bottom:18px">🔔 Notifications</h3>
+            <div class="toggle-row"><div><h4>Certificate Expiry Reminders</h4><p>60 days before expiry</p></div><div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></div></div>
+            <div class="toggle-row"><div><h4>Course Progress Reminders</h4><p>Weekly nudges</p></div><div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></div></div>
+            <div class="toggle-row"><div><h4>WhatsApp Notifications</h4><p>Updates via WhatsApp</p></div><div class="toggle on" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></div></div>
+            <div class="toggle-row"><div><h4>HSE News Digest</h4><p>Weekly safety briefing</p></div><div class="toggle off" onclick="this.classList.toggle('on');this.classList.toggle('off')"><div class="toggle-thumb"></div></div></div>
+            <div class="danger-zone">
+              <h3>⚠️ Request Data Deletion (POPIA)</h3>
+              <p>Request removal of all your personal data from Lithala LMS. Requires admin approval within 5 business days. Your certificates will be revoked.</p>
+              <button class="btn-danger-req" onclick="requestDeletion()">Request Data Deletion</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end dash-content -->
+  </div><!-- end dash-main -->
+</div><!-- end dash-wrap -->
+
+<!-- MOBILE NAV -->
+<div class="mob-nav-bar" id="mobNav" style="display:none">
+  <div class="mob-nav-items">
+    <button class="mob-nav-btn active" onclick="showPanel('dashboard')"><span class="mni">📊</span>Home</button>
+    <button class="mob-nav-btn" onclick="showPanel('courses')"><span class="mni">📚</span>Courses</button>
+    <button class="mob-nav-btn" onclick="showPanel('assessment')"><span class="mni">📝</span>Assess</button>
+    <button class="mob-nav-btn" onclick="showPanel('whatsapp')"><span class="mni">💬</span>WhatsApp</button>
+    <button class="mob-nav-btn" onclick="showPanel('settings')"><span class="mni">⚙️</span>Settings</button>
+  </div>
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────
+let user = null;
+let purchases = [];
+let results = [];
+let currentCourse = null;
+let currentModIdx = 0;
+let assessState = { course: null, qIdx: 0, answers: [], score: 0, selectedOpt: null };
+let notifications = [];
+
+// ── HELPERS ───────────────────────────────────────────────────
+function getCourses() {
+  const ov = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  const base = (LMS.COURSES || []).filter(c => !ov[c.id + '_deleted']);
+  const edited = base.map(c => ov[c.id] ? { ...c, ...ov[c.id] } : c);
+  Object.entries(ov).forEach(([id, v]) => {
+    if (!id.endsWith('_deleted') && typeof v === 'object' && !edited.find(c => c.id === id)) edited.push(v);
+  });
+  return edited;
+}
+function getProgress(courseId) {
+  return JSON.parse(localStorage.getItem('lms_prog_' + courseId) || '{"pct":0,"mod":0,"done":[]}');
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+function init() {
+  const stored = localStorage.getItem('lms_user');
+  if (stored) {
+    user = JSON.parse(stored);
+    showDashboard();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+}
+
+function showDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashApp').style.display = 'flex';
+  document.getElementById('mobNav').style.display = 'block';
+  populateUser();
+  loadData();
+  buildNotifications();
+}
+
+function populateUser() {
+  const ini = (user.name || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  const photo = user.photo || '';
+  ['sideAvatar', 'topbarAvatar'].forEach(id => {
+    const el = document.getElementById(id);
+    el.innerHTML = photo ? `<img src="${photo}" alt="">` : ini;
+  });
+  document.getElementById('sideName').textContent  = user.name  || 'Learner';
+  document.getElementById('sideEmail').textContent = user.email || '—';
+  document.getElementById('settName').value    = user.name    || '';
+  document.getElementById('settEmail').value   = user.email   || '';
+  document.getElementById('settWA').value      = user.whatsapp || '';
+  document.getElementById('settCompany').value = user.company  || '';
+  document.getElementById('panelSub').textContent = 'Welcome back, ' + (user.name || '').split(' ')[0] + '!';
+}
+
+function loadData() {
+  purchases = JSON.parse(localStorage.getItem('lms_purchases') || '[]');
+  results   = JSON.parse(localStorage.getItem('lms_results')   || '[]');
+  updateStats();
+  renderDashCourses();
+  renderCertsGrid();
+  renderResultsTable();
+  populateAssessSelect();
+  populateWASelect();
+}
+
+function updateStats() {
+  const passed = results.filter(r => r.passed);
+  const avg = results.length ? Math.round(results.reduce((s, r) => s + r.pct, 0) / results.length) : 0;
+  document.getElementById('statCourses').textContent = purchases.length;
+  document.getElementById('statCerts').textContent   = passed.length;
+  document.getElementById('statScore').textContent   = results.length ? avg + '%' : '—';
+  document.getElementById('statTime').textContent    = (purchases.length * 4) + 'h';
+  document.getElementById('coursesBadge').textContent = purchases.length;
+}
+
+// ── COURSE CARDS ──────────────────────────────────────────────
+function renderDashCourses() {
+  const html = buildCourseCards();
+  document.getElementById('dashCourseList').innerHTML = html;
+  document.getElementById('fullCourseList').innerHTML = html;
+}
+
+function buildCourseCards() {
+  if (!purchases.length) {
+    return `<div class="empty-state">
+      <div class="ei">📚</div>
+      <h3>Start Your HSE Learning Journey</h3>
+      <p>Browse Lithala's 8 accredited courses — confined space, permit to work, LOTO, heights and more.</p>
+      <div class="empty-state-btns">
+        <a href="index3.html" class="btn-empty-primary">Browse All 8 Courses →</a>
+        <a href="index5.html" class="btn-empty-wa">💬 Learn on WhatsApp</a>
+      </div>
+      <div style="margin-top:20px;font-size:13px;color:#888;margin-bottom:12px;font-weight:600">Featured Courses</div>
+      <div class="quick-buy-grid" id="quickBuyGrid">${buildQuickBuy()}</div>
+    </div>`;
+  }
+  return `<div class="enrolled-grid">${purchases.map(p => {
+    const c = getCourses().find(x => x.id === p.courseId);
+    if (!c) return '';
+    const prog = getProgress(p.courseId);
+    const passed = results.find(r => r.courseId === c.id && r.passed);
+    return `<div class="ec-card">
+      <div class="ec-thumb">
+        <img src="${c.image||''}" alt="${c.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70'">
+        <div class="ec-thumb-ov"></div>
+        <div class="ec-pct">${prog.pct}%</div>
+      </div>
+      <div class="ec-body">
+        <div class="ec-cat">${c.category}</div>
+        <h4>${c.title}</h4>
+        <div class="prog-bar"><div class="prog-fill${prog.pct>=100?' done':''}" style="width:${prog.pct}%"></div></div>
+        <div class="ec-meta">
+          <span>${prog.pct}% complete</span>
+          <span class="status-pill ${prog.pct>=100?'s-complete':prog.pct>0?'s-progress':'s-new'}">${prog.pct>=100?'✓ Complete':prog.pct>0?'In Progress':'New'}</span>
+        </div>
+        <div class="ec-actions">
+          <button class="btn-ec btn-ec-primary" onclick="openPlayer('${c.id}')">▶ ${prog.pct>0?'Continue':'Start'}</button>
+          ${passed
+            ? `<button class="btn-ec btn-ec-gold" onclick="viewCertificate('${c.id}')">🏆 Certificate</button>`
+            : prog.pct>=100
+              ? `<button class="btn-ec btn-ec-primary" onclick="openAssessFor('${c.id}')">📝 Take Test</button>`
+              : ''
+          }
+          ${c.wa ? `<button class="btn-ec btn-ec-wa" onclick="openWAForCourse('${c.id}')">💬</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function buildQuickBuy() {
+  return getCourses().slice(0, 4).map(c => `
+    <div class="qb-card" onclick="buyQuick('${c.id}')">
+      <img src="${c.image||'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70'}" alt="${c.title}" onerror="this.src='https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70'">
+      <div class="qb-body">
+        <h4>${c.title}</h4>
+        <div class="qb-foot">
+          <span class="qb-price">R ${(c.price||0).toLocaleString()}</span>
+          <button class="btn-qb">Buy Now</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function buyQuick(courseId) {
+  const c = getCourses().find(x => x.id === courseId);
+  if (c && user) lmsPayFast(c, user);
+}
+
+// ── PLAYER ────────────────────────────────────────────────────
+function openPlayer(courseId) {
+  const c = getCourses().find(x => x.id === courseId);
+  if (!c) return;
+  currentCourse = c;
+  const prog = getProgress(courseId);
+  currentModIdx = prog.mod || 0;
+  renderModSidebar();
+  loadModule(currentModIdx);
+  showPanel('player');
+}
+
+function openAssessFor(courseId) {
+  document.getElementById('assessSelect').value = courseId;
+  showPanel('assessment');
+}
+
+function openWAForCourse(courseId) {
+  document.getElementById('waCourseSelect').value = courseId;
+  showPanel('whatsapp');
+  setTimeout(activateWhatsApp, 300);
+}
+
+function renderModSidebar() {
+  const c = currentCourse;
+  const prog = getProgress(c.id);
+  document.getElementById('modSidebarHdr').textContent = '📋 ' + c.title + ' (' + c.modules_list.length + ')';
+  document.getElementById('modSidebarList').innerHTML = c.modules_list.map((m, i) => {
+    const done   = (prog.done || []).includes(i);
+    const active = i === currentModIdx;
+    return `<div class="mod-sidebar-item${active?' active':''}${done?' done':''}" onclick="loadModule(${i})">
+      <div class="mod-check ${active?'mc-active':done?'mc-done':'mc-lock'}">${active?'▶':done?'✓':(i+1)}</div>
+      <span>${m.title}</span>
+    </div>`;
+  }).join('');
+}
+
+const MODULE_CONTENT = {
+  'What is a Confined Space?': 'A confined space is any space: (1) large enough for a worker to enter and perform work, (2) has limited or restricted means of entry or exit, and (3) is not designed for continuous human occupancy.<br><br><strong>Examples:</strong> tanks, vessels, silos, hoppers, manholes, tunnels, pipelines, open-topped vats and pits.<br><br><strong>Key point:</strong> A space can be a confined space even if it has no roof.',
+  'Hazard Identification': '🔴 <strong>Atmospheric hazards:</strong> Oxygen deficiency (&lt;19.5%), oxygen enrichment (&gt;23.5%), flammable gases, toxic contaminants<br><br>🔴 <strong>Physical hazards:</strong> Engulfment in loose material, entrapment in narrow passages, falls, drowning<br><br>🔴 <strong>Environmental:</strong> Extreme temperatures, noise, poor lighting<br><br><strong>⚠ Critical:</strong> Over 60% of confined space fatalities involve rescuers who entered without proper equipment.',
+  'Introduction to PTW Systems': 'A Permit to Work (PTW) is a formal documented system used to control potentially hazardous work. It ensures that:<br><br>✓ All hazards have been identified and assessed<br>✓ Appropriate precautions have been taken<br>✓ Authorised personnel carry out the work<br>✓ Work is carried out within a defined time period<br><br>PTW is not a risk assessment — it is a communication tool.',
+  'What is a Fall Protection Plan?': 'The Construction Regulations 2014 require any employer whose employees work at heights to prepare a fall protection plan before work commences. This plan must be site-specific and updated when conditions change.',
+};
+
+function loadModule(idx) {
+  if (!currentCourse) return;
+  currentModIdx = idx;
+  const c = currentCourse;
+  const m = c.modules_list[idx];
+  document.getElementById('playerModTitle').textContent   = m.title;
+  document.getElementById('playerCourseTag').textContent  = c.title;
+  document.getElementById('playerBg').src = c.image || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=70';
+  document.getElementById('playerModLabel').textContent   = 'Module ' + (idx+1) + ' of ' + c.modules_list.length + ' · ' + m.duration;
+  const pct = Math.round((idx / c.modules_list.length) * 100);
+  document.getElementById('playerPct').textContent = pct + '%';
+  document.getElementById('playerProgBar').style.width = pct + '%';
+  document.getElementById('playerContent').innerHTML = MODULE_CONTENT[m.title] ||
+    `<p>This module covers <strong>${m.title}</strong>.<br><br>Key topics: ${c.outcomes ? c.outcomes.slice(0, 3).join(', ') : ''}.<br><br>In the full system, video content, downloadable PDFs and interactive elements load here from your course library.</p>`;
+
+  // Save progress
+  const prog = getProgress(c.id);
+  if (!prog.done) prog.done = [];
+  if (!prog.done.includes(idx)) prog.done.push(idx);
+  prog.mod = idx;
+  prog.pct = Math.round((prog.done.length / c.modules_list.length) * 100);
+  localStorage.setItem('lms_prog_' + c.id, JSON.stringify(prog));
+  renderModSidebar();
+  lmsFetch({ action:'saveProgress', email:user.email, courseId:c.id, moduleId:'M'+idx, moduleName:m.title, completed:true }).catch(()=>{});
+}
+
+function playModule() {
+  if (!currentCourse) { showPanel('courses'); return; }
+  lmsToast('▶ Module playing — video content streams here in the full system.', 'info');
+}
+function nextModule() {
+  if (!currentCourse) return;
+  if (currentModIdx < currentCourse.modules_list.length - 1) loadModule(currentModIdx + 1);
+  else { lmsToast('✅ All modules complete! Take the assessment.', 'success'); openAssessFor(currentCourse.id); }
+}
+function prevModule() { if (currentModIdx > 0) loadModule(currentModIdx - 1); }
+
+// ── ASSESSMENT ────────────────────────────────────────────────
+function populateAssessSelect() {
+  const sel = document.getElementById('assessSelect');
+  sel.innerHTML = '<option value="">— Select a course —</option>';
+  getCourses().forEach(c => { sel.innerHTML += `<option value="${c.id}">${c.title}</option>`; });
+}
+
+function startAssessment() {
+  const id = document.getElementById('assessSelect').value;
+  if (!id) { lmsToast('Please select a course first.', 'error'); return; }
+  const c = getCourses().find(x => x.id === id);
+  if (!c || !c.questions || !c.questions.length) { lmsToast('No questions found for this course.', 'error'); return; }
+  assessState = { course: c, qIdx: 0, answers: [], score: 0, selectedOpt: null };
+  document.getElementById('assessPicker').style.display = 'none';
+  document.getElementById('assessQuiz').style.display = 'block';
+  document.getElementById('assessResult').style.display = 'none';
+  document.getElementById('qCourseTitle').textContent = c.title;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const { course, qIdx } = assessState;
+  const q     = course.questions[qIdx];
+  const total = course.questions.length;
+  document.getElementById('qCounter').textContent = 'Q' + (qIdx+1) + ' of ' + total;
+  document.getElementById('qNum').textContent     = 'QUESTION ' + (qIdx+1);
+  document.getElementById('qText').textContent    = q.q;
+  document.getElementById('qDots').innerHTML = course.questions.map((_, i) =>
+    `<div class="q-dot${i<qIdx?' answered':i===qIdx?' current':''}"></div>`).join('');
+  document.getElementById('qOpts').innerHTML = q.options.map((opt, i) =>
+    `<div class="q-opt" id="opt${i}" onclick="selectOpt(${i})">
+      <div class="q-opt-ltr">${'ABCD'[i]}</div><span>${opt}</span>
+    </div>`).join('');
+  document.getElementById('btnSubmitQ').style.display = 'block';
+  document.getElementById('btnNextQ').style.display   = 'none';
+  assessState.selectedOpt = null;
+}
+
+function selectOpt(i) {
+  document.querySelectorAll('.q-opt').forEach(o => o.classList.remove('selected'));
+  document.getElementById('opt' + i).classList.add('selected');
+  assessState.selectedOpt = i;
+}
+
+function submitAnswer() {
+  const { course, qIdx } = assessState;
+  const q = course.questions[qIdx];
+  if (assessState.selectedOpt === null) { lmsToast('Please select an answer.', 'error'); return; }
+  const sel     = assessState.selectedOpt;
+  const correct = sel === q.answer;
+  document.getElementById('opt' + q.answer).classList.add('correct');
+  if (!correct) document.getElementById('opt' + sel).classList.add('wrong');
+  document.querySelectorAll('.q-opt').forEach(o => o.style.pointerEvents = 'none');
+  assessState.answers.push({ q: qIdx, selected: sel, correct });
+  if (correct) assessState.score++;
+  document.getElementById('btnSubmitQ').style.display = 'none';
+  const isLast = qIdx >= course.questions.length - 1;
+  document.getElementById('btnNextQ').textContent   = isLast ? 'See Results →' : 'Next →';
+  document.getElementById('btnNextQ').onclick       = isLast ? showResults : nextQuestion;
+  document.getElementById('btnNextQ').style.display = 'block';
+}
+
+function nextQuestion() {
+  assessState.qIdx++;
+  renderQuestion();
+}
+
+function showResults() {
+  const { course, score } = assessState;
+  const total  = course.questions.length;
+  const pct    = Math.round((score / total) * 100);
+  const passed = pct >= 80;
+  const certNo = passed ? 'LTH-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 9000 + 1000) : null;
+
+  document.getElementById('assessQuiz').style.display   = 'none';
+  document.getElementById('assessResult').style.display = 'block';
+  document.getElementById('resultEmoji').textContent = passed ? '🏆' : '📋';
+  document.getElementById('resultPct').textContent   = pct + '%';
+  document.getElementById('resultStatus').textContent = passed ? '✅ PASSED — Well Done!' : '❌ Not Yet Competent';
+  document.getElementById('resultStatus').style.color = passed ? '#2d6a4f' : '#c62828';
+  document.getElementById('resultMsg').textContent = passed
+    ? 'You scored ' + score + ' out of ' + total + ' correct. Your certificate has been generated. Check the Certificates tab or your email.'
+    : 'You scored ' + score + ' out of ' + total + '. You need 80% (' + Math.ceil(total * 0.8) + ' correct) to pass. Review the course material and try again.';
+
+  if (passed) {
+    document.getElementById('viewCertBtn').style.display = 'inline-block';
+  }
+
+  // Save result
+  const result = { courseId:course.id, courseName:course.title, score, total, pct, passed, certNo, date:new Date().toISOString(), name:user.name, email:user.email };
+  const stored = JSON.parse(localStorage.getItem('lms_results') || '[]');
+  stored.unshift(result);
+  localStorage.setItem('lms_results', JSON.stringify(stored));
+  results = stored;
+
+  // Push to Apps Script (sends emails to user + both admins)
+  lmsFetch({ action:'submitResult', email:user.email, name:user.name, courseId:course.id, courseName:course.title, score, totalQuestions:total, passed }).catch(()=>{});
+
+  updateStats();
+  renderCertsGrid();
+  renderResultsTable();
+
+  // Add notification
+  addNotification(passed ? '🏆' : '📋', passed ? 'Certificate Earned!' : 'Assessment Complete', course.title + ' — ' + pct + '%');
+}
+
+function resetAssessment() {
+  assessState = { course:null, qIdx:0, answers:[], score:0, selectedOpt:null };
+  document.getElementById('assessPicker').style.display = 'block';
+  document.getElementById('assessQuiz').style.display   = 'none';
+  document.getElementById('assessResult').style.display = 'none';
+  document.getElementById('viewCertBtn').style.display  = 'none';
+}
+
+// ── CERTIFICATES ──────────────────────────────────────────────
+function renderCertsGrid() {
+  const passed = results.filter(r => r.passed);
+  const grid   = document.getElementById('certsGrid');
+  const preview = document.getElementById('dashCertPreview');
+
+  if (!passed.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:44px;color:#aaa"><div style="font-size:52px;margin-bottom:12px">🏆</div><p style="font-size:14px;font-weight:600;color:#555;margin-bottom:5px">No certificates yet</p><p style="font-size:13px">Complete a course assessment with 80%+ to earn your certificate.</p></div>';
+    preview.innerHTML = '<p style="font-size:13px;color:#aaa;text-align:center;padding:16px">Complete a course to earn your first certificate.</p>';
+    return;
+  }
+
+  grid.innerHTML = passed.map(r => {
+    const c     = getCourses().find(x => x.id === r.courseId);
+    const cNo   = r.certNo || ('LTH-' + new Date(r.date).getFullYear() + '-' + Math.floor(Math.random()*9000+1000));
+    const iDate = new Date(r.date).toLocaleDateString('en-ZA');
+    return `<div class="cert-card">
+      <div style="font-size:40px;margin-bottom:8px">🏆</div>
+      <div style="font-size:9px;font-weight:700;color:#d4a017;letter-spacing:3px;text-transform:uppercase;margin-bottom:3px">Certificate of Completion</div>
+      <div class="cert-org">LITHALA RISK SOLUTIONS</div>
+      <div class="cert-issued">This certifies that</div>
+      <div class="cert-name">${user.name || 'Learner'}</div>
+      <div class="cert-course">${c ? c.title : r.courseId}</div>
+      <div class="cert-meta">Score: ${r.pct}% · ${iDate} · Cert: ${cNo}</div>
+      <div class="cert-btns">
+        <button class="btn-cert-dl" onclick="downloadCert('${r.courseId}','${cNo}','${r.pct}','${iDate}')">⬇ Download PDF</button>
+        <button class="btn-cert-li" onclick="shareToLinkedIn('${r.courseId}','${cNo}','${iDate}')">💼 LinkedIn</button>
+        <button class="btn-cert-email" onclick="emailCert('${r.courseId}','${cNo}','${r.pct}')">📧 Email</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  preview.innerHTML = passed.slice(0, 2).map(r => {
+    const c   = getCourses().find(x => x.id === r.courseId);
+    const cNo = r.certNo || 'LTH-' + new Date(r.date).getFullYear() + '-XXXX';
+    return `<div style="display:flex;align-items:center;gap:11px;padding:10px;background:#fffde7;border:1px solid rgba(212,160,23,.2);border-radius:10px;margin-bottom:8px">
+      <div style="font-size:22px">🏆</div>
+      <div style="flex:1">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#0d2b52">${c?c.title:r.courseId}</div>
+        <div style="font-size:11px;color:#aaa;margin-top:2px">Score: ${r.pct}% · ${new Date(r.date).toLocaleDateString('en-ZA')}</div>
+      </div>
+      <button onclick="downloadCert('${r.courseId}','${cNo}','${r.pct}','${new Date(r.date).toLocaleDateString('en-ZA')}')" style="background:#d4a017;color:#1a2a00;border:none;padding:5px 11px;border-radius:5px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;cursor:pointer">⬇ PDF</button>
+    </div>`;
+  }).join('');
+}
+
+function downloadCert(courseId, certNo, score, iDate) {
+  const c = getCourses().find(x => x.id === courseId);
+  const params = new URLSearchParams({
+    name:   user.name || 'Learner',
+    course: c ? c.title : courseId,
+    sub:    c ? c.subtitle : '',
+    score:  score,
+    cert:   certNo || 'LTH-' + new Date().getFullYear() + '-0000',
+    issued: new Date().toISOString(),
+    email:  user.email || '',
+  });
+  window.open('certificate.html?' + params.toString(), '_blank');
+}
+
+function viewCertificate(courseId) {
+  const r = results.find(x => x.courseId === courseId && x.passed);
+  if (r) downloadCert(courseId, r.certNo, r.pct, new Date(r.date).toLocaleDateString('en-ZA'));
+  else showPanel('certs');
+}
+
+function shareToLinkedIn(courseId, certNo, iDate) {
+  const c       = getCourses().find(x => x.id === courseId);
+  const certUrl = (LMS.SITE_URL || '') + '/certificate.html?name=' + encodeURIComponent(user.name||'') + '&course=' + encodeURIComponent(c?c.title:courseId) + '&cert=' + certNo;
+  const liUrl   = 'https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME'
+    + '&name=' + encodeURIComponent((c?c.title:courseId) + ' — Lithala LMS')
+    + '&organizationName=' + encodeURIComponent('Lithala Risk Solutions')
+    + '&issueYear=' + new Date().getFullYear()
+    + '&issueMonth=' + (new Date().getMonth()+1)
+    + '&certUrl=' + encodeURIComponent(certUrl)
+    + '&certId=' + encodeURIComponent(certNo);
+  window.open(liUrl, '_blank');
+  lmsToast('Opening LinkedIn to share your certificate...', 'success');
+}
+
+function emailCert(courseId, certNo, score) {
+  const c = getCourses().find(x => x.id === courseId);
+  // Send via Apps Script
+  lmsFetch({
+    action:     'submitResult',
+    email:      user.email,
+    name:       user.name,
+    courseId,
+    courseName: c ? c.title : courseId,
+    score:      Math.round((parseFloat(score)/100) * 5),
+    totalQuestions: 5,
+    passed:     true,
+    certNo,
+  }).then(() => {
+    lmsToast('📧 Certificate emailed to ' + user.email + ' and admin team!', 'success');
+  }).catch(() => {
+    lmsToast('📧 Certificate emailed to ' + user.email, 'success');
+  });
+}
+
+// ── RESULTS TABLE ─────────────────────────────────────────────
+function renderResultsTable() {
+  const tbody = document.getElementById('resultsBody');
+  if (!results.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:22px;color:#aaa">No results yet.</td></tr>'; return; }
+  tbody.innerHTML = results.map(r => {
+    const c   = getCourses().find(x => x.id === r.courseId);
+    const cNo = r.certNo || '—';
+    return `<tr>
+      <td><strong style="color:#0d2b52">${c?c.title:r.courseId}</strong></td>
+      <td>${r.score}/${r.total}</td>
+      <td>${r.pct}%</td>
+      <td><span class="tag ${r.passed?'tag-pass':'tag-fail'}">${r.passed?'✅ Passed':'❌ Retry'}</span></td>
+      <td>${new Date(r.date).toLocaleDateString('en-ZA')}</td>
+      <td>${r.passed ? `<button onclick="downloadCert('${r.courseId}','${cNo}','${r.pct}','${new Date(r.date).toLocaleDateString('en-ZA')}')" style="background:#d4a017;color:#1a2a00;border:none;padding:4px 10px;border-radius:5px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;cursor:pointer">⬇ PDF</button>` : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function exportResultsPDF() {
+  const lines = results.map(r => {
+    const c = getCourses().find(x => x.id === r.courseId);
+    return (c?c.title:r.courseId) + ' | ' + r.score + '/' + r.total + ' (' + r.pct + '%) | ' + (r.passed?'PASSED':'FAILED') + ' | ' + new Date(r.date).toLocaleDateString('en-ZA');
+  }).join('\n');
+  const win = window.open('', '_blank');
+  win.document.write('<html><head><title>Lithala LMS — Results Export</title></head><body><pre style="font-family:monospace;padding:20px"><h2>Lithala LMS — Assessment Results</h2><p>' + (user.name||'') + ' · ' + (user.email||'') + ' · Exported: ' + new Date().toLocaleDateString('en-ZA') + '</p><hr>\n' + lines + '</pre></body></html>');
+  win.document.close();
+  win.print();
+}
+
+// ── AI ASSISTANT ──────────────────────────────────────────────
+const AI_ANSWERS = {
+  ohsa:     '📋 <strong>Latest OHSA Updates (2024):</strong><br><br>• Section 8: written hazard identification now required for all workplaces with 5+ employees<br>• Non-compliance penalties increased to R50,000 for first offence<br>• DoL unannounced inspections up 40% in Q1 2025<br>• New digital incident reporting portal at dol.gov.za',
+  confined: '🔵 <strong>Confined Space Hazards:</strong><br><br>• Oxygen deficiency (&lt;19.5%) — most common killer<br>• Oxygen enrichment (&gt;23.5%) — fire/explosion risk<br>• Flammable gases (methane, H₂S)<br>• Toxic atmospheres (CO, H₂S, SO₂)<br><br><strong>⚠ Critical:</strong> Over 60% of confined space deaths involve rescuers. Always use a retrieval system — never enter to rescue without proper equipment.',
+  iso:      '🏅 <strong>ISO 45001:2018 Key Clauses:</strong><br><br>• Clause 4: Context of the organisation<br>• Clause 5: Leadership &amp; worker participation<br>• Clause 6: Planning — hazard ID &amp; risk assessment<br>• Clause 7: Support — resources &amp; competence<br>• Clause 8: Operational controls<br>• Clause 9: Performance evaluation<br>• Clause 10: Continual improvement',
+  ptw:      '📋 <strong>PTW Best Practices:</strong><br><br>• Verify energy isolation before signing<br>• Display PTW at the work location<br>• Only the issuer can cancel<br>• Re-issue required if work extends beyond one shift<br>• Use SIMOPS controls for overlapping permits',
+  trends:   '📈 <strong>SA HSE Trends 2025:</strong><br><br>🤖 AI-powered incident prediction<br>📱 WhatsApp HSE communication (like Lithala!)<br>🌿 ESG-driven environmental reporting<br>🧠 Mental health now part of OHS obligations<br>📊 Digital safety management replacing paper files',
+  loto:     '⚡ <strong>LOTO — 6-Step Procedure:</strong><br><br>1. Notify affected employees<br>2. Identify all energy sources<br>3. Isolate all energy sources<br>4. Apply lockout/tagout devices<br>5. Release/restrain stored energy<br>6. Verify zero energy state before work',
+};
+
+function askAI(q) {
+  document.getElementById('aiInp').value = q;
+  sendAI();
+}
+
+function sendAI() {
+  const inp = document.getElementById('aiInp');
+  const val = inp.value.trim();
+  if (!val) return;
+  addAIMsg(val, 'user');
+  inp.value = '';
+  const typing = document.getElementById('aiTyping');
+  typing.style.display = 'flex';
+  const msgs = document.getElementById('aiMsgs');
+  msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(() => {
+    typing.style.display = 'none';
+    const m = val.toLowerCase();
+    let resp = '🔍 Based on current South African HSE regulations and best practices: ' + val + '<br><br>For detailed regulatory guidance, consult the DoL at dol.gov.za or contact Lithala at info@lithala.com.';
+    if (m.includes('ohsa') || m.includes('dol') || m.includes('section 8')) resp = AI_ANSWERS.ohsa;
+    else if (m.includes('confined') || m.includes('space'))                  resp = AI_ANSWERS.confined;
+    else if (m.includes('iso') || m.includes('45001'))                       resp = AI_ANSWERS.iso;
+    else if (m.includes('permit') || m.includes('ptw'))                      resp = AI_ANSWERS.ptw;
+    else if (m.includes('trend'))                                             resp = AI_ANSWERS.trends;
+    else if (m.includes('loto') || m.includes('lock') || m.includes('tag'))  resp = AI_ANSWERS.loto;
+    addAIMsg(resp, 'bot');
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 1500);
+}
+
+function addAIMsg(text, from) {
+  const msgs = document.getElementById('aiMsgs');
+  const div  = document.createElement('div');
+  div.className = 'ai-msg ' + from;
+  div.innerHTML = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ── WHATSAPP ──────────────────────────────────────────────────
+function populateWASelect() {
+  const sel = document.getElementById('waCourseSelect');
+  sel.innerHTML = getCourses().filter(c => c.wa).map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+}
+
+function activateWhatsApp() {
+  const id   = document.getElementById('waCourseSelect').value;
+  const c    = getCourses().find(x => x.id === id);
+  if (!c) { lmsToast('Please select a course first.', 'error'); return; }
+  const wa   = user.whatsapp || '';
+  if (!wa) {
+    lmsToast('Please add your WhatsApp number in Settings first.', 'warning');
+    showPanel('settings');
+    return;
+  }
+  const msg  = encodeURIComponent('Hi Lithala LMS! 👋\n\nI would like to activate WhatsApp learning for:\n\n*Course:* ' + c.title + '\n*ID:* ' + c.id + '\n*Email:* ' + (user.email||'') + '\n*Name:* ' + (user.name||''));
+  window.open('https://wa.me/27824214001?text=' + msg, '_blank');
+  lmsToast('Opening WhatsApp... Send the message to activate your course! 💬', 'success');
+}
+
+// WA Demo simulator
+// ── WHATSAPP LEARNING ENGINE ─────────────────────────────────
+// Powered by wa-learning.js (WA_COURSES object)
+let waState = { courseId: null, modIdx: 0, qIdx: 0, score: 0, inAssessment: false, assessAnswers: [] };
+
+function waDemo(num) {
+  // Find course by num
+  const course = Object.values(WA_COURSES || {}).find(c => c.num === String(num));
+  if (!course) return;
+  waState = { courseId: course.id, modIdx: 0, qIdx: 0, score: 0, inAssessment: false, assessAnswers: [] };
+  addWAMsg(num + ' — ' + course.title, 'user');
+  setTimeout(() => {
+    addWAMsg('Great choice! 🎯\n\nStarting *' + course.icon + ' ' + course.title + '*\n\nThis course has *' + course.modules.length + ' modules* including a final assessment.\n\n📖 *Module 1: ' + course.modules[0].title + '*\n\nReady? Tap below to start.', 'bot');
+    document.getElementById('waOpts').innerHTML =
+      '<div class="wa-opt-pill" onclick="waShowModule()">▶ Start Module 1</div>' +
+      '<div class="wa-opt-pill" onclick="waShowMenu()">📋 Course Menu</div>';
+  }, 700);
+}
+
+function waShowMenu() {
+  addWAMsg('📋 Menu', 'user');
+  setTimeout(() => {
+    addWAMsg('📋 *Lithala LMS — Course Menu*\n\nChoose a course to start:\n\n1️⃣ 🔵 Confined Space Entry\n2️⃣ 📋 Permit to Work (PTW)\n3️⃣ 🏗️ Work at Heights\n4️⃣ 🔥 Hot Work Safety\n5️⃣ ⚡ LOTO\n6️⃣ 🎓 Risk Assessment\n\nReply with the number:', 'bot');
+    document.getElementById('waOpts').innerHTML = [1,2,3,4,5,6].map(n => {
+      const c = Object.values(WA_COURSES||{}).find(x=>x.num===String(n));
+      return c ? '<div class="wa-opt-pill" onclick="waDemo(' + n + ')">' + c.icon + ' ' + c.num + ') ' + c.title.split(' ').slice(0,3).join(' ') + '</div>' : '';
+    }).join('');
+  }, 500);
+}
+
+function waShowModule() {
+  const course = (WA_COURSES||{})[waState.courseId];
+  if (!course) return;
+  const mod = course.modules[waState.modIdx];
+  if (!mod) return;
+
+  if (mod.isAssessment) {
+    waState.inAssessment = true;
+    waState.qIdx = 0;
+    waState.score = 0;
+    waState.assessAnswers = [];
+    addWAMsg('▶ Start Module ' + (waState.modIdx+1) + ': ' + mod.title, 'user');
+    setTimeout(() => {
+      addWAMsg('📝 *Final Assessment: ' + course.title + '*\n\nYou need *80%* to pass and earn your certificate.\n\n' + mod.questions.length + ' questions. Ready?', 'bot');
+      document.getElementById('waOpts').innerHTML = '<div class="wa-opt-pill" onclick="waShowAssessQ(0)">📝 Start Assessment</div>';
+    }, 600);
+    return;
+  }
+
+  // Regular module — show content page by page
+  addWAMsg('▶ Module ' + (waState.modIdx+1) + ': ' + mod.title, 'user');
+  const contentIdx = waState._contentPage || 0;
+  const pages = mod.content || [];
+  setTimeout(() => {
+    addWAMsg(pages[contentIdx] || mod.title, 'bot');
+    setTimeout(() => {
+      if (contentIdx < pages.length - 1) {
+        waState._contentPage = contentIdx + 1;
+        document.getElementById('waOpts').innerHTML =
+          '<div class="wa-opt-pill" onclick="waShowModule()">📖 Continue Reading</div>' +
+          '<div class="wa-opt-pill" onclick="waShowQuiz()">➡ Skip to Quiz</div>';
+      } else {
+        waState._contentPage = 0;
+        document.getElementById('waOpts').innerHTML =
+          '<div class="wa-opt-pill" onclick="waShowQuiz()">❓ Take Module Quiz</div>' +
+          '<div class="wa-opt-pill" onclick="waNextModule()">⏭ Skip to Next</div>';
+      }
+    }, 300);
+  }, 600);
+}
+
+function waShowQuiz() {
+  const course = (WA_COURSES||{})[waState.courseId];
+  const mod    = course && course.modules[waState.modIdx];
+  if (!mod || !mod.quiz) return;
+  addWAMsg('❓ Ready for the quiz!', 'user');
+  setTimeout(() => {
+    addWAMsg('❓ *Quick Check:*\n\n' + mod.quiz.q, 'bot');
+    document.getElementById('waOpts').innerHTML = mod.quiz.opts.map((o,i) =>
+      '<div class="wa-opt-pill" onclick="waQuizAnswer(' + i + ')">' + String.fromCharCode(65+i) + ') ' + o + '</div>').join('');
+  }, 600);
+}
+
+function waQuizAnswer(sel) {
+  const course = (WA_COURSES||{})[waState.courseId];
+  const mod    = course && course.modules[waState.modIdx];
+  if (!mod || !mod.quiz) return;
+  const right = sel === mod.quiz.ans;
+  addWAMsg(String.fromCharCode(65+sel) + ') ' + mod.quiz.opts[sel], 'user');
+  setTimeout(() => {
+    const feedback = right ? '✅ *Correct!*\n\n' + mod.quiz.explanation : '❌ *Incorrect.*\n\nThe correct answer is *' + String.fromCharCode(65+mod.quiz.ans) + ')*.\n\n' + mod.quiz.explanation;
+    addWAMsg(feedback, 'bot');
+    setTimeout(() => {
+      const isLast = waState.modIdx >= course.modules.length - 2; // -2 because last is assessment
+      document.getElementById('waOpts').innerHTML =
+        '<div class="wa-opt-pill" onclick="waNextModule()">' + (isLast ? '📝 Final Assessment' : '▶ Next Module') + '</div>' +
+        '<div class="wa-opt-pill" onclick="waShowMenu()">📋 Menu</div>';
+    }, 400);
+  }, 600);
+}
+
+function waNextModule() {
+  const course = (WA_COURSES||{})[waState.courseId];
+  if (!course) return;
+  waState.modIdx++;
+  waState._contentPage = 0;
+  if (waState.modIdx >= course.modules.length) {
+    addWAMsg('🎉 Course complete!', 'user');
+    setTimeout(() => {
+      addWAMsg('🎉 *Congratulations!*\n\nYou\'ve completed all modules of *' + course.title + '*!\n\nTo earn your certificate, activate the real WhatsApp course by clicking *Open WhatsApp to Activate* above.\n\nYour certificate arrives on WhatsApp as a PDF.', 'bot');
+      document.getElementById('waOpts').innerHTML = '<div class="wa-opt-pill" onclick="waShowMenu()">📋 Try Another Course</div>';
+    }, 500);
+    return;
+  }
+  const mod = course.modules[waState.modIdx];
+  addWAMsg('▶ Next: Module ' + (waState.modIdx+1), 'user');
+  setTimeout(() => {
+    addWAMsg('📖 *Module ' + (waState.modIdx+1) + ': ' + mod.title + '*\n\n' + (waState.modIdx+1) + ' of ' + course.modules.length + ' — ' + (mod.isAssessment ? 'Final Assessment' : 'Learning Module'), 'bot');
+    document.getElementById('waOpts').innerHTML = mod.isAssessment
+      ? '<div class="wa-opt-pill" onclick="waShowModule()">📝 Start Assessment</div>'
+      : '<div class="wa-opt-pill" onclick="waShowModule()">▶ Start Module</div>' + '<div class="wa-opt-pill" onclick="waShowMenu()">📋 Menu</div>';
+  }, 500);
+}
+
+// Assessment question flow
+function waShowAssessQ(qIdx) {
+  const course = (WA_COURSES||{})[waState.courseId];
+  const mod    = course && course.modules[waState.modIdx];
+  if (!mod || !mod.questions) return;
+  waState.qIdx = qIdx;
+  const q     = mod.questions[qIdx];
+  const total = mod.questions.length;
+  addWAMsg('Q' + (qIdx+1) + ' of ' + total, 'user');
+  setTimeout(() => {
+    addWAMsg('*Q' + (qIdx+1) + '/' + total + ':* ' + q.q, 'bot');
+    document.getElementById('waOpts').innerHTML = q.opts.map((o,i) =>
+      '<div class="wa-opt-pill" onclick="waAssessAnswer(' + i + ')">' + String.fromCharCode(65+i) + ') ' + o + '</div>').join('');
+  }, 500);
+}
+
+function waAssessAnswer(sel) {
+  const course = (WA_COURSES||{})[waState.courseId];
+  const mod    = course && course.modules[waState.modIdx];
+  const q      = mod.questions[waState.qIdx];
+  const right  = sel === q.ans;
+  if (right) waState.score++;
+  waState.assessAnswers.push({ q: waState.qIdx, sel, right });
+  addWAMsg(String.fromCharCode(65+sel) + ') ' + q.opts[sel] + (right ? ' ✅' : ' ❌'), 'user');
+  const isLast = waState.qIdx >= mod.questions.length - 1;
+  setTimeout(() => {
+    addWAMsg(right ? '✅ Correct!' : '❌ Incorrect. Answer: *' + String.fromCharCode(65+q.ans) + '*', 'bot');
+    setTimeout(() => {
+      if (isLast) {
+        document.getElementById('waOpts').innerHTML = '<div class="wa-opt-pill" onclick="waShowAssessResult()">📊 See Results</div>';
+      } else {
+        document.getElementById('waOpts').innerHTML = '<div class="wa-opt-pill" onclick="waShowAssessQ(' + (waState.qIdx+1) + ')">Next Question →</div>';
+      }
+    }, 300);
+  }, 500);
+}
+
+function waShowAssessResult() {
+  const course = (WA_COURSES||{})[waState.courseId];
+  const mod    = course && course.modules[waState.modIdx];
+  const total  = mod.questions.length;
+  const pct    = Math.round((waState.score / total) * 100);
+  const passed = pct >= 80;
+  addWAMsg('📊 Results please!', 'user');
+  setTimeout(() => {
+    addWAMsg(
+      (passed ? '🏆 *PASSED!*' : '📋 *Not Yet Competent*') + '\n\n' +
+      'Score: *' + waState.score + '/' + total + ' (' + pct + '%)*\n\n' +
+      (passed
+        ? '✅ Congratulations! Activate the real WhatsApp course above to receive your *official certificate* via WhatsApp PDF.'
+        : '❌ You need 80% to pass. Review the modules and try again.'), 'bot');
+    document.getElementById('waOpts').innerHTML =
+      '<div class="wa-opt-pill" onclick="waShowMenu()">📋 Course Menu</div>' +
+      (passed ? '<div class="wa-opt-pill" onclick="activateWhatsApp()">💬 Get Real Certificate</div>' : '<div class="wa-opt-pill" onclick="waDemo(' + Object.values(WA_COURSES||{}).find(c=>c.id===waState.courseId)?.num + ')">🔄 Retry Course</div>');
+  }, 600);
+}
+
+function addWAMsg(text, from) {
+  const chat = document.getElementById('waChatBody');
+  const now  = new Date();
+  const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  const div  = document.createElement('div');
+  div.className = 'wm ' + from;
+  div.innerHTML = '<p>' + text.replace(/\n/g,'<br>') + '</p><time>' + time + '</time>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function waSendText() {
+  const inp = document.getElementById('waTextInp');
+  const val = inp.value.trim().toUpperCase();
+  if (!inp.value.trim()) return;
+  const raw = inp.value.trim();
+  inp.value = '';
+  const num = raw.match(/^[1-6]$/);
+  if (num) { waDemo(parseInt(num[0])); return; }
+  if (val === 'MENU' || val === 'HOME') { waShowMenu(); return; }
+  if (val === 'NEXT' && waState.courseId) { waNextModule(); return; }
+  if (val === 'RETRY' && waState.courseId) { waState.modIdx = 0; waState._contentPage = 0; waShowModule(); return; }
+  addWAMsg(raw, 'user');
+  setTimeout(() => addWAMsg('Reply with a *number 1–6* to choose a course, or type *MENU* to see all options.', 'bot'), 500);
+}
+
+// ── NOTIFICATIONS ─────────────────────────────────────────────
+function buildNotifications() {
+  notifications = JSON.parse(localStorage.getItem('lms_notifs') || '[]');
+  if (!notifications.length) {
+    notifications = [
+      { icon:'🎓', title:'Welcome to Lithala LMS!', body:'Start your HSE learning journey today.', read:false, time: new Date().toISOString() },
+      { icon:'📚', title:'Browse Available Courses', body:'8 accredited HSE courses ready to start.', read:false, time: new Date().toISOString() },
+    ];
+  }
+  renderNotifications();
+}
+function addNotification(icon, title, body) {
+  notifications.unshift({ icon, title, body, read:false, time:new Date().toISOString() });
+  localStorage.setItem('lms_notifs', JSON.stringify(notifications.slice(0, 20)));
+  renderNotifications();
+}
+function renderNotifications() {
+  const unread = notifications.filter(n => !n.read).length;
+  document.getElementById('notifDot').style.display = unread ? 'block' : 'none';
+  document.getElementById('notifList').innerHTML = notifications.slice(0, 6).map(n => `
+    <div class="notif-item${n.read?'':' unread'}">
+      <div class="notif-icon">${n.icon}</div>
+      <div class="notif-text">
+        <h4>${n.title}</h4>
+        <p>${n.body}</p>
+        <div class="notif-time">${new Date(n.time).toLocaleDateString('en-ZA')}</div>
+      </div>
+    </div>`).join('') || '<div style="padding:20px;text-align:center;color:#aaa;font-size:13px">No notifications</div>';
+}
+function toggleNotifications() {
+  document.getElementById('notifPanel').classList.toggle('open');
+}
+function markAllRead() {
+  notifications.forEach(n => n.read = true);
+  localStorage.setItem('lms_notifs', JSON.stringify(notifications));
+  renderNotifications();
+  document.getElementById('notifPanel').classList.remove('open');
+}
+// Close notif panel when clicking outside
+document.addEventListener('click', e => {
+  if (!document.getElementById('notifBtn').contains(e.target)) {
+    document.getElementById('notifPanel').classList.remove('open');
+  }
+});
+
+// ── PANELS ────────────────────────────────────────────────────
+const TITLES = { dashboard:'Dashboard', courses:'My Courses', player:'Course Player', assessment:'Take Assessment', certs:'Certificates', results:'Assessment History', ai:'AI Safety Assistant', whatsapp:'WhatsApp Learning', settings:'Settings & Data' };
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.mob-nav-btn').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  document.getElementById('panelTitle').textContent = TITLES[id] || id;
+  if (id === 'dashboard') { renderDashCourses(); updateStats(); }
+  if (id === 'courses')   renderDashCourses();
+  if (id === 'certs')     renderCertsGrid();
+  if (id === 'results')   renderResultsTable();
+}
+
+// ── AUTH ──────────────────────────────────────────────────────
+function doEmailLogin() {
+  const email = document.getElementById('loginEmailInp').value.trim();
+  if (!email) { lmsToast('Please enter your email address.', 'error'); return; }
+  lmsEmailLogin(email, '');
+  user = lmsGetUser();
+  showDashboard();
+}
+function doLogout() {
+  if (confirm('Sign out of Lithala LMS?')) {
+    localStorage.removeItem('lms_user');
+    window.location.reload();
+  }
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────
+function saveProfile() {
+  user.name    = document.getElementById('settName').value;
+  user.email   = document.getElementById('settEmail').value;
+  user.whatsapp= document.getElementById('settWA').value;
+  user.company = document.getElementById('settCompany').value;
+  lmsSetUser(user);
+  populateUser();
+  lmsToast('✅ Profile saved!', 'success');
+}
+function requestDeletion() {
+  if (!confirm('Request deletion of all your data from Lithala LMS?\n\nThis requires admin approval and will be processed within 5 business days. Your certificates will also be revoked.')) return;
+  lmsFetch({ action:'requestDeletion', email:user.email, name:user.name, reason:'User request from dashboard' }).catch(()=>{});
+  lmsToast('✅ Deletion request submitted. You will be notified within 5 business days.', 'success');
+}
+
+// ── START ─────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

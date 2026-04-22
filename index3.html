@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Courses — Lithala LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="lms-config.js"></script>
+<script src="auth.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{--navy:#0d2b52;--ocean:#1565c0;--sky:#2196f3;--forest:#1a3a2a;--lime:#52b788;--gold:#d4a017;--cream:#f5f7f5;--white:#fff;--mist:#e0eae4;--ink:#1e2d26}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden;max-width:100vw}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink)}
+/* TICKER */
+.ticker-wrap{background:#1a3a2a;color:#52b788;padding:9px 0;overflow:hidden;position:sticky;top:0;z-index:1000;border-bottom:2px solid #52b788}
+.ticker-inner{display:flex;align-items:center;padding:0 4%}
+.ticker-label{background:#d4a017;color:#1a3a2a;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;padding:3px 12px;letter-spacing:1.5px;text-transform:uppercase;margin-right:14px;border-radius:3px;flex-shrink:0}
+.ticker-overflow{overflow:hidden;flex:1;min-width:0}
+.ticker-track{display:inline-flex;white-space:nowrap;animation:tkr 55s linear infinite;font-size:12px;gap:56px}
+.ticker-track span::before{content:"⚠ ";color:#f4a261}
+@keyframes tkr{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+/* NAV */
+nav{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:space-between;padding:0 4%;height:64px;box-shadow:0 2px 20px rgba(13,43,82,.09);position:sticky;top:37px;z-index:999;border-bottom:1px solid rgba(21,101,192,.1)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo img{height:34px;object-fit:contain}
+.nav-logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#1a3a2a;line-height:1}
+.nav-logo-text em{color:#1565c0;font-style:normal}
+.nav-logo-sub{font-size:9px;color:#1565c0;letter-spacing:1.5px;text-transform:uppercase}
+.nav-links{display:flex;gap:24px;list-style:none}
+.nav-links a{text-decoration:none;color:#1e2d26;font-size:13px;font-weight:500;transition:color .2s;position:relative;padding-bottom:3px}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:#1565c0;transition:width .25s}
+.nav-links a:hover,.nav-links a.active{color:#1565c0}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-btns{display:flex;gap:8px;align-items:center}
+.btn-sm{padding:8px 16px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;text-decoration:none;transition:all .2s;border:none}
+.btn-outline{border:2px solid #1565c0!important;color:#1565c0;background:transparent}
+.btn-outline:hover{background:#1565c0;color:white}
+.btn-blue{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;box-shadow:0 3px 10px rgba(21,101,192,.3)}
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none}
+.hbg span{display:block;width:22px;height:2px;background:#1e2d26;border-radius:2px}
+.mob-menu{display:none;position:fixed;inset:0;background:rgba(13,43,82,.97);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:22px}
+.mob-menu.open{display:flex}
+.mob-close{position:absolute;top:20px;right:20px;background:none;border:none;color:white;font-size:30px;cursor:pointer}
+.mob-menu a{color:white;font-family:'Syne',sans-serif;font-size:21px;font-weight:700;text-decoration:none}
+/* PAGE HEADER */
+.page-hdr{background:linear-gradient(135deg,#0d2b52,#1565c0 60%,#1a3a2a);padding:56px 4% 44px;color:white;position:relative;overflow:hidden}
+.page-hdr::before{content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1400&q=60') center/cover;opacity:.07}
+.page-hdr::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:32px;background:var(--cream);clip-path:ellipse(55% 100% at 50% 100%)}
+.page-hdr-inner{position:relative;z-index:2}
+.page-hdr h1{font-family:'Syne',sans-serif;font-size:clamp(26px,5vw,48px);font-weight:800;margin-bottom:8px}
+.page-hdr h1 em{color:#90caf9;font-style:normal}
+.page-hdr p{font-size:14px;color:rgba(255,255,255,.72);max-width:480px;line-height:1.6}
+.breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:14px}
+.breadcrumb a{color:#90caf9;text-decoration:none}
+/* FILTER BAR */
+.filter-bar{background:white;padding:13px 4%;display:flex;align-items:center;gap:9px;box-shadow:0 2px 10px rgba(13,43,82,.07);position:sticky;top:101px;z-index:90;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid #f0f4f8}
+.filter-bar::-webkit-scrollbar{display:none}
+.chip{padding:7px 15px;border-radius:50px;border:2px solid #e0eae4;background:white;font-family:'Syne',sans-serif;font-weight:600;font-size:11px;cursor:pointer;transition:all .2s;color:#666;white-space:nowrap;flex-shrink:0;user-select:none}
+.chip:hover{border-color:#1565c0;color:#1565c0}
+.chip.active{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border-color:#1565c0}
+.search-box{margin-left:auto;display:flex;align-items:center;gap:7px;background:#f5f7f5;border:2px solid #e0eae4;border-radius:8px;padding:7px 12px;flex-shrink:0;transition:border-color .2s}
+.search-box:focus-within{border-color:#2196f3}
+.search-box input{border:none;background:none;font-size:12.5px;color:#1e2d26;width:140px;outline:none;font-family:'DM Sans',sans-serif}
+/* LAYOUT */
+.cat-layout{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:32px 4% 56px;align-items:start}
+/* SIDEBAR */
+.sidebar{position:sticky;top:166px}
+.sb-card{background:white;border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04)}
+.sb-card h3{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#0d2b52;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #f0f4f8}
+.sb-list{list-style:none;display:flex;flex-direction:column;gap:3px}
+.sb-list li{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:#666;cursor:pointer;padding:7px 9px;border-radius:7px;transition:all .2s;user-select:none}
+.sb-list li:hover{background:#f0f7ff;color:#1565c0}
+.sb-list li.active{background:#e3f2fd;color:#1565c0;font-weight:600}
+.sb-count{background:#f0f4f8;color:#888;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.sb-list li.active .sb-count{background:#1565c0;color:white}
+/* COURSES GRID */
+.grid-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.grid-header p{font-size:13px;color:#888}
+.grid-header strong{color:#0d2b52;font-family:'Syne',sans-serif}
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:18px}
+/* COURSE CARD */
+.ccard{background:white;border-radius:18px;overflow:hidden;box-shadow:0 4px 18px rgba(13,43,82,.07);transition:all .3s;border:1px solid transparent;cursor:pointer;display:block;text-decoration:none;color:inherit}
+.ccard:hover{transform:translateY(-5px);box-shadow:0 20px 44px rgba(13,43,82,.13);border-color:rgba(21,101,192,.18)}
+.cthumb{height:170px;position:relative;overflow:hidden}
+.cthumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s;display:block}
+.ccard:hover .cthumb img{transform:scale(1.07)}
+.cthumb-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,43,82,.08),rgba(13,43,82,.68))}
+.cbadge{position:absolute;top:10px;left:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;padding:3px 9px;border-radius:18px}
+.badge-bestseller{background:#e63946;color:white}
+.badge-elearning{background:#7b1fa2;color:white}
+.badge-new{background:#52b788;color:#1a3a2a}
+.badge-popular{background:#d4a017;color:#1a2a00}
+.badge-essential{background:#ff6f00;color:white}
+.cwa-pill{position:absolute;top:10px;right:10px;background:rgba(37,211,102,.9);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:18px}
+.cprice-ov{position:absolute;bottom:10px;right:10px;background:rgba(13,43,82,.8);backdrop-filter:blur(6px);color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;padding:4px 10px;border-radius:8px}
+.cbody{padding:17px}
+.ccat{font-size:9px;font-weight:700;color:#1565c0;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.ccard h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#0d2b52;margin-bottom:3px;line-height:1.3}
+.csub{font-size:11px;color:#2196f3;font-weight:600;margin-bottom:8px}
+.ccard p{font-size:12px;color:#5a7060;line-height:1.6;margin-bottom:11px}
+.cmeta{display:flex;gap:10px;font-size:10.5px;color:#bbb;margin-bottom:11px;flex-wrap:wrap}
+.cfoot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f0f4f8;padding-top:11px}
+.cprice{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#0d2b52}
+.cprice small{font-size:9px;font-weight:400;color:#aaa;display:block}
+.btn-enroll{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:7px 14px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;cursor:pointer;transition:all .2s}
+.btn-enroll:hover{transform:scale(1.04)}
+/* COURSE MODAL */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9998;align-items:center;justify-content:center;backdrop-filter:blur(6px);padding:14px;overflow-y:auto}
+.modal-ov.open{display:flex}
+.modal-box{background:white;border-radius:20px;width:100%;max-width:780px;overflow:hidden;animation:mIn .3s ease;margin:auto}
+@keyframes mIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.modal-hdr{position:relative;height:200px;overflow:hidden}
+.modal-hdr img{width:100%;height:100%;object-fit:cover;display:block}
+.modal-hdr-ov{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,43,82,.2),rgba(13,43,82,.88))}
+.modal-hdr-inner{position:absolute;bottom:0;left:0;right:0;padding:24px 28px;color:white}
+.modal-close-btn{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.15);backdrop-filter:blur(6px);border:none;color:white;width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer;z-index:2;line-height:1}
+.modal-cat{font-size:9px;font-weight:700;color:#90caf9;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.modal-hdr-inner h2{font-family:'Syne',sans-serif;font-size:clamp(16px,3vw,24px);font-weight:800;margin-bottom:10px;line-height:1.2}
+.modal-stats{display:flex;gap:10px;flex-wrap:wrap}
+.modal-stat{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.12);padding:4px 10px;border-radius:18px;font-size:11.5px;color:rgba(255,255,255,.85)}
+.modal-body{padding:24px 28px;max-height:55vh;overflow-y:auto}
+.modal-section{margin-bottom:20px}
+.modal-section h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#0d2b52;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.modal-section p{font-size:13.5px;color:#5a7060;line-height:1.7}
+.outcomes-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.outcome-item{display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:#5a7060;background:#f0f7ff;border-radius:7px;padding:7px 10px}
+.outcome-item::before{content:'✓';color:#1565c0;font-weight:800;flex-shrink:0;margin-top:1px}
+.module-list{display:flex;flex-direction:column;gap:5px}
+.mod-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#f5f7f5;border-radius:8px;font-size:12.5px;transition:background .15s;cursor:default}
+.mod-row:hover{background:#e3f2fd}
+.mod-row.is-assessment{background:linear-gradient(135deg,#f0f7ff,#f3e5f5)}
+.mod-left{display:flex;align-items:center;gap:9px}
+.mod-num{background:#1565c0;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mod-row.is-assessment .mod-num{background:#7b1fa2}
+.mod-dur{font-size:11px;color:#aaa}
+.modal-buy{background:linear-gradient(145deg,#f0f7ff,#e8f5e9);border-top:2px solid #f0f4f8;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.modal-buy-price{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:#0d2b52;line-height:1}
+.modal-buy-price span{font-size:13px;font-weight:400;color:#888}
+.modal-buy-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn-buy-main{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:13px 24px;border-radius:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 4px 14px rgba(21,101,192,.3);transition:all .2s;display:flex;align-items:center;gap:7px}
+.btn-buy-main:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(21,101,192,.4)}
+.btn-buy-wa{background:#25d366;color:white;border:none;padding:11px 18px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-buy-wa:hover{background:#128c7e}
+/* AUTH MODAL */
+.auth-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(6px);padding:16px}
+.auth-ov.open{display:flex}
+.auth-box{background:white;border-radius:20px;width:100%;max-width:420px;padding:36px 32px;position:relative;animation:mIn .3s ease}
+.auth-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:19px;cursor:pointer;color:#aaa}
+.auth-tabs{display:flex;gap:3px;background:#f0f4f8;border-radius:9px;padding:3px;margin-bottom:20px}
+.auth-tab{flex:1;padding:8px;text-align:center;border:none;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;background:none;color:#888;transition:all .2s}
+.auth-tab.active{background:white;color:#0d2b52;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:11px;font-weight:600;color:#1a3a2a;margin-bottom:4px}
+.fg input{width:100%;padding:10px 13px;border:2px solid #e0eae4;border-radius:8px;font-size:13px;background:#f5f7f5;outline:none;transition:border-color .2s;font-family:'DM Sans',sans-serif}
+.fg input:focus{border-color:#2196f3;background:white}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.google-btn{width:100%;background:white;border:2px solid #e0eae4;color:#333;padding:11px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:12px;transition:all .2s}
+.google-btn:hover{border-color:#4285f4;box-shadow:0 2px 8px rgba(66,133,244,.2)}
+.divider{display:flex;align-items:center;gap:9px;margin-bottom:12px;color:#aaa;font-size:11px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:#e0eae4}
+.btn-submit{width:100%;background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:12px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all .2s;margin-top:2px}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(21,101,192,.35)}
+/* FOOTER */
+.site-footer{background:#0d2b52;color:white;padding:48px 4% 22px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:36px}
+.brand-name{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;margin-bottom:3px}
+.brand-name em{color:#64b5f6;font-style:normal}
+.brand-sub{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:12px}
+.footer-brand p{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:14px;max-width:260px}
+.bbbee{display:inline-flex;align-items:center;gap:5px;background:rgba(82,183,136,.15);border:1px solid rgba(82,183,136,.3);color:#52b788;padding:4px 10px;border-radius:4px;font-size:10.5px;font-weight:700}
+.footer-socials{display:flex;gap:7px;margin-top:12px}
+.fsocial{width:32px;height:32px;background:rgba(255,255,255,.08);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;text-decoration:none;color:white;transition:background .2s}
+.fsocial:hover{background:#1565c0}
+.footer-col h4{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;margin-bottom:13px;color:#64b5f6;letter-spacing:1px;text-transform:uppercase}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.footer-col ul li a{text-decoration:none;font-size:12.5px;color:rgba(255,255,255,.6);transition:color .2s}
+.footer-col ul li a:hover{color:#64b5f6}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:20px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:rgba(255,255,255,.4);flex-wrap:wrap;gap:8px}
+.footer-bottom a{color:#64b5f6;text-decoration:none}
+/* NO RESULTS */
+.no-results{text-align:center;padding:56px 20px;color:#aaa;grid-column:1/-1}
+.no-results div{font-size:48px;margin-bottom:12px}
+.no-results p{font-size:15px;font-weight:600;color:#555;margin-bottom:6px}
+
+@media(max-width:900px){
+  .nav-links,.nav-btns{display:none}
+  .hbg{display:flex}
+  .cat-layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0}
+  .filter-bar{top:37px}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:22px}
+}
+@media(max-width:600px){
+  .courses-grid{grid-template-columns:1fr}
+  .outcomes-grid{grid-template-columns:1fr}
+  .modal-buy{flex-direction:column;align-items:stretch}
+  .modal-buy-btns{flex-direction:column}
+  .btn-buy-main,.btn-buy-wa{justify-content:center}
+  .footer-grid{grid-template-columns:1fr}
+  .r2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-label">HSE LIVE</span>
+    <div class="ticker-overflow">
+      <div class="ticker-track">
+        <span>DoL increased OHSA inspections Q1 2025 — is your safety file ready for an unannounced visit?</span>
+        <span>ISO 45001:2018 gap assessment tool now available on Lithala LMS — start your audit today</span>
+        <span>Permit-to-work ranked #1 safety training priority by SA manufacturers 2024</span>
+        <span>Confined Space fatalities reported Gauteng Q1 2025 — ensure your team is certified</span>
+        <span>NEMA waste regulations updated — new disposal thresholds effective March 2025</span>
+        <span>DoL increased OHSA inspections Q1 2025 — is your safety file ready for an unannounced visit?</span>
+        <span>ISO 45001:2018 gap assessment tool now available on Lithala LMS — start your audit today</span>
+        <span>Permit-to-work ranked #1 safety training priority by SA manufacturers 2024</span>
+        <span>Confined Space fatalities reported Gauteng Q1 2025 — ensure your team is certified</span>
+        <span>NEMA waste regulations updated — new disposal thresholds effective March 2025</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="logo.png" alt="Lithala" onerror="this.style.display='none'">
+    <div><div class="nav-logo-text">LITHALA <em>LMS</em></div><div class="nav-logo-sub">Risk Solutions</div></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="index3.html" class="active">Courses</a></li>
+    <li><a href="index4.html">Templates</a></li>
+    <li><a href="index5.html">WhatsApp Learning</a></li>
+    <li><a href="index6.html">About</a></li>
+  </ul>
+  <div class="nav-btns">
+    <a href="dashboard3.html" class="btn-sm btn-outline">My Dashboard</a>
+    <a href="#" class="btn-sm btn-blue" onclick="openAuth('login');return false">Login / Register</a>
+  </div>
+  <button class="hbg" onclick="document.getElementById('mob').classList.add('open');document.body.style.overflow='hidden'">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="mob-menu" id="mob">
+  <button class="mob-close" onclick="document.getElementById('mob').classList.remove('open');document.body.style.overflow=''">✕</button>
+  <a href="index.html">🏠 Home</a>
+  <a href="index3.html">📚 Courses</a>
+  <a href="index4.html">📋 Templates</a>
+  <a href="index5.html">💬 WhatsApp</a>
+  <a href="index6.html">ℹ️ About</a>
+  <a href="dashboard3.html" style="color:#64b5f6">📊 My Dashboard</a>
+</div>
+
+<!-- PAGE HEADER -->
+<div class="page-hdr">
+  <div class="page-hdr-inner">
+    <div class="breadcrumb"><a href="index.html">🏠 Home</a> <span>›</span> <span>Course Catalogue</span></div>
+    <h1>HSE Course <em>Catalogue</em></h1>
+    <p>8 accredited courses from Lithala Risk Solutions — confined space, permit to work, heights, LOTO and more. All self-paced with digital certificates.</p>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="chip active" onclick="filterCat('all',this)">All (8)</span>
+  <span class="chip" onclick="filterCat('Confined Space',this)">🔵 Confined Space</span>
+  <span class="chip" onclick="filterCat('Permit to Work',this)">📋 Permit to Work</span>
+  <span class="chip" onclick="filterCat('Basic Work at Height',this)">🏗️ Heights</span>
+  <span class="chip" onclick="filterCat('Hot Work',this)">🔥 Hot Work</span>
+  <span class="chip" onclick="filterCat('Electrical Safety',this)">⚡ Electrical</span>
+  <span class="chip" onclick="filterCat('E-LEARNING MODULE',this)">🎓 Risk Assessment</span>
+  <span class="chip" onclick="filterCat('wa',this)">💬 WhatsApp Ready</span>
+  <div class="search-box">
+    <span style="color:#aaa;font-size:13px">🔍</span>
+    <input type="text" placeholder="Search courses..." oninput="searchCourses(this.value)">
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="cat-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-card">
+      <h3>📂 Categories</h3>
+      <ul class="sb-list">
+        <li class="active" onclick="filterCat('all',null)"><span>All Courses</span><span class="sb-count">8</span></li>
+        <li onclick="filterCat('Confined Space',null)"><span>🔵 Confined Space</span><span class="sb-count">2</span></li>
+        <li onclick="filterCat('Permit to Work',null)"><span>📋 Permit to Work</span><span class="sb-count">1</span></li>
+        <li onclick="filterCat('Basic Work at Height',null)"><span>🏗️ Work at Heights</span><span class="sb-count">1</span></li>
+        <li onclick="filterCat('Hot Work',null)"><span>🔥 Hot Work</span><span class="sb-count">1</span></li>
+        <li onclick="filterCat('Electrical Safety',null)"><span>⚡ Electrical &amp; LOTO</span><span class="sb-count">2</span></li>
+        <li onclick="filterCat('E-LEARNING MODULE',null)"><span>🎓 Risk Assessment</span><span class="sb-count">1</span></li>
+      </ul>
+    </div>
+    <div class="sb-card">
+      <h3>💰 Price Range</h3>
+      <ul class="sb-list">
+        <li onclick="filterPrice(0,999)"><span>Under R1,000</span><span class="sb-count">3</span></li>
+        <li onclick="filterPrice(1000,1599)"><span>R1,000 – R1,599</span><span class="sb-count">3</span></li>
+        <li onclick="filterPrice(1600,1999)"><span>R1,600 – R1,799</span><span class="sb-count">2</span></li>
+      </ul>
+    </div>
+    <div class="sb-card">
+      <h3>📱 Delivery</h3>
+      <ul class="sb-list">
+        <li onclick="filterCat('all',null)"><span>Online (Browser)</span><span class="sb-count">8</span></li>
+        <li onclick="filterCat('wa',null)"><span>💬 WhatsApp</span><span class="sb-count">6</span></li>
+      </ul>
+    </div>
+    <div class="sb-card" style="background:linear-gradient(135deg,#0d2b52,#1565c0);border:none">
+      <h3 style="color:#90caf9;border-color:rgba(255,255,255,.12)">🏢 Bulk Training?</h3>
+      <p style="font-size:12px;color:rgba(255,255,255,.72);line-height:1.6;margin-bottom:12px">Volume pricing for 5+ learners with SETA reporting dashboard.</p>
+      <a href="index6.html" style="display:block;background:#2196f3;color:white;text-align:center;padding:9px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;text-decoration:none">Contact for Pricing →</a>
+    </div>
+  </aside>
+
+  <!-- COURSES GRID -->
+  <main>
+    <div class="grid-header">
+      <p>Showing <strong id="courseCount">8</strong> courses</p>
+      <p style="font-size:11px;color:#aaa">All prices include VAT</p>
+    </div>
+    <div class="courses-grid" id="coursesGrid"></div>
+  </main>
+</div>
+
+<!-- COURSE DETAIL MODAL -->
+<div class="modal-ov" id="courseModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <img id="modal-img" src="" alt="">
+      <div class="modal-hdr-ov"></div>
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+      <div class="modal-hdr-inner">
+        <div class="modal-cat" id="modal-cat"></div>
+        <h2 id="modal-title"></h2>
+        <div class="modal-stats" id="modal-stats"></div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <h3>📖 About this Course</h3>
+        <p id="modal-desc"></p>
+      </div>
+      <div class="modal-section">
+        <h3>✅ What You'll Learn</h3>
+        <div class="outcomes-grid" id="modal-outcomes"></div>
+      </div>
+      <div class="modal-section">
+        <h3>📋 Course Modules</h3>
+        <div class="module-list" id="modal-modules"></div>
+      </div>
+    </div>
+    <div class="modal-buy">
+      <div>
+        <div class="modal-buy-price" id="modal-price"></div>
+        <div style="font-size:11px;color:#888;margin-top:5px">✓ 12 months access &nbsp;·&nbsp; 🏆 Certificate on pass &nbsp;·&nbsp; 📧 Results emailed</div>
+      </div>
+      <div class="modal-buy-btns">
+        <button class="btn-buy-main" id="modal-buy-btn">🛒 Purchase &amp; Enroll</button>
+        <button class="btn-buy-wa" id="modal-wa-btn" style="display:none">💬 Learn via WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="auth-ov" id="authModal">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuth()">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <img src="logo.png" style="height:28px;object-fit:contain" onerror="this.style.display='none'" alt="">
+      <h2 id="authTitle" style="font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:#0d2b52">Welcome Back</h2>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabL" onclick="authTab('login')">Login</button>
+      <button class="auth-tab" id="tabR" onclick="authTab('register')">Register</button>
+    </div>
+    <div id="googleBtnTarget"></div>
+    <button class="google-btn" onclick="triggerGoogleSignIn()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width:18px" alt="G">
+      Continue with Google (Gmail)
+    </button>
+    <div class="divider">or with email</div>
+    <div id="loginForm">
+      <div class="fg"><label>Email</label><input type="email" id="lEmail" placeholder="you@company.co.za"></div>
+      <div class="fg"><label>Password</label><input type="password" id="lPwd" placeholder="••••••••"></div>
+      <button class="btn-submit" onclick="doEmailLogin()">→ Login to My Courses</button>
+    </div>
+    <div id="regForm" style="display:none">
+      <div class="r2">
+        <div class="fg"><label>First Name</label><input type="text" id="rFirst" placeholder="Thabo"></div>
+        <div class="fg"><label>Last Name</label><input type="text" id="rLast" placeholder="Nkosi"></div>
+      </div>
+      <div class="fg"><label>Email</label><input type="email" id="rEmail" placeholder="you@company.co.za"></div>
+      <div class="fg"><label>WhatsApp Number</label><input type="tel" id="rWA" placeholder="+27 82 000 0000"></div>
+      <div class="fg"><label>Password</label><input type="password" id="rPwd" placeholder="Create a strong password"></div>
+      <button class="btn-submit" onclick="doEmailRegister()">🎓 Create Account &amp; Start Learning</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px">
+        <img src="logo.png" style="height:30px;object-fit:contain" onerror="this.style.display='none'" alt="">
+        <div><div class="brand-name">LITHALA <em>LMS</em></div><div class="brand-sub">Risk Solutions</div></div>
+      </div>
+      <p>South Africa's premier HSE learning platform. Trusted by Heineken, Transnet, Unilever and leading manufacturers.</p>
+      <div class="bbbee">🏆 Level 1 B-BBEE</div>
+      <div class="footer-socials">
+        <a class="fsocial" href="https://www.lithala.com" target="_blank">🌐</a>
+        <a class="fsocial" href="#">💼</a>
+        <a class="fsocial" href="https://wa.me/27824214001">💬</a>
+        <a class="fsocial" href="mailto:info@lithala.com">✉️</a>
+      </div>
+    </div>
+    <div class="footer-col"><h4>Courses</h4><ul>
+      <li><a href="#" onclick="filterCat('Confined Space',null);return false">Confined Space</a></li>
+      <li><a href="#" onclick="filterCat('Permit to Work',null);return false">Permit to Work</a></li>
+      <li><a href="#" onclick="filterCat('Basic Work at Height',null);return false">Work at Heights</a></li>
+      <li><a href="#" onclick="filterCat('Hot Work',null);return false">Hot Work</a></li>
+      <li><a href="#" onclick="filterCat('Electrical Safety',null);return false">LOTO &amp; Electrical</a></li>
+      <li><a href="#" onclick="filterCat('E-LEARNING MODULE',null);return false">Risk Assessment</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Platform</h4><ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index5.html">WhatsApp Learning</a></li>
+      <li><a href="index4.html">Document Store</a></li>
+      <li><a href="dashboard3.html">My Dashboard</a></li>
+      <li><a href="admin.html">Admin Panel</a></li>
+      <li><a href="index6.html">About &amp; Contact</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Contact</h4><ul>
+      <li><a href="mailto:info@lithala.com">info@lithala.com</a></li>
+      <li><a href="tel:+27824214001">+27 82 421 4001</a></li>
+      <li><a href="https://lithala.com" target="_blank">lithala.com</a></li>
+      <li><a href="https://wa.me/27824214001">WhatsApp Us</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Lithala Risk Solutions (Pty) Ltd · All rights reserved.</span>
+    <span><a href="index.html">🏠 Home</a> · <a href="https://www.lithala.com" target="_blank">lithala.com</a></span>
+  </div>
+</footer>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────
+let activeCat    = 'all';
+let activeSearch = '';
+let pendingCourse = null;
+
+// ── RENDER ────────────────────────────────────────────────────
+function getCourses() {
+  const overrides = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  const base = (LMS.COURSES || []).filter(c => !overrides[c.id + '_deleted']);
+  const edited = base.map(c => overrides[c.id] ? { ...c, ...overrides[c.id] } : c);
+  Object.entries(overrides).forEach(([id, val]) => {
+    if (!id.endsWith('_deleted') && typeof val === 'object' && !edited.find(c => c.id === id)) edited.push(val);
+  });
+  return edited;
+}
+
+function renderCourses() {
+  const grid = document.getElementById('coursesGrid');
+  const all  = getCourses();
+  const filtered = all.filter(c => {
+    const mc = activeCat === 'all' || c.category === activeCat || (activeCat === 'wa' && c.wa);
+    const ms = !activeSearch || c.title.toLowerCase().includes(activeSearch) || (c.category||'').toLowerCase().includes(activeSearch);
+    return mc && ms;
+  });
+  document.getElementById('courseCount').textContent = filtered.length;
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="no-results"><div>🔍</div><p>No courses found</p><span>Try a different filter or search term.</span></div>';
+    return;
+  }
+  const IMGS = {
+    'Confined Space':'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=75',
+    'Permit to Work':'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=500&q=75',
+    'Basic Work at Height':'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=75',
+    'Hot Work':'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=500&q=75',
+    'Electrical Safety':'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=500&q=75',
+    'E-LEARNING MODULE':'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&q=75',
+  };
+  grid.innerHTML = filtered.map(c => {
+    const img    = c.image || IMGS[c.category] || IMGS['E-LEARNING MODULE'];
+    const badgeClass = c.badge ? 'badge-' + c.badge.toLowerCase().replace(/\s+/g,'-') : '';
+    return `<div class="ccard" onclick="openModal('${c.id}')">
+      <div class="cthumb">
+        <img src="${img}" alt="${c.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=70'">
+        <div class="cthumb-ov"></div>
+        ${c.badge ? `<div class="cbadge ${badgeClass}">${c.badge}</div>` : ''}
+        ${c.wa ? '<div class="cwa-pill">💬 WhatsApp</div>' : ''}
+        <div class="cprice-ov">R ${(c.price||0).toLocaleString()}</div>
+      </div>
+      <div class="cbody">
+        <div class="ccat">${c.category}</div>
+        <h3>${c.title}</h3>
+        <div class="csub">${c.subtitle}</div>
+        <p>${(c.description||'').substring(0,88)}...</p>
+        <div class="cmeta">
+          <span>⏱ ${c.duration||''}</span>
+          <span>📋 ${c.modules||0} modules</span>
+          <span>⭐ ${c.rating||4.8}</span>
+          <span>👥 ${(c.enrolled||0).toLocaleString()}</span>
+        </div>
+        <div class="cfoot">
+          <div class="cprice">R ${(c.price||0).toLocaleString()}<small>incl. VAT</small></div>
+          <button class="btn-enroll">View Course →</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── FILTERS ───────────────────────────────────────────────────
+function filterCat(cat, chipEl) {
+  activeCat = cat;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.sb-list li').forEach(li => li.classList.remove('active'));
+  if (chipEl) chipEl.classList.add('active');
+  renderCourses();
+  window.scrollTo({ top: 200, behavior: 'smooth' });
+}
+function filterPrice(min, max) {
+  activeCat = 'price:' + min + '-' + max;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  const all = getCourses();
+  const filtered = all.filter(c => c.price >= min && c.price <= max);
+  document.getElementById('courseCount').textContent = filtered.length;
+  const IMGS = {'Confined Space':'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=75','Permit to Work':'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=500&q=75','Hot Work':'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=500&q=75','Electrical Safety':'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=500&q=75','E-LEARNING MODULE':'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&q=75'};
+  document.getElementById('coursesGrid').innerHTML = filtered.length ? filtered.map(c => `<div class="ccard" onclick="openModal('${c.id}')"><div class="cthumb"><img src="${c.image||IMGS[c.category]||IMGS['E-LEARNING MODULE']}" alt="${c.title}" loading="lazy"><div class="cthumb-ov"></div><div class="cprice-ov">R ${(c.price||0).toLocaleString()}</div></div><div class="cbody"><div class="ccat">${c.category}</div><h3>${c.title}</h3><div class="csub">${c.subtitle}</div><div class="cfoot"><div class="cprice">R ${(c.price||0).toLocaleString()}<small>incl. VAT</small></div><button class="btn-enroll">View →</button></div></div></div>`).join('') : '<div class="no-results"><div>🔍</div><p>No courses in this range</p></div>';
+}
+function searchCourses(val) {
+  activeSearch = val.toLowerCase();
+  renderCourses();
+}
+
+// ── COURSE MODAL ──────────────────────────────────────────────
+function openModal(id) {
+  const c = getCourses().find(x => x.id === id);
+  if (!c) return;
+  pendingCourse = c;
+
+  document.getElementById('modal-img').src    = c.image || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=75';
+  document.getElementById('modal-cat').textContent = c.category;
+  document.getElementById('modal-title').textContent = c.title + ' — ' + c.subtitle;
+  document.getElementById('modal-stats').innerHTML = [
+    '⏱ ' + c.duration,
+    '📋 ' + c.modules + ' modules',
+    '⭐ ' + c.rating + '/5',
+    '👥 ' + (c.enrolled||0).toLocaleString() + ' enrolled',
+    c.wa ? '💬 WhatsApp available' : null,
+  ].filter(Boolean).map(s => `<div class="modal-stat">${s}</div>`).join('');
+  document.getElementById('modal-desc').textContent = c.description || '';
+  document.getElementById('modal-outcomes').innerHTML = (c.outcomes||[]).map(o => `<div class="outcome-item">${o}</div>`).join('');
+  document.getElementById('modal-modules').innerHTML  = (c.modules_list||[]).map((m,i) => `
+    <div class="mod-row${m.isAssessment?' is-assessment':''}">
+      <div class="mod-left">
+        <div class="mod-num">${String(i+1).padStart(2,'0')}</div>
+        <span>${m.isAssessment ? '📝 ' : ''}${m.title}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="mod-dur">${m.duration}</span>
+        <span style="font-size:13px;color:${i<1?'#1565c0':'#ccc'}">${i<1?'▶':'🔒'}</span>
+      </div>
+    </div>`).join('');
+  document.getElementById('modal-price').innerHTML = `R ${(c.price||0).toLocaleString()} <span>incl. VAT</span>`;
+
+  // Wire buy buttons
+  document.getElementById('modal-buy-btn').onclick = () => purchaseCourse(c);
+  const waBtn = document.getElementById('modal-wa-btn');
+  if (c.wa) {
+    waBtn.style.display = 'flex';
+    waBtn.onclick = () => startWhatsAppCourse(c);
+  } else {
+    waBtn.style.display = 'none';
+  }
+
+  document.getElementById('courseModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('courseModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('courseModal').addEventListener('click', e => { if (e.target.id === 'courseModal') closeModal(); });
+
+// ── PURCHASE ──────────────────────────────────────────────────
+function purchaseCourse(course) {
+  const user = lmsGetUser();
+  if (!user) {
+    pendingCourse = course;
+    closeModal();
+    openAuth('login');
+    return;
+  }
+  closeModal();
+  lmsPayFast(course, user);
+}
+
+// ── WHATSAPP COURSE LAUNCH ────────────────────────────────────
+function startWhatsAppCourse(course) {
+  const user = lmsGetUser();
+  // Check if purchased
+  const purchases = JSON.parse(localStorage.getItem('lms_purchases') || '[]');
+  const owned = purchases.find(p => p.courseId === course.id);
+  if (!owned && user) {
+    if (!confirm('You need to purchase this course first. Would you like to buy "' + course.title + '" for R' + course.price.toLocaleString() + '?')) return;
+    closeModal();
+    lmsPayFast(course, user);
+    return;
+  }
+  if (!owned) {
+    closeModal();
+    openAuth('login');
+    return;
+  }
+  // Open real WhatsApp with pre-filled message
+  const msg = encodeURIComponent(
+    'Hi Lithala LMS! 👋\n\n' +
+    'I have purchased the *' + course.title + '* course (' + course.id + ').\n\n' +
+    'Please activate my WhatsApp learning.\n\n' +
+    'Email: ' + (user ? user.email : '') + '\n' +
+    'Name: ' + (user ? user.name : '')
+  );
+  const waNumber = '27824214001'; // Lithala's number without +
+  window.open('https://wa.me/' + waNumber + '?text=' + msg, '_blank');
+  closeModal();
+  lmsToast('Opening WhatsApp... Send the message to start your course! 💬', 'success');
+}
+
+// ── AUTH ──────────────────────────────────────────────────────
+function openAuth(t) {
+  document.getElementById('authModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  authTab(t || 'login');
+}
+function closeAuth() {
+  document.getElementById('authModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function authTab(t) {
+  const isL = t === 'login';
+  document.getElementById('loginForm').style.display = isL ? 'block' : 'none';
+  document.getElementById('regForm').style.display   = isL ? 'none' : 'block';
+  document.getElementById('tabL').classList.toggle('active', isL);
+  document.getElementById('tabR').classList.toggle('active', !isL);
+  document.getElementById('authTitle').textContent = isL ? 'Welcome Back' : 'Create Account';
+}
+document.getElementById('authModal').addEventListener('click', e => { if (e.target.id === 'authModal') closeAuth(); });
+
+function doEmailLogin() {
+  const email = document.getElementById('lEmail').value.trim();
+  if (!email) { lmsToast('Please enter your email.', 'error'); return; }
+  lmsEmailLogin(email, '');
+  closeAuth();
+  if (pendingCourse) { const c = pendingCourse; pendingCourse = null; lmsPayFast(c, lmsGetUser()); }
+  else window.location.href = 'dashboard3.html';
+}
+function doEmailRegister() {
+  const first = document.getElementById('rFirst').value.trim();
+  const last  = document.getElementById('rLast').value.trim();
+  const email = document.getElementById('rEmail').value.trim();
+  const wa    = document.getElementById('rWA').value.trim();
+  if (!first || !email) { lmsToast('Please fill in your name and email.', 'error'); return; }
+  lmsEmailRegister(first, last, email, wa, '');
+  closeAuth();
+  if (pendingCourse) { const c = pendingCourse; pendingCourse = null; lmsPayFast(c, lmsGetUser()); }
+  else window.location.href = 'dashboard3.html';
+}
+
+// Init
+renderCourses();
+</script>
+</body>
+</html>

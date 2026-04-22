@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Course Editor — Lithala LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<script src="lms-config.js"></script>
+<script src="auth.js"></script>
+<style>
+:root{--navy:#0d2b52;--ocean:#1565c0;--forest:#1a3a2a;--lime:#52b788;--gold:#d4a017;--cream:#f5f7f5;--mist:#e0eae4;--ink:#1e2d26;--danger:#e63946}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden;background:#eef2f7;font-family:'DM Sans',sans-serif;color:var(--ink)}
+@keyframes mIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* LOGIN */
+#loginScreen{display:flex;min-height:100vh;background:linear-gradient(135deg,#0d2b52,#1a3a2a);align-items:center;justify-content:center;padding:20px}
+.login-box{background:white;border-radius:20px;width:100%;max-width:360px;padding:36px 30px;text-align:center;animation:mIn .3s ease}
+.login-box h1{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#0d2b52;margin-bottom:4px}
+.login-box p{font-size:13px;color:#aaa;margin-bottom:20px}
+.login-box input{width:100%;padding:11px 13px;border:2px solid #e0eae4;border-radius:9px;font-size:14px;background:#f5f7f5;outline:none;margin-bottom:11px;font-family:'DM Sans',sans-serif;transition:border-color .2s}
+.login-box input:focus{border-color:#2196f3;background:white}
+.btn-full{width:100%;background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:13px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer}
+
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+
+/* TOPBAR */
+.topbar{background:white;border-bottom:1px solid #f0f4f8;padding:0 4%;height:60px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,.06);position:sticky;top:0;z-index:100}
+.topbar-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:#0d2b52}
+.topbar-logo em{color:#1565c0;font-style:normal}
+.topbar-logo span{font-size:11px;color:#aaa;margin-left:6px;font-family:'DM Sans',sans-serif;font-weight:400}
+.topbar-btns{display:flex;gap:9px;align-items:center}
+
+/* MAIN */
+.main{display:grid;grid-template-columns:300px 1fr;gap:0;flex:1;min-height:calc(100vh - 60px)}
+
+/* COURSE LIST SIDEBAR */
+.course-list-side{background:white;border-right:1px solid #f0f4f8;padding:20px 0;overflow-y:auto;max-height:calc(100vh - 60px);position:sticky;top:60px}
+.cls-header{padding:0 18px 14px;border-bottom:1px solid #f0f4f8;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.cls-header h2{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0d2b52}
+.btn-add-course{background:linear-gradient(135deg,#2d6a4f,#52b788);color:white;border:none;padding:7px 14px;border-radius:7px;font-family:'Syne',sans-serif;font-weight:700;font-size:11.5px;cursor:pointer;transition:all .2s}
+.btn-add-course:hover{transform:scale(1.03)}
+.course-item{padding:12px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .15s;border-left:3px solid transparent}
+.course-item:hover{background:#f5f7f5}
+.course-item.active{background:#e3f2fd;border-left-color:#1565c0}
+.ci-img{width:46px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#f0f4f8}
+.ci-info h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;line-height:1.2;margin-bottom:2px}
+.ci-info p{font-size:11px;color:#888}
+.ci-price{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#1565c0;margin-left:auto;flex-shrink:0}
+
+/* EDITOR MAIN */
+.editor-main{padding:24px 28px;overflow-y:auto;max-height:calc(100vh - 60px)}
+.editor-empty{text-align:center;padding:80px 20px;color:#aaa}
+.editor-empty div{font-size:56px;margin-bottom:16px}
+.editor-empty h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#555;margin-bottom:8px}
+.editor-empty p{font-size:14px;line-height:1.6}
+
+/* SECTION CARDS */
+.section-card{background:white;border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04)}
+.sc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #f0f4f8}
+.sc-header h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0d2b52;display:flex;align-items:center;gap:7px}
+.sc-header .sc-hint{font-size:11.5px;color:#aaa;font-weight:400;margin-left:4px}
+
+/* FORM FIELDS */
+.fg{margin-bottom:15px}
+.fg label{display:block;font-size:11.5px;font-weight:600;color:#1a3a2a;margin-bottom:5px}
+.fg label .hint{font-size:10.5px;font-weight:400;color:#aaa;margin-left:4px}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 13px;border:2px solid #e0eae4;border-radius:8px;font-size:13.5px;background:#f5f7f5;outline:none;transition:border-color .2s;font-family:'DM Sans',sans-serif;color:#1e2d26}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#2196f3;background:white}
+.fg textarea{resize:vertical;min-height:80px;line-height:1.5}
+.fg .img-preview{margin-top:8px;border-radius:8px;overflow:hidden;height:120px}
+.fg .img-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.check-row{display:flex;align-items:center;gap:8px;padding:10px 13px;background:#f5f7f5;border-radius:8px;border:2px solid #e0eae4;cursor:pointer;transition:all .2s}
+.check-row:hover{border-color:#2196f3}
+.check-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:#1565c0}
+.check-row label{font-size:13.5px;color:#1e2d26;cursor:pointer}
+
+/* MODULES EDITOR */
+.modules-editor{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.mod-row{background:#f5f7f5;border:1px solid #e0eae4;border-radius:9px;padding:10px 12px;display:flex;align-items:center;gap:9px;transition:border-color .2s}
+.mod-row:hover{border-color:#2196f3}
+.mod-row.assessment-row{background:linear-gradient(135deg,#f0f7ff,#f3e5f5);border-color:rgba(123,31,162,.2)}
+.mod-drag{cursor:grab;color:#ccc;font-size:16px;flex-shrink:0;user-select:none}
+.mod-num-badge{background:#1565c0;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mod-row.assessment-row .mod-num-badge{background:#7b1fa2}
+.mod-inp{flex:2;border:none;background:transparent;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;color:#1e2d26}
+.mod-dur-inp{flex:1;max-width:90px;border:none;background:transparent;font-size:12px;outline:none;font-family:'DM Sans',sans-serif;color:#888;text-align:right}
+.mod-type-sel{border:none;background:transparent;font-size:11.5px;color:#888;outline:none;cursor:pointer;font-family:'DM Sans',sans-serif}
+.mod-del{background:none;border:none;color:#e0eae4;cursor:pointer;font-size:16px;flex-shrink:0;line-height:1;transition:color .2s}
+.mod-del:hover{color:#e63946}
+.btn-add-mod{background:none;border:2px dashed #e0eae4;width:100%;padding:10px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:600;font-size:12.5px;color:#aaa;cursor:pointer;transition:all .2s}
+.btn-add-mod:hover{border-color:#1565c0;color:#1565c0}
+
+/* QUESTIONS EDITOR */
+.questions-editor{display:flex;flex-direction:column;gap:12px;margin-bottom:12px}
+.q-block{background:#f5f7f5;border:1px solid #e0eae4;border-radius:10px;padding:14px}
+.q-block-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.q-num-badge{background:#1565c0;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.q-inp{flex:1;border:none;background:white;border:1px solid #e0eae4;border-radius:7px;padding:8px 11px;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;color:#1e2d26;width:100%}
+.q-del{background:none;border:none;color:#e0eae4;cursor:pointer;font-size:15px;flex-shrink:0;line-height:1;transition:color .2s;margin-left:auto}
+.q-del:hover{color:#e63946}
+.q-opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+.q-opt-row{display:flex;align-items:center;gap:6px;background:white;border:1px solid #e0eae4;border-radius:7px;padding:6px 10px}
+.q-opt-ltr{font-family:'Syne',sans-serif;font-weight:700;font-size:10px;color:#888;flex-shrink:0;width:14px}
+.q-opt-inp{flex:1;border:none;background:transparent;font-size:12.5px;outline:none;font-family:'DM Sans',sans-serif;color:#1e2d26}
+.q-correct-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.q-correct-row label{font-size:11.5px;font-weight:600;color:#1a3a2a}
+.q-correct-sel{padding:5px 9px;border:1px solid #e0eae4;border-radius:6px;font-size:12px;background:white;outline:none;cursor:pointer}
+.btn-add-q{background:none;border:2px dashed #e0eae4;width:100%;padding:9px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:600;font-size:12px;color:#aaa;cursor:pointer;transition:all .2s}
+.btn-add-q:hover{border-color:#1565c0;color:#1565c0}
+
+/* ACTION BUTTONS */
+.action-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.btn-save{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:12px 28px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;transition:all .2s;box-shadow:0 3px 12px rgba(21,101,192,.3)}
+.btn-save:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(21,101,192,.4)}
+.btn-preview{background:white;border:2px solid #1565c0;color:#1565c0;padding:11px 22px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-delete{background:transparent;border:2px solid #e63946;color:#e63946;padding:11px 22px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s}
+.btn-delete:hover{background:#e63946;color:white}
+.btn-outline{background:white;border:2px solid #e0eae4;color:#555;padding:11px 20px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer}
+
+/* TOAST */
+#toast{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2d6a4f;color:white;padding:13px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.2);animation:mIn .3s ease}
+
+@media(max-width:900px){
+  .main{grid-template-columns:1fr}
+  .course-list-side{position:relative;top:0;max-height:none;border-right:none;border-bottom:1px solid #f0f4f8}
+  .r2,.r3{grid-template-columns:1fr}
+  .q-opts-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div style="font-size:38px;margin-bottom:10px">✏️</div>
+    <h1>Course Editor</h1>
+    <p>Admin access only — Lithala LMS</p>
+    <input type="password" id="adminPwd" placeholder="Admin password" onkeypress="if(event.key==='Enter')tryLogin()">
+    <button class="btn-full" onclick="tryLogin()">Sign In →</button>
+  </div>
+</div>
+
+<div id="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">LITHALA <em>LMS</em> <span>Course Editor</span></div>
+    <div class="topbar-btns">
+      <a href="index3.html" class="btn-outline" style="padding:7px 16px;font-size:12px;font-family:'Syne',sans-serif;font-weight:700;text-decoration:none;border-radius:7px">👁 View Courses</a>
+      <a href="dashboard3.html" class="btn-outline" style="padding:7px 16px;font-size:12px;font-family:'Syne',sans-serif;font-weight:700;text-decoration:none;border-radius:7px">📊 Dashboard</a>
+      <a href="admin.html" class="btn-outline" style="padding:7px 16px;font-size:12px;font-family:'Syne',sans-serif;font-weight:700;text-decoration:none;border-radius:7px">⚙️ Admin Panel</a>
+    </div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="main">
+    <!-- COURSE LIST -->
+    <aside class="course-list-side">
+      <div class="cls-header">
+        <h2>📚 Courses</h2>
+        <button class="btn-add-course" onclick="newCourse()">+ New Course</button>
+      </div>
+      <div id="courseListEl"></div>
+    </aside>
+
+    <!-- EDITOR -->
+    <main class="editor-main">
+      <div class="editor-empty" id="editorEmpty">
+        <div>✏️</div>
+        <h3>Select a course to edit</h3>
+        <p>Choose a course from the list on the left, or click <strong>+ New Course</strong> to create a new one.<br><br>No coding required — fill in the form and your course goes live immediately.</p>
+      </div>
+      <div id="editorForm" style="display:none"></div>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────
+function tryLogin() {
+  const pwd = document.getElementById('adminPwd').value;
+  if (pwd === LMS.ADMIN_PASSWORD) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    renderCourseList();
+  } else {
+    document.getElementById('adminPwd').style.borderColor = '#e63946';
+    setTimeout(()=>document.getElementById('adminPwd').style.borderColor='',1500);
+    showToast('Incorrect password.','error');
+  }
+}
+document.getElementById('adminPwd').addEventListener('keypress',e=>{if(e.key==='Enter')tryLogin();});
+
+// ── COURSE DATA ───────────────────────────────────────────────
+function getCourses() {
+  const ov   = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  const base = (LMS.COURSES || []).filter(c => !ov[c.id + '_deleted']);
+  const edited = base.map(c => ov[c.id] ? { ...c, ...ov[c.id] } : c);
+  Object.entries(ov).forEach(([id, v]) => {
+    if (!id.endsWith('_deleted') && typeof v === 'object' && !edited.find(c => c.id === id)) edited.push(v);
+  });
+  return edited;
+}
+function saveCourse(course) {
+  const ov = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  ov[course.id] = course;
+  localStorage.setItem('lms_course_overrides', JSON.stringify(ov));
+  // Also save to Apps Script
+  lmsFetch({ action:'saveCourse', course }).catch(()=>{});
+}
+function deleteCourseById(id) {
+  const ov = JSON.parse(localStorage.getItem('lms_course_overrides') || '{}');
+  ov[id + '_deleted'] = true;
+  delete ov[id];
+  localStorage.setItem('lms_course_overrides', JSON.stringify(ov));
+  lmsFetch({ action:'deleteCourse', courseId: id }).catch(()=>{});
+}
+
+// ── COURSE LIST ───────────────────────────────────────────────
+let activeCourseId = null;
+function renderCourseList() {
+  const list = document.getElementById('courseListEl');
+  const all  = getCourses();
+  list.innerHTML = all.map(c => `
+    <div class="course-item${c.id === activeCourseId ? ' active' : ''}" onclick="editCourse('${c.id}')">
+      <img class="ci-img" src="${c.image||''}" onerror="this.style.background='#e3f2fd'" alt="">
+      <div class="ci-info">
+        <h4>${c.title}</h4>
+        <p>${c.subtitle} · ${c.modules||0} modules</p>
+      </div>
+      <div class="ci-price">R${(c.price||0).toLocaleString()}</div>
+    </div>`).join('') + `<div class="course-item" onclick="newCourse()" style="color:#1565c0;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;gap:8px;border-top:1px solid #f0f4f8;margin-top:6px"><span style="font-size:20px">+</span> Add New Course</div>`;
+}
+
+// ── EDIT COURSE ───────────────────────────────────────────────
+let editingId = null;
+function editCourse(id) {
+  editingId = id;
+  activeCourseId = id;
+  renderCourseList();
+  const c = getCourses().find(x => x.id === id);
+  renderEditor(c);
+}
+function newCourse() {
+  editingId = null;
+  activeCourseId = null;
+  renderCourseList();
+  renderEditor(null);
+}
+
+function renderEditor(c) {
+  document.getElementById('editorEmpty').style.display = 'none';
+  document.getElementById('editorForm').style.display  = 'block';
+
+  const mods = c ? (c.modules_list || []) : [{ title:'Module 1', duration:'30 min', isAssessment:false }];
+  const qs   = c ? (c.questions || [])    : [{ q:'', options:['','','',''], answer:0 }];
+  const outs = c ? (c.outcomes || []).join('\n') : '';
+
+  document.getElementById('editorForm').innerHTML = `
+    <!-- BASIC INFO -->
+    <div class="section-card">
+      <div class="sc-header">
+        <h3>📋 Basic Information <span class="sc-hint">All fields required</span></h3>
+        ${c ? `<span style="background:#e3f2fd;color:#1565c0;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">${c.id}</span>` : ''}
+      </div>
+      ${!c ? `<div class="fg"><label>Course ID <span class="hint">(e.g. CS002 — no spaces, unique)</span></label><input id="f-id" placeholder="e.g. MYCS002" maxlength="20" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"></div>` : `<input type="hidden" id="f-id" value="${c.id}">`}
+      <div class="r2">
+        <div class="fg"><label>Course Title</label><input id="f-title" placeholder="e.g. Fire Safety Awareness" value="${c ? c.title : ''}"></div>
+        <div class="fg"><label>Subtitle <span class="hint">"e-Learning Module" or "Training Material"</span></label><input id="f-sub" placeholder="e-Learning Module" value="${c ? c.subtitle : ''}"></div>
+      </div>
+      <div class="r2">
+        <div class="fg"><label>Category</label>
+          <select id="f-cat">
+            ${['Confined Space','Permit to Work','Basic Work at Height','Hot Work','Electrical Safety','E-LEARNING MODULE','Fire Safety','Environmental','General Safety','Other'].map(cat => `<option${c && c.category===cat?' selected':''}>${cat}</option>`).join('')}
+          </select>
+        </div>
+        <div class="fg"><label>Badge <span class="hint">(optional)</span></label>
+          <select id="f-badge">
+            <option value="">None</option>
+            ${['Bestseller','New','Popular','Essential','eLearning'].map(b=>`<option value="${b}"${c && c.badge===b?' selected':''}>${b}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Description <span class="hint">(2–3 sentences shown to learners)</span></label>
+        <textarea id="f-desc" rows="3" placeholder="This course covers...">${c ? c.description : ''}</textarea>
+      </div>
+    </div>
+
+    <!-- PRICING & DETAILS -->
+    <div class="section-card">
+      <div class="sc-header"><h3>💰 Pricing &amp; Details</h3></div>
+      <div class="r3">
+        <div class="fg"><label>Price (Rands, incl. VAT)</label><input id="f-price" type="number" min="0" placeholder="1500" value="${c ? c.price : ''}"></div>
+        <div class="fg"><label>Duration</label><input id="f-dur" placeholder="4 hours" value="${c ? c.duration : ''}"></div>
+        <div class="fg"><label>Rating <span class="hint">(4.0–5.0)</span></label><input id="f-rating" type="number" min="4" max="5" step="0.1" placeholder="4.8" value="${c ? c.rating : '4.8'}"></div>
+      </div>
+      <div class="check-row" onclick="document.getElementById('f-wa').click()">
+        <input type="checkbox" id="f-wa" ${c && c.wa ? 'checked' : ''}>
+        <label for="f-wa">💬 This course is available via WhatsApp delivery (learners can activate via WhatsApp)</label>
+      </div>
+    </div>
+
+    <!-- COVER IMAGE -->
+    <div class="section-card">
+      <div class="sc-header"><h3>🖼️ Cover Image</h3></div>
+      <div class="fg">
+        <label>Image URL <span class="hint">Paste any image link (Unsplash, your own hosting, Google Drive public link)</span></label>
+        <input id="f-img" placeholder="https://images.unsplash.com/photo-XXXXX?w=600&q=80" value="${c ? c.image : ''}" oninput="updateImgPreview()">
+        <div class="img-preview" id="imgPreview" style="${c && c.image ? '' : 'display:none'}">
+          <img id="imgPreviewEl" src="${c ? c.image : ''}" alt="Preview" onerror="document.getElementById('imgPreview').style.display='none'">
+        </div>
+      </div>
+      <p style="font-size:12px;color:#aaa;margin-top:-8px">💡 <strong>Free images:</strong> Go to <a href="https://unsplash.com" target="_blank" style="color:#1565c0">unsplash.com</a>, find an image, right-click → Copy Image Address, paste here.</p>
+    </div>
+
+    <!-- LEARNING OUTCOMES -->
+    <div class="section-card">
+      <div class="sc-header"><h3>✅ Learning Outcomes <span class="sc-hint">What learners will be able to do after the course</span></h3></div>
+      <div class="fg">
+        <label>Enter one outcome per line <span class="hint">(5–8 outcomes recommended)</span></label>
+        <textarea id="f-outcomes" rows="6" placeholder="Identify confined space hazards and risks&#10;Conduct atmospheric testing procedures&#10;Implement confined space entry permits&#10;Execute emergency rescue protocols&#10;Comply with OHSA confined space regulations">${outs}</textarea>
+      </div>
+    </div>
+
+    <!-- MODULES -->
+    <div class="section-card">
+      <div class="sc-header"><h3>📋 Course Modules <span class="sc-hint">Drag to reorder · Last module should be the Assessment</span></h3></div>
+      <div class="modules-editor" id="modsEditor">
+        ${mods.map((m,i) => makeModRow(m,i)).join('')}
+      </div>
+      <button class="btn-add-mod" onclick="addModRow()">+ Add Module</button>
+    </div>
+
+    <!-- ASSESSMENT QUESTIONS -->
+    <div class="section-card">
+      <div class="sc-header"><h3>📝 Assessment Questions <span class="sc-hint">Minimum 5 · Learners need 80% to pass</span></h3></div>
+      <div class="questions-editor" id="qsEditor">
+        ${qs.map((q,i) => makeQBlock(q,i)).join('')}
+      </div>
+      <button class="btn-add-q" onclick="addQBlock()">+ Add Question</button>
+    </div>
+
+    <!-- SAVE -->
+    <div class="action-bar">
+      <button class="btn-save" onclick="saveCourseForm()">💾 Save Course</button>
+      <a href="index3.html" class="btn-preview" target="_blank">👁 Preview in Catalogue</a>
+      <button class="btn-outline" onclick="newCourse()">+ New Course</button>
+      ${c ? `<button class="btn-delete" onclick="confirmDelete('${c.id}','${c.title}')">🗑️ Delete Course</button>` : ''}
+    </div>
+    <div style="height:40px"></div>
+  `;
+}
+
+function makeModRow(m, i) {
+  return `<div class="mod-row${m.isAssessment?' assessment-row':''}" id="modrow-${i}">
+    <span class="mod-drag" title="Drag to reorder">⋮⋮</span>
+    <div class="mod-num-badge">${String(i+1).padStart(2,'0')}</div>
+    <input class="mod-inp" value="${(m.title||'').replace(/"/g,'&quot;')}" placeholder="Module title..." oninput="updateModNums()">
+    <input class="mod-dur-inp" value="${m.duration||'30 min'}" placeholder="30 min">
+    <select class="mod-type-sel" onchange="this.closest('.mod-row').classList.toggle('assessment-row',this.value==='assessment')">
+      <option value="content"${!m.isAssessment?' selected':''}>Content</option>
+      <option value="assessment"${m.isAssessment?' selected':''}>Assessment</option>
+    </select>
+    <button class="mod-del" onclick="this.closest('.mod-row').remove();updateModNums()" title="Remove module">✕</button>
+  </div>`;
+}
+
+function makeQBlock(q, i) {
+  const opts = q.options || ['','','',''];
+  return `<div class="q-block" id="qblock-${i}">
+    <div class="q-block-header">
+      <div class="q-num-badge">Q${i+1}</div>
+      <input class="q-inp" style="flex:1;margin-left:8px" value="${(q.q||'').replace(/"/g,'&quot;')}" placeholder="Type the question here...">
+      <button class="q-del" onclick="this.closest('.q-block').remove();updateQNums()" title="Remove question">✕</button>
+    </div>
+    <div class="q-opts-grid">
+      ${opts.map((o,oi) => `<div class="q-opt-row"><span class="q-opt-ltr">${'ABCD'[oi]}</span><input class="q-opt-inp" value="${(o||'').replace(/"/g,'&quot;')}" placeholder="Option ${String.fromCharCode(65+oi)}"></div>`).join('')}
+    </div>
+    <div class="q-correct-row">
+      <label>Correct Answer:</label>
+      <select class="q-correct-sel">
+        ${['A (first)','B (second)','C (third)','D (fourth)'].map((l,li) => `<option value="${li}"${q.answer===li?' selected':''}>${l}</option>`).join('')}
+      </select>
+    </div>
+  </div>`;
+}
+
+function addModRow() {
+  const ed = document.getElementById('modsEditor');
+  const i  = ed.querySelectorAll('.mod-row').length;
+  const div = document.createElement('div');
+  div.innerHTML = makeModRow({ title:'', duration:'30 min', isAssessment:false }, i);
+  ed.appendChild(div.firstElementChild);
+  updateModNums();
+}
+function addQBlock() {
+  const ed = document.getElementById('qsEditor');
+  const i  = ed.querySelectorAll('.q-block').length;
+  const div = document.createElement('div');
+  div.innerHTML = makeQBlock({ q:'', options:['','','',''], answer:0 }, i);
+  ed.appendChild(div.firstElementChild);
+  updateQNums();
+}
+function updateModNums() {
+  document.querySelectorAll('.mod-row .mod-num-badge').forEach((b,i) => { b.textContent = String(i+1).padStart(2,'0'); });
+}
+function updateQNums() {
+  document.querySelectorAll('.q-block .q-num-badge').forEach((b,i) => { b.textContent = 'Q'+(i+1); });
+}
+function updateImgPreview() {
+  const url = document.getElementById('f-img').value.trim();
+  const prev = document.getElementById('imgPreview');
+  const img  = document.getElementById('imgPreviewEl');
+  if (url) { img.src = url; prev.style.display = 'block'; }
+  else      { prev.style.display = 'none'; }
+}
+
+// ── SAVE FORM ─────────────────────────────────────────────────
+function saveCourseForm() {
+  const id    = (document.getElementById('f-id').value || '').trim().replace(/\s/g,'').toUpperCase();
+  const title = (document.getElementById('f-title').value || '').trim();
+  const price = parseInt(document.getElementById('f-price').value) || 0;
+  if (!id || !title || !price) { showToast('Please fill in Course ID, Title and Price.','error'); return; }
+
+  // Modules
+  const modRows = document.querySelectorAll('#modsEditor .mod-row');
+  const modules_list = Array.from(modRows).map((row,i) => {
+    const inputs  = row.querySelectorAll('input');
+    const typeSel = row.querySelector('select');
+    return { id: id+'-M'+(i+1), title: inputs[1].value.trim(), duration: inputs[2].value.trim()||'30 min', isAssessment: typeSel && typeSel.value==='assessment' };
+  }).filter(m => m.title);
+
+  // Questions
+  const qBlocks   = document.querySelectorAll('#qsEditor .q-block');
+  const questions = Array.from(qBlocks).map(block => {
+    const qText   = block.querySelector('.q-inp').value.trim();
+    const optInps = block.querySelectorAll('.q-opt-inp');
+    const opts    = Array.from(optInps).map(i => i.value.trim());
+    const answer  = parseInt(block.querySelector('.q-correct-sel').value) || 0;
+    return { q: qText, options: opts, answer };
+  }).filter(q => q.q && q.options.filter(Boolean).length >= 2);
+
+  // Outcomes
+  const outcomes = (document.getElementById('f-outcomes').value || '').split('\n').map(s=>s.trim()).filter(Boolean);
+
+  const course = {
+    id,
+    title,
+    subtitle:    (document.getElementById('f-sub').value||'').trim()    || 'Training Material',
+    category:    document.getElementById('f-cat').value,
+    price,
+    image:       (document.getElementById('f-img').value||'').trim()    || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80',
+    duration:    (document.getElementById('f-dur').value||'').trim()    || '4 hours',
+    modules:     modules_list.length,
+    rating:      parseFloat(document.getElementById('f-rating').value)  || 4.8,
+    enrolled:    (getCourses().find(c=>c.id===id)||{}).enrolled          || 0,
+    badge:       document.getElementById('f-badge').value               || '',
+    wa:          document.getElementById('f-wa').checked,
+    description: (document.getElementById('f-desc').value||'').trim(),
+    outcomes,
+    modules_list,
+    questions,
+  };
+
+  saveCourse(course);
+  editingId      = course.id;
+  activeCourseId = course.id;
+  renderCourseList();
+  showToast('✅ "' + title + '" saved and live on your site!','success');
+}
+
+function confirmDelete(id, title) {
+  if (!confirm('Delete "' + title + '"?\n\nThis will remove it from the catalogue immediately. This cannot be undone.')) return;
+  deleteCourseById(id);
+  editingId = null; activeCourseId = null;
+  renderCourseList();
+  document.getElementById('editorEmpty').style.display = 'block';
+  document.getElementById('editorForm').style.display  = 'none';
+  showToast('"' + title + '" has been deleted.','info');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = type==='error' ? '#c62828' : type==='info' ? '#1565c0' : '#2d6a4f';
+  t.style.display = 'block';
+  setTimeout(()=>{ t.style.opacity='0'; }, 3000);
+  setTimeout(()=>{ t.style.display='none'; t.style.opacity='1'; }, 3500);
+}
+
+// Init — auto-login for testing if password matches
+window.onload = () => {
+  // Check if already logged into admin
+  if (sessionStorage.getItem('admin_logged_in') === 'yes') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    renderCourseList();
+  }
+};
+// Persist login for the session
+const origTryLogin = tryLogin;
+window.tryLogin = function() {
+  const pwd = document.getElementById('adminPwd').value;
+  if (pwd === LMS.ADMIN_PASSWORD) sessionStorage.setItem('admin_logged_in', 'yes');
+  origTryLogin();
+};
+</script>
+</body>
+</html>

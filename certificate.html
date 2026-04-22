@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Certificate — Lithala LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="lms-config.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* ── SCREEN STYLES ─────────────────────────────────────────── */
+body{
+  font-family:'DM Sans',sans-serif;
+  background:#e8e4d8;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:24px 16px 40px;
+}
+
+/* Action buttons row */
+.actions{
+  display:flex;gap:10px;margin-bottom:20px;
+  flex-wrap:wrap;justify-content:center;
+  width:100%;max-width:860px;
+}
+.btn{
+  padding:10px 22px;border-radius:8px;
+  font-family:'Syne',sans-serif;font-weight:700;font-size:13px;
+  cursor:pointer;border:none;transition:all .2s;
+  display:flex;align-items:center;gap:6px;text-decoration:none;
+}
+.btn-print  {background:#1a3a2a;color:white}
+.btn-print:hover{background:#0d2b52}
+.btn-linkedin{background:#0077b5;color:white}
+.btn-linkedin:hover{background:#005885}
+.btn-close  {background:white;color:#555;border:2px solid #ccc}
+
+/* ── THE CERTIFICATE ────────────────────────────────────────── */
+/* Wrapper handles the responsive scaling trick */
+.cert-outer{
+  width:100%;
+  max-width:860px;
+  /* On small screens we scale DOWN so the whole cert fits */
+}
+
+.cert-page{
+  background:white;
+  border:10px solid #1a3a2a;
+  outline:3px solid #d4a017;
+  outline-offset:-18px;
+  border-radius:4px;
+  padding:52px 56px 48px;
+  position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.22);
+  text-align:center;
+  /* Fixed width so the design stays proportional */
+  width:100%;
+}
+
+/* Corner ornaments */
+.co{position:absolute;font-size:28px;color:#d4a017;line-height:1;user-select:none}
+.co-tl{top:20px;left:24px}.co-tr{top:20px;right:24px}
+.co-bl{bottom:20px;left:24px}.co-br{bottom:20px;right:24px}
+
+/* Header */
+.cert-logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:8px}
+.cert-logo-row img{height:50px;object-fit:contain}
+.cert-org{font-family:'Cinzel',serif;font-size:clamp(16px,3vw,26px);font-weight:700;color:#1a3a2a;letter-spacing:2px}
+.cert-org-sub{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:#2d6a4f;letter-spacing:4px;text-transform:uppercase;margin-top:2px}
+
+/* Divider */
+.cert-divider{display:flex;align-items:center;gap:14px;margin:14px 0}
+.cert-divider::before,.cert-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,#d4a017,transparent)}
+.cert-divider span{color:#d4a017;font-size:18px}
+
+/* Body text */
+.cert-label{font-family:'DM Sans',sans-serif;font-size:11px;color:#888;letter-spacing:3px;text-transform:uppercase;margin-bottom:7px}
+.cert-name{
+  font-family:'Cinzel',serif;
+  font-size:clamp(22px,5vw,42px);
+  font-weight:600;color:#0d2b52;
+  line-height:1.15;
+  width:100%;
+  border-bottom:2px solid rgba(212,160,23,.35);
+  padding-bottom:12px;margin-bottom:6px;
+  display:block;
+}
+.cert-course{font-family:'Syne',sans-serif;font-size:clamp(14px,2.5vw,20px);font-weight:800;color:#1a3a2a;margin-bottom:4px}
+.cert-subtitle{font-size:12px;color:#888;margin-bottom:0}
+
+/* Score row */
+.cert-scores{
+  display:inline-flex;align-items:center;gap:0;
+  background:#f0f7f0;border:1px solid rgba(45,106,79,.2);
+  border-radius:50px;padding:8px 0;margin:14px 0;
+  flex-wrap:wrap;justify-content:center;
+}
+.cert-score-item{text-align:center;padding:0 20px}
+.cert-score-item + .cert-score-item{border-left:1px solid #e0eae4}
+.cert-score-item .val{font-family:'Syne',sans-serif;font-size:clamp(14px,3vw,20px);font-weight:800;color:#0d2b52;line-height:1}
+.cert-score-item .lbl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+
+/* Footer row */
+.cert-footer{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-top:32px;padding-top:18px;
+  border-top:1px solid rgba(212,160,23,.28);
+  gap:12px;flex-wrap:wrap;
+}
+.cert-sig-block{text-align:center;flex:1;min-width:140px}
+.cert-sig-name{font-family:'Cinzel',serif;font-size:clamp(13px,2vw,17px);font-weight:600;color:#1a3a2a;margin-bottom:7px}
+.cert-sig-line{width:140px;border-top:2px solid #1a3a2a;margin:0 auto 5px}
+.cert-sig-role{font-size:10px;color:#888}
+.cert-sig-contact{font-size:9px;color:#aaa;margin-top:3px}
+.cert-seal-block{text-align:center;flex:1;min-width:100px}
+.cert-seal-icon{font-size:clamp(44px,8vw,64px);line-height:1}
+.cert-seal-text{font-size:9px;color:#888;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-top:5px}
+.cert-info-block{text-align:right;flex:1;min-width:140px;font-size:10px;color:#888;line-height:2}
+.cert-info-block strong{color:#1a3a2a;font-weight:700}
+
+/* ── PRINT STYLES ───────────────────────────────────────────── */
+@media print{
+  body{background:white;padding:0;display:block}
+  .actions{display:none}
+  .cert-outer{max-width:100%;margin:0}
+  .cert-page{
+    box-shadow:none;
+    border-width:10px;
+    page-break-inside:avoid;
+    width:100%;
+    /* Reset the transform for print — browser handles sizing */
+    transform:none !important;
+  }
+  /* Let the page fill A4 */
+  @page{size:A4 landscape;margin:8mm}
+}
+
+/* ── RESPONSIVE SCALING ─────────────────────────────────────── 
+   On mobile we scale the cert down so it fits width without 
+   cutting off. We use a CSS custom property trick. */
+@media(max-width:900px){
+  .cert-page{
+    padding:32px 28px 28px;
+  }
+}
+@media(max-width:600px){
+  .cert-page{
+    padding:24px 18px 20px;
+    border-width:7px;
+    outline-offset:-12px;
+  }
+  .cert-scores{flex-direction:row;border-radius:12px}
+  .cert-score-item + .cert-score-item{border-left:none;border-top:1px solid #e0eae4}
+  .cert-footer{flex-direction:column;align-items:center;text-align:center;gap:20px}
+  .cert-info-block{text-align:center}
+  .cert-sig-block,.cert-seal-block,.cert-info-block{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- Action buttons — hidden when printing -->
+<div class="actions" id="certActions">
+  <button class="btn btn-print" onclick="window.print()">🖨️ Download / Print PDF</button>
+  <a  class="btn btn-linkedin" id="linkedinBtn" href="#" target="_blank">💼 Share on LinkedIn</a>
+  <button class="btn btn-close" onclick="window.close()">✕ Close</button>
+</div>
+
+<!-- Certificate -->
+<div class="cert-outer">
+  <div class="cert-page" id="certPage">
+
+    <span class="co co-tl">❧</span>
+    <span class="co co-tr">❧</span>
+    <span class="co co-bl">❧</span>
+    <span class="co co-br">❧</span>
+
+    <!-- Logo + org name -->
+    <div class="cert-logo-row">
+      <img src="logo.png" alt="Lithala" onerror="this.style.display='none'">
+      <div>
+        <div class="cert-org">LITHALA RISK SOLUTIONS</div>
+        <div class="cert-org-sub">Learning Management System</div>
+      </div>
+    </div>
+
+    <div class="cert-divider"><span>✦</span></div>
+
+    <div style="font-family:'Cinzel',serif;font-size:clamp(11px,1.8vw,13px);color:#888;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px">
+      Certificate of Competence
+    </div>
+
+    <div class="cert-label">This is to certify that</div>
+    <div class="cert-name" id="certName">Learner Name</div>
+
+    <div class="cert-label" style="margin-top:10px">has successfully completed</div>
+    <div class="cert-course"  id="certCourse">Course Title</div>
+    <div class="cert-subtitle" id="certSubtitle">Subtitle</div>
+
+    <div class="cert-scores">
+      <div class="cert-score-item"><div class="val" id="certScore">—%</div><div class="lbl">Final Score</div></div>
+      <div class="cert-score-item"><div class="val" id="certDate">—</div><div class="lbl">Issue Date</div></div>
+      <div class="cert-score-item"><div class="val" id="certExpiry">—</div><div class="lbl">Valid Until</div></div>
+      <div class="cert-score-item"><div class="val" id="certNum" style="font-size:clamp(10px,1.5vw,14px)">—</div><div class="lbl">Cert. No.</div></div>
+    </div>
+
+    <div class="cert-footer">
+      <div class="cert-sig-block">
+        <div class="cert-sig-name">Lithala Risk Solutions</div>
+        <div class="cert-sig-line"></div>
+        <div class="cert-sig-role">Director, Lithala Risk Solutions (Pty) Ltd</div>
+        <div class="cert-sig-contact">info@lithala.com · +27 (0) 82 421 4001</div>
+      </div>
+      <div class="cert-seal-block">
+        <div class="cert-seal-icon">🛡️</div>
+        <div class="cert-seal-text">Verified Certificate</div>
+        <div style="font-size:9px;color:#aaa;margin-top:3px;font-family:'DM Sans',sans-serif">lithala.com</div>
+      </div>
+      <div class="cert-info-block" id="certInfoBlock">
+        <div><strong>Certificate No.</strong><br><span id="certNumRight">—</span></div>
+        <div style="margin-top:6px"><strong>Level 1 B-BBEE</strong><br>Accredited HSE Provider</div>
+        <div style="margin-top:6px"><strong>Valid for 2 Years</strong><br>from date of issue</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Read params
+const p       = new URLSearchParams(window.location.search);
+const name    = decodeURIComponent(p.get('name')   || 'Learner');
+const course  = decodeURIComponent(p.get('course') || 'Course');
+const sub     = decodeURIComponent(p.get('sub')    || '');
+const score   = p.get('score') || '0';
+const certNo  = decodeURIComponent(p.get('cert')   || 'LTH-2025-0000');
+const issued  = p.get('issued')
+  ? new Date(p.get('issued')).toLocaleDateString('en-ZA')
+  : new Date().toLocaleDateString('en-ZA');
+const expiry  = p.get('issued')
+  ? new Date(new Date(p.get('issued')).getTime() + 2*365*24*60*60*1000).toLocaleDateString('en-ZA')
+  : new Date(Date.now() + 2*365*24*60*60*1000).toLocaleDateString('en-ZA');
+
+// Populate
+document.getElementById('certName').textContent    = name;
+document.getElementById('certCourse').textContent  = course;
+document.getElementById('certSubtitle').textContent= sub;
+document.getElementById('certScore').textContent   = score + '%';
+document.getElementById('certDate').textContent    = issued;
+document.getElementById('certExpiry').textContent  = expiry;
+document.getElementById('certNum').textContent     = certNo;
+document.getElementById('certNumRight').textContent= certNo;
+document.title = 'Certificate — ' + course + ' | Lithala LMS';
+
+// LinkedIn share URL
+const certUrl = window.location.href;
+const liUrl   = 'https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME'
+  + '&name='             + encodeURIComponent(course + ' — Lithala LMS')
+  + '&organizationName=' + encodeURIComponent('Lithala Risk Solutions')
+  + '&issueYear='        + new Date().getFullYear()
+  + '&issueMonth='       + (new Date().getMonth() + 1)
+  + '&certUrl='          + encodeURIComponent(certUrl)
+  + '&certId='           + encodeURIComponent(certNo);
+document.getElementById('linkedinBtn').href = liUrl;
+
+// Auto-print if ?print=1
+if (p.get('print') === '1') setTimeout(() => window.print(), 900);
+</script>
+</body>
+</html>
