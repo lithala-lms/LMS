@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin User Guide — Lithala LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d2b52;--ocean:#1565c0;--sky:#2196f3;--forest:#1a3a2a;
+  --lime:#52b788;--gold:#d4a017;--cream:#faf8f4;--white:#fff;--mist:#e0eae4;--ink:#1e2d26;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+
+/* ── COVER ──────────────────────────────────────────────────── */
+.cover{
+  background:linear-gradient(135deg,#0d2b52 0%,#1a3a2a 100%);
+  padding:64px 8% 72px;color:white;text-align:center;position:relative;overflow:hidden;
+}
+.cover::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:40px;background:var(--cream);clip-path:ellipse(55% 100% at 50% 100%)}
+.cover-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:32px;color:#52b788;margin-bottom:4px}
+.cover-logo em{color:#64b5f6;font-style:normal}
+.cover-sub{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:36px}
+.cover h1{font-family:'Syne',sans-serif;font-size:clamp(26px,5vw,48px);font-weight:800;line-height:1.15;margin-bottom:14px}
+.cover h1 em{color:#64b5f6;font-style:normal}
+.cover p{font-size:16px;color:rgba(255,255,255,.7);max-width:560px;margin:0 auto 28px;line-height:1.7}
+.cover-badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.cover-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;color:rgba(255,255,255,.85)}
+
+/* ── LAYOUT ─────────────────────────────────────────────────── */
+.page-wrap{display:grid;grid-template-columns:260px 1fr;gap:0;min-height:100vh}
+
+/* TOC SIDEBAR */
+.toc{
+  background:white;border-right:1px solid #f0f4f8;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  padding:28px 0;
+}
+.toc-logo{padding:0 20px 18px;border-bottom:1px solid #f0f4f8;margin-bottom:12px}
+.toc-logo div{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#0d2b52}
+.toc-logo div em{color:#1565c0;font-style:normal}
+.toc-logo p{font-size:11px;color:#aaa;margin-top:2px}
+.toc-section-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#bbb;padding:10px 20px 4px}
+.toc a{display:block;padding:8px 20px;font-size:13px;color:#666;text-decoration:none;border-left:3px solid transparent;transition:all .15s}
+.toc a:hover,.toc a.active{background:#f0f7ff;color:#1565c0;border-left-color:#1565c0}
+.toc a .toc-num{font-family:'Syne',sans-serif;font-weight:800;font-size:11px;color:#1565c0;margin-right:5px}
+
+/* MAIN CONTENT */
+.content{padding:44px 5% 80px;max-width:860px}
+
+/* ── SECTIONS ───────────────────────────────────────────────── */
+.section{margin-bottom:64px;scroll-margin-top:24px}
+.section-badge{display:inline-flex;align-items:center;gap:6px;background:#e3f2fd;color:#1565c0;border:1px solid rgba(21,101,192,.2);font-size:10px;font-weight:700;padding:4px 13px;border-radius:50px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.section h2{font-family:'Syne',sans-serif;font-size:clamp(20px,3vw,28px);font-weight:800;color:#0d2b52;margin-bottom:8px}
+.section>p{font-size:14.5px;color:#5a7060;margin-bottom:22px;max-width:680px;line-height:1.7}
+hr.section-rule{border:none;border-top:2px solid #f0f4f8;margin-bottom:28px}
+
+/* ── CREDENTIAL BOX ─────────────────────────────────────────── */
+.cred-box{background:linear-gradient(145deg,#0d2b52,#1a3a2a);border-radius:16px;padding:26px 28px;color:white;margin-bottom:22px}
+.cred-box h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#64b5f6;margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.cred-grid{display:flex;flex-direction:column;gap:10px}
+.cred-row{display:flex;align-items:flex-start;gap:14px;background:rgba(255,255,255,.08);border-radius:10px;padding:12px 15px}
+.cred-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:1px;min-width:110px;flex-shrink:0;margin-top:1px}
+.cred-val{font-size:13.5px;color:white;font-weight:500;word-break:break-all;line-height:1.4}
+.cred-val code{background:rgba(33,150,243,.2);padding:1px 7px;border-radius:4px;font-family:monospace;font-size:13px;color:#90caf9}
+.cred-tag{display:inline-block;background:rgba(82,183,136,.2);color:#52b788;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:8px;letter-spacing:.5px}
+.cred-tag.warn{background:rgba(212,160,23,.2);color:#d4a017}
+.cred-tag.danger{background:rgba(230,57,70,.15);color:#f48a8a}
+
+/* ── STEP CARDS ─────────────────────────────────────────────── */
+.steps{display:flex;flex-direction:column;gap:16px;margin-bottom:24px}
+.step-card{display:flex;gap:18px;background:white;border-radius:14px;padding:20px 22px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04);align-items:flex-start}
+.step-num{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1565c0,#2196f3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:white;flex-shrink:0}
+.step-body h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#0d2b52;margin-bottom:5px}
+.step-body p{font-size:13px;color:#5a7060;line-height:1.6}
+.step-body code{background:#f0f4f8;padding:2px 7px;border-radius:4px;font-family:monospace;font-size:12.5px;color:#0d2b52}
+.step-body ul{margin-top:7px;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5a7060}
+
+/* ── CALLOUT BOXES ──────────────────────────────────────────── */
+.callout{display:flex;gap:13px;padding:16px 18px;border-radius:12px;margin-bottom:18px;align-items:flex-start}
+.callout.tip{background:#f0fff4;border-left:4px solid #52b788}
+.callout.warn{background:#fffbf0;border-left:4px solid #d4a017}
+.callout.info{background:#f0f7ff;border-left:4px solid #1565c0}
+.callout.danger{background:#fff5f5;border-left:4px solid #e63946}
+.callout-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.callout h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:3px}
+.callout.tip h4{color:#2d6a4f}.callout.warn h4{color:#d4a017}.callout.info h4{color:#1565c0}.callout.danger h4{color:#c62828}
+.callout p,.callout ul{font-size:13px;color:#5a7060;line-height:1.6}
+.callout ul{padding-left:16px;margin-top:4px}
+
+/* ── SCREENSHOT MOCKUPS ─────────────────────────────────────── */
+.mock-wrap{margin:20px 0;border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(13,43,82,.14);border:1px solid rgba(13,43,82,.08)}
+.mock-bar{background:#f0f4f8;padding:10px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #e0eae4}
+.mock-dot{width:11px;height:11px;border-radius:50%}
+.mock-dot.r{background:#ff5f57}.mock-dot.y{background:#febc2e}.mock-dot.g{background:#28c840}
+.mock-url{font-family:monospace;font-size:11.5px;color:#888;margin-left:6px;background:white;padding:3px 12px;border-radius:4px;border:1px solid #e0eae4;flex:1}
+.mock-body{background:white;padding:20px;font-size:13px;color:#1e2d26}
+
+/* Screen simulation */
+.screen-sim{background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(13,43,82,.1);margin:20px 0;border:1px solid #f0f4f8}
+.ss-topbar{background:linear-gradient(135deg,#0d2b52,#1a3a2a);padding:13px 18px;display:flex;align-items:center;justify-content:space-between}
+.ss-topbar .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#52b788}
+.ss-topbar .logo em{color:#64b5f6;font-style:normal}
+.ss-topbar .badge{background:rgba(255,255,255,.12);color:rgba(255,255,255,.75);font-size:11px;padding:3px 10px;border-radius:4px}
+.ss-sidebar{background:#f5f7f5;border-right:1px solid #f0f4f8;padding:14px 0;min-width:160px;flex-shrink:0}
+.ss-sidebar-item{padding:8px 14px;font-size:12px;color:#666;display:flex;align-items:center;gap:7px;cursor:default}
+.ss-sidebar-item.active{background:#e3f2fd;color:#1565c0;font-weight:600}
+.ss-content{flex:1;padding:18px}
+.ss-body{display:flex;min-height:220px}
+
+/* FORM MOCK */
+.form-mock{background:#f5f7f5;border-radius:10px;padding:16px;margin:14px 0}
+.fm-row{margin-bottom:10px}
+.fm-label{font-size:10.5px;font-weight:600;color:#1a3a2a;margin-bottom:3px}
+.fm-input{background:white;border:2px solid #e0eae4;border-radius:7px;padding:8px 12px;font-size:12.5px;color:#1e2d26;width:100%;font-family:'DM Sans',sans-serif}
+.fm-input.highlight{border-color:#1565c0}
+.fm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fm-btn{background:linear-gradient(135deg,#1565c0,#2196f3);color:white;border:none;padding:10px 22px;border-radius:8px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:default;margin-top:6px}
+
+/* ── SHEET TABLE ────────────────────────────────────────────── */
+.sheet-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:16px 0;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(13,43,82,.07)}
+.sheet-table thead tr{background:#1a3a2a}
+.sheet-table thead th{color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;padding:10px 13px;text-align:left;letter-spacing:.5px}
+.sheet-table tbody tr:nth-child(even){background:#f8faf5}
+.sheet-table tbody tr:hover{background:#e8f5e9}
+.sheet-table tbody td{padding:9px 13px;color:#3d5a47;border-bottom:1px solid #f0f4f8;vertical-align:top}
+.sheet-table tbody td:first-child{font-family:monospace;font-size:11.5px;color:#1565c0;font-weight:600}
+
+/* ── EMAIL MOCK ─────────────────────────────────────────────── */
+.email-mock{background:white;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(13,43,82,.1);margin:20px 0;border:1px solid #f0f4f8}
+.email-header-bar{background:#f5f7f5;padding:12px 18px;border-bottom:1px solid #f0f4f8;font-size:12px;color:#888}
+.email-header-bar strong{color:#1e2d26}
+.email-body-wrap{padding:0}
+.email-hdr{background:#1a3a2a;padding:20px 24px;text-align:center}
+.email-hdr .el{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#52b788}
+.email-content{padding:24px;background:#f8f4ec}
+.email-result-box{background:#e8f5e9;border-left:4px solid #52b788;padding:18px;border-radius:8px;margin:14px 0;text-align:center}
+.email-result-box .score{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:#2d6a4f}
+.email-result-box .status{font-size:16px;color:#2d6a4f;font-weight:700;margin-top:4px}
+.email-result-box .detail{font-size:13px;color:#555;margin-top:6px}
+
+/* ── TAG / PILL ─────────────────────────────────────────────── */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:.3px;vertical-align:middle}
+.tag-blue{background:#e3f2fd;color:#1565c0}
+.tag-green{background:rgba(82,183,136,.12);color:#2d6a4f}
+.tag-gold{background:rgba(212,160,23,.12);color:#d4a017}
+.tag-red{background:rgba(230,57,70,.08);color:#c62828}
+
+/* ── MISC ───────────────────────────────────────────────────── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.info-card{background:white;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04)}
+.info-card h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.info-card p,.info-card li{font-size:13px;color:#5a7060;line-height:1.6}
+.info-card ul{padding-left:16px}
+.url-pill{display:inline-flex;align-items:center;gap:7px;background:#0d2b52;color:#90caf9;font-family:monospace;font-size:13px;padding:9px 16px;border-radius:8px;margin:4px 0;word-break:break-all;line-height:1.4}
+kbd{background:#f0f4f8;border:1px solid #e0eae4;border-radius:4px;padding:2px 7px;font-family:monospace;font-size:12.5px;color:#0d2b52}
+code{background:#f0f4f8;padding:2px 7px;border-radius:4px;font-family:monospace;font-size:12.5px;color:#0d2b52}
+
+@media(max-width:900px){
+  .page-wrap{grid-template-columns:1fr}
+  .toc{display:none}
+  .content{padding:28px 5% 60px}
+  .two-col{grid-template-columns:1fr}
+  .fm-grid{grid-template-columns:1fr}
+  .ss-sidebar{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <div class="cover-logo">LITHALA <em>LMS</em></div>
+  <div class="cover-sub">Learning Management System</div>
+  <h1>Admin <em>User Guide</em></h1>
+  <p>How to add and edit courses, upload assessments, manage learner results, and understand how everything connects to Google Sheets and email.</p>
+  <div class="cover-badges">
+    <span class="cover-badge">📚 Course Manager</span>
+    <span class="cover-badge">📊 Google Sheets</span>
+    <span class="cover-badge">📧 Email Results</span>
+    <span class="cover-badge">🏆 Certificates</span>
+    <span class="cover-badge">🛡️ Lithala Risk Solutions</span>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+<!-- TABLE OF CONTENTS -->
+<nav class="toc">
+  <div class="toc-logo">
+    <div>LITHALA <em>LMS</em></div>
+    <p>Admin Guide</p>
+  </div>
+  <div class="toc-section-label">Getting Started</div>
+  <a href="#s1"><span class="toc-num">1.</span> Passwords &amp; Access URLs</a>
+  <a href="#s2"><span class="toc-num">2.</span> How the System Works</a>
+  <div class="toc-section-label">Managing Courses</div>
+  <a href="#s3"><span class="toc-num">3.</span> Opening the Course Editor</a>
+  <a href="#s4"><span class="toc-num">4.</span> Adding a New Course</a>
+  <a href="#s5"><span class="toc-num">5.</span> Adding Course Modules</a>
+  <a href="#s6"><span class="toc-num">6.</span> Adding Quiz Questions</a>
+  <a href="#s7"><span class="toc-num">7.</span> Attaching a PDF</a>
+  <a href="#s8"><span class="toc-num">8.</span> Editing an Existing Course</a>
+  <a href="#s9"><span class="toc-num">9.</span> Deleting a Course</a>
+  <div class="toc-section-label">Results &amp; Data</div>
+  <a href="#s10"><span class="toc-num">10.</span> Assessment Results Emails</a>
+  <a href="#s11"><span class="toc-num">11.</span> Google Sheet Data</a>
+  <a href="#s12"><span class="toc-num">12.</span> Certificates</a>
+  <div class="toc-section-label">Reference</div>
+  <a href="#s13"><span class="toc-num">13.</span> All Passwords &amp; Links</a>
+  <a href="#s14"><span class="toc-num">14.</span> Troubleshooting</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="content">
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 1 — PASSWORDS & ACCESS
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-badge">🔐 Section 1</div>
+  <h2>Passwords &amp; Access URLs</h2>
+  <p>These are all the login details for the Lithala LMS system. Keep this page private — do not share it publicly.</p>
+  <hr class="section-rule">
+
+  <!-- COURSE EDITOR -->
+  <div class="cred-box">
+    <h3>✏️ Course Editor — Add &amp; Edit Courses</h3>
+    <div class="cred-grid">
+      <div class="cred-row">
+        <div class="cred-label">Web Address</div>
+        <div class="cred-val"><code>https://lithala-lms.github.io/LMS/course-editor.html</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Password</div>
+        <div class="cred-val"><code>LithalaAdmin2025</code> <span class="cred-tag warn">Change this!</span></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Who can use</div>
+        <div class="cred-val">Site owner / admin staff only</div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">What it does</div>
+        <div class="cred-val">Add new courses, edit existing ones, attach PDFs, add quiz questions — all without coding</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="cred-box" style="margin-bottom:22px">
+    <h3>⚙️ Admin Panel — View Learner Data</h3>
+    <div class="cred-grid">
+      <div class="cred-row">
+        <div class="cred-label">Web Address</div>
+        <div class="cred-val"><code>https://lithala-lms.github.io/LMS/admin.html</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Password</div>
+        <div class="cred-val"><code>LithalaAdmin2025</code> <span class="cred-tag">(same password)</span></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">What it does</div>
+        <div class="cred-val">View registered learners, purchases, assessment results, deletion requests. Export data to CSV.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOOGLE SHEET -->
+  <div class="cred-box" style="margin-bottom:22px">
+    <h3>📊 Google Sheet — Live Data</h3>
+    <div class="cred-grid">
+      <div class="cred-row">
+        <div class="cred-label">Sheet ID</div>
+        <div class="cred-val"><code>110-K93UME8_8z5pystKKc5yIsoAC1_OdKyt4KSs0oco</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Direct Link</div>
+        <div class="cred-val"><code>https://docs.google.com/spreadsheets/d/110-K93UME8_8z5pystKKc5yIsoAC1_OdKyt4KSs0oco</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Google Account</div>
+        <div class="cred-val"><code>lithalalms@gmail.com</code> <span class="cred-tag">Owner</span></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">What it stores</div>
+        <div class="cred-val">All learner registrations, purchases, course progress, assessment results and deletion requests</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT EMAILS -->
+  <div class="cred-box">
+    <h3>📧 Assessment Result Emails are Sent To</h3>
+    <div class="cred-grid">
+      <div class="cred-row">
+        <div class="cred-label">Admin Email 1</div>
+        <div class="cred-val"><code>info@lithala.com</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Admin Email 2</div>
+        <div class="cred-val"><code>lithalalms@gmail.com</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Learner</div>
+        <div class="cred-val">Their own email address (the one they registered with)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn" style="margin-top:20px">
+    <div class="callout-icon">⚠️</div>
+    <div>
+      <h4>Change Your Password</h4>
+      <p>To change the admin password, open <code>lms-config.js</code> on GitHub, find the line that says <code>ADMIN_PASSWORD: 'LithalaAdmin2025'</code>, and replace <code>LithalaAdmin2025</code> with your new password. Save the file — the change takes effect immediately.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 2 — HOW THE SYSTEM WORKS
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-badge">🔁 Section 2</div>
+  <h2>How the System Works</h2>
+  <p>Understanding how courses, learners, results and data all connect together.</p>
+  <hr class="section-rule">
+
+  <!-- Flow diagram using boxes -->
+  <div style="background:white;border-radius:16px;padding:28px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04);margin-bottom:24px">
+    <h4 style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#0d2b52;margin-bottom:18px">📊 Full System Flow</h4>
+    <div style="display:flex;flex-direction:column;gap:0">
+      <!-- Row 1 -->
+      <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap">
+        <div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:13px 16px;min-width:150px;text-align:center">
+          <div style="font-size:22px;margin-bottom:4px">✏️</div>
+          <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#0d2b52">You add a course</div>
+          <div style="font-size:11px;color:#888;margin-top:2px">Course Editor page</div>
+        </div>
+        <div style="font-size:22px;color:#2196f3;padding:0 10px">→</div>
+        <div style="background:#f0fff4;border:2px solid #52b788;border-radius:10px;padding:13px 16px;min-width:150px;text-align:center">
+          <div style="font-size:22px;margin-bottom:4px">🌐</div>
+          <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#0d2b52">Goes live on site</div>
+          <div style="font-size:11px;color:#888;margin-top:2px">Courses page instantly</div>
+        </div>
+        <div style="font-size:22px;color:#2196f3;padding:0 10px">→</div>
+        <div style="background:#fff8e1;border:2px solid #d4a017;border-radius:10px;padding:13px 16px;min-width:150px;text-align:center">
+          <div style="font-size:22px;margin-bottom:4px">🛒</div>
+          <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#0d2b52">Learner purchases</div>
+          <div style="font-size:11px;color:#888;margin-top:2px">PayFast checkout</div>
+        </div>
+      </div>
+      <div style="margin-left:60px;color:#52b788;font-size:22px;padding:5px 0">↓</div>
+      <!-- Row 2 -->
+      <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap">
+        <div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:13px 16px;min-width:150px;text-align:center">
+          <div style="font-size:22px;margin-bottom:4px">📊</div>
+          <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#0d2b52">Google Sheet updated</div>
+          <div style="font-size:11px;color:#888;margin-top:2px">Purchase recorded</div>
+        </div>
+        <div style="font-size:22px;color:#2196f3;padding:0 10px">←</div>
+        <div style="background:#f0fff4;border:2px solid #52b788;border-radius:10px;padding:13px 16px;min-width:150px;text-align:center">
+          <div style="font-size:22px;margin-bottom:4px">📝</div>
+          <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#0d2b52">Learner completes</div>
+          <div style="font-size:11px;color:#888;margin-top:2px">Modules + assessment</div>
+        </div>
+        <div style="font-size:22px;color:#2196f3;padding:0 10px">→</div>
+        <div style="background:#fce4ec;border:2px solid #e63946;border-radius:10px;padding:13px 16px;min-width:150px;text-align:center">
+          <div style="font-size:22px;margin-bottom:4px">📧</div>
+          <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#0d2b52">Emails sent</div>
+          <div style="font-size:11px;color:#888;margin-top:2px">Learner + both admins</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="info-card">
+      <h4>📊 Google Sheet — what it stores</h4>
+      <ul>
+        <li><strong>Users</strong> — every person who registers</li>
+        <li><strong>Purchases</strong> — every course bought</li>
+        <li><strong>Progress</strong> — modules completed per learner</li>
+        <li><strong>Results</strong> — assessment scores and certificates</li>
+        <li><strong>DeletionRequests</strong> — POPIA data requests</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h4>📧 Emails — when they are sent</h4>
+      <ul>
+        <li>Welcome email to learner on registration</li>
+        <li>Result email to learner after assessment</li>
+        <li>Result email to <strong>info@lithala.com</strong></li>
+        <li>Result email to <strong>lithalalms@gmail.com</strong></li>
+        <li>Certificate details included if they passed</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 3 — OPENING THE COURSE EDITOR
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-badge">🖥️ Section 3</div>
+  <h2>Opening the Course Editor</h2>
+  <p>The Course Editor is a private page — it is not linked from the public site. Only people who know the address can find it.</p>
+  <hr class="section-rule">
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Open your web browser</h4>
+        <p>Use Chrome, Edge or Safari on any device — phone, tablet or computer.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Go to this address</h4>
+        <div class="url-pill">🌐 https://lithala-lms.github.io/LMS/course-editor.html</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Enter the password</h4>
+        <p>You will see a login screen. Type the password and press <kbd>Enter</kbd> or click <strong>Sign In</strong>.</p>
+        <p style="margin-top:6px">Password: <code>LithalaAdmin2025</code></p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>You are now inside the Course Editor</h4>
+        <p>On the left you will see a list of all your existing courses. On the right is the editing area where you fill in course details.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login screen mockup -->
+  <div class="mock-wrap">
+    <div class="mock-bar">
+      <div class="mock-dot r"></div><div class="mock-dot y"></div><div class="mock-dot g"></div>
+      <div class="mock-url">https://lithala-lms.github.io/LMS/course-editor.html</div>
+    </div>
+    <div class="mock-body" style="background:linear-gradient(135deg,#0d2b52,#1a3a2a);padding:40px;text-align:center">
+      <div style="background:white;border-radius:18px;max-width:320px;margin:0 auto;padding:34px 28px">
+        <div style="font-size:40px;margin-bottom:10px">🎓</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:19px;color:#0d2b52;margin-bottom:3px">Course Manager</div>
+        <div style="font-size:12px;color:#aaa;margin-bottom:22px">Lithala LMS — Site Owner Access<br>Add, edit and publish your own courses.</div>
+        <div style="background:#f5f7f5;border:2px solid #1565c0;border-radius:9px;padding:11px 14px;font-size:13.5px;color:#888;margin-bottom:12px;text-align:left">••••••••••••••••</div>
+        <div style="background:linear-gradient(135deg,#1565c0,#2196f3);color:white;padding:13px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px">Sign In →</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div>
+      <h4>Bookmark this page</h4>
+      <p>Add <code>course-editor.html</code> to your browser bookmarks so you can find it quickly. You can also save it to your phone's home screen.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 4 — ADDING A NEW COURSE
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-badge">➕ Section 4</div>
+  <h2>Adding a New Course</h2>
+  <p>Click <strong>+ New Course</strong> in the top left of the Course Editor to start filling in a blank form.</p>
+  <hr class="section-rule">
+
+  <!-- Editor screen mockup -->
+  <div class="screen-sim">
+    <div class="ss-topbar">
+      <div class="logo">LITHALA <em>LMS</em></div>
+      <div class="badge">Course Manager</div>
+    </div>
+    <div class="ss-body">
+      <div class="ss-sidebar">
+        <div class="ss-sidebar-item active" style="background:#e3f2fd;color:#1565c0;font-weight:600;font-size:12px">➕ New Course</div>
+        <div class="ss-sidebar-item" style="font-size:11px">📄 Confined Space Entry</div>
+        <div class="ss-sidebar-item" style="font-size:11px">📄 Permit to Work</div>
+        <div class="ss-sidebar-item" style="font-size:11px">📄 Hot Work Safety</div>
+        <div class="ss-sidebar-item" style="font-size:11px;color:#aaa">+ 5 more...</div>
+      </div>
+      <div class="ss-content">
+        <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin-bottom:12px">📋 Course Details — New Course</div>
+        <div class="form-mock">
+          <div class="fm-grid">
+            <div class="fm-row"><div class="fm-label">Course ID *</div><div class="fm-input highlight">FIRE001</div></div>
+            <div class="fm-row"><div class="fm-label">Category</div><div class="fm-input">Fire Safety</div></div>
+          </div>
+          <div class="fm-row"><div class="fm-label">Course Title *</div><div class="fm-input highlight">Fire Safety Awareness</div></div>
+          <div class="fm-row"><div class="fm-label">Subtitle</div><div class="fm-input">e-Learning Module</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps" style="margin-top:22px">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Course ID <span class="tag tag-red">Required</span></h4>
+        <p>A short unique code for the course. Use capital letters and numbers only — no spaces.</p>
+        <ul>
+          <li><strong>Good examples:</strong> <code>FIRE001</code>, <code>ENV002</code>, <code>CHEM003</code></li>
+          <li><strong>Bad examples:</strong> <code>fire safety</code>, <code>Course 1</code> (spaces not allowed)</li>
+          <li>This ID is only used internally. Learners never see it.</li>
+          <li>Each course must have a <em>different</em> ID — you cannot use the same one twice.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Course Title <span class="tag tag-red">Required</span></h4>
+        <p>The main name of the course shown to learners. Examples: <em>Fire Safety Awareness</em>, <em>Environmental Compliance</em>, <em>Chemical Handling</em>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Subtitle</h4>
+        <p>A short description of the type. Use either <em>e-Learning Module</em> or <em>Training Material</em>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Category</h4>
+        <p>Choose the closest matching category from the dropdown. This is used to filter courses on the Courses page.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>Price <span class="tag tag-red">Required</span></h4>
+        <p>The price in South African Rands, including VAT. Enter numbers only — no <code>R</code> symbol. Example: <code>1500</code></p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <h4>Duration</h4>
+        <p>The estimated time to complete the course. Example: <code>3 hours</code>, <code>4.5 hours</code>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">7</div>
+      <div class="step-body">
+        <h4>Description</h4>
+        <p>2–3 sentences about what the course covers. This is what learners read before purchasing. Write it in plain, professional language.</p>
+        <p style="margin-top:6px"><strong>Example:</strong> <em>"This course covers fire prevention principles, extinguisher selection and use, evacuation procedures and legal requirements under the OHS Act."</em></p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">8</div>
+      <div class="step-body">
+        <h4>Cover Image</h4>
+        <p>Paste a link to a photo. The easiest way to get a free professional photo:</p>
+        <ul>
+          <li>Go to <code>unsplash.com</code> in your browser</li>
+          <li>Search for something relevant (e.g. "fire safety", "workplace training")</li>
+          <li>Click the photo you like</li>
+          <li>Right-click the photo → <strong>Copy Image Address</strong></li>
+          <li>Paste that URL into the Image URL field</li>
+          <li>A preview will appear immediately below</li>
+        </ul>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">9</div>
+      <div class="step-body">
+        <h4>Learning Outcomes</h4>
+        <p>Type one outcome per line — what the learner will be able to do after completing the course. Aim for 5–8 outcomes.</p>
+        <p style="margin-top:6px"><strong>Example:</strong></p>
+        <ul>
+          <li>Identify fire hazards in the workplace</li>
+          <li>Select and operate the correct fire extinguisher</li>
+          <li>Follow the emergency evacuation procedure</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div>
+      <h4>WhatsApp Delivery checkbox</h4>
+      <p>If you tick the <strong>WhatsApp delivery</strong> checkbox, learners will see a 💬 WhatsApp badge on the course card and will be able to activate the course via WhatsApp. Only tick this if you are ready to manually deliver the course via WhatsApp.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 5 — ADDING COURSE MODULES
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="section-badge">📋 Section 5</div>
+  <h2>Adding Course Modules</h2>
+  <p>Modules are the sections of your course. Each module represents one topic or lesson. The last module should always be the Assessment.</p>
+  <hr class="section-rule">
+
+  <!-- Module section mockup -->
+  <div class="mock-wrap">
+    <div class="mock-bar">
+      <div class="mock-dot r"></div><div class="mock-dot y"></div><div class="mock-dot g"></div>
+      <div class="mock-url">Course Editor — Modules</div>
+    </div>
+    <div class="mock-body">
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#0d2b52;margin-bottom:12px">📋 Course Modules</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px">
+        <div style="background:#f5f7f5;border:1px solid #e0eae4;border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:9px">
+          <span style="color:#ccc;font-size:14px">⋮⋮</span>
+          <div style="background:#1565c0;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0">01</div>
+          <span style="flex:2;font-size:12.5px;color:#1e2d26">Introduction to Fire Safety</span>
+          <span style="font-size:11px;color:#aaa;min-width:60px;text-align:right">20 min</span>
+          <span style="font-size:11px;color:#888">Content ▾</span>
+          <span style="color:#ddd;font-size:14px;cursor:pointer">✕</span>
+        </div>
+        <div style="background:#f5f7f5;border:1px solid #e0eae4;border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:9px">
+          <span style="color:#ccc;font-size:14px">⋮⋮</span>
+          <div style="background:#1565c0;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0">02</div>
+          <span style="flex:2;font-size:12.5px;color:#1e2d26">Fire Classes &amp; Extinguishers</span>
+          <span style="font-size:11px;color:#aaa;min-width:60px;text-align:right">25 min</span>
+          <span style="font-size:11px;color:#888">Content ▾</span>
+          <span style="color:#ddd;font-size:14px">✕</span>
+        </div>
+        <div style="background:linear-gradient(135deg,#f0f7ff,#f3e5f5);border:1px solid rgba(123,31,162,.18);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:9px">
+          <span style="color:#ccc;font-size:14px">⋮⋮</span>
+          <div style="background:#7b1fa2;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0">03</div>
+          <span style="flex:2;font-size:12.5px;color:#1e2d26">Final Assessment</span>
+          <span style="font-size:11px;color:#aaa;min-width:60px;text-align:right">30 min</span>
+          <span style="font-size:11px;color:#7b1fa2;font-weight:600">Assessment ▾</span>
+          <span style="color:#ddd;font-size:14px">✕</span>
+        </div>
+      </div>
+      <div style="width:100%;padding:9px;border-radius:8px;border:2px dashed #e0eae4;background:none;text-align:center;font-family:'Syne',sans-serif;font-weight:600;font-size:12px;color:#aaa">+ Add Module</div>
+    </div>
+  </div>
+
+  <div class="steps" style="margin-top:22px">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Click + Add Module to add a new row</h4>
+        <p>Each row is one module. You can add as many as needed — most courses have 4–8 modules.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Type the module title in the text box</h4>
+        <p>Examples: <em>Introduction to Fire Safety</em>, <em>Fire Classes &amp; Extinguishers</em>, <em>Evacuation Procedures</em></p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Enter the estimated duration</h4>
+        <p>Type how long this module takes. Examples: <code>20 min</code>, <code>30 min</code>, <code>1 hour</code></p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Set the last module to "Assessment"</h4>
+        <p>Click the dropdown on the right of the last module row and change it from <strong>Content</strong> to <strong>Assessment</strong>. The row will turn purple/blue to show it is the assessment module. This is what triggers the quiz at the end.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>To remove a module</h4>
+        <p>Click the <strong>✕</strong> button on the right of any module row. This removes it from the list immediately.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div>
+      <h4>Recommended module structure</h4>
+      <ul>
+        <li>Start with an <em>Introduction</em> module</li>
+        <li>Add 3–6 topic modules covering the main content</li>
+        <li>End with a <em>Final Assessment</em> module (set to Assessment type)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 6 — ADDING QUIZ QUESTIONS
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="section-badge">📝 Section 6</div>
+  <h2>Adding Quiz Questions</h2>
+  <p>Assessment questions are multiple choice — the learner picks A, B, C or D. You set which answer is correct. Learners need 80% to pass and earn a certificate.</p>
+  <hr class="section-rule">
+
+  <!-- Question mockup -->
+  <div class="mock-wrap">
+    <div class="mock-bar">
+      <div class="mock-dot r"></div><div class="mock-dot y"></div><div class="mock-dot g"></div>
+      <div class="mock-url">Course Editor — Assessment Questions</div>
+    </div>
+    <div class="mock-body">
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#0d2b52;margin-bottom:12px">📝 Assessment Questions — <span style="font-weight:400;color:#888">Learners need 80% to pass</span></div>
+      <div style="background:#f5f7f5;border:1px solid #e0eae4;border-radius:10px;padding:14px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+          <div style="background:#1565c0;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center">Q1</div>
+          <div style="flex:1;background:white;border:2px solid #1565c0;border-radius:8px;padding:8px 12px;font-size:13px;color:#1e2d26">What class of fire is caused by electrical equipment?</div>
+          <div style="color:#ddd;font-size:14px">✕</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px">
+          <div style="display:flex;align-items:center;gap:6px;background:white;border:1px solid #e0eae4;border-radius:7px;padding:6px 10px"><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:10px;color:#888;width:14px">A</span><span style="font-size:12px;color:#1e2d26">Class A</span></div>
+          <div style="display:flex;align-items:center;gap:6px;background:white;border:1px solid #e0eae4;border-radius:7px;padding:6px 10px"><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:10px;color:#888;width:14px">B</span><span style="font-size:12px;color:#1e2d26">Class B</span></div>
+          <div style="display:flex;align-items:center;gap:6px;background:white;border:2px solid #52b788;border-radius:7px;padding:6px 10px"><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:10px;color:#888;width:14px">C</span><span style="font-size:12px;color:#1e2d26">Class C ← Correct</span></div>
+          <div style="display:flex;align-items:center;gap:6px;background:white;border:1px solid #e0eae4;border-radius:7px;padding:6px 10px"><span style="font-family:'Syne',sans-serif;font-weight:700;font-size:10px;color:#888;width:14px">D</span><span style="font-size:12px;color:#1e2d26">Class D</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:9px">
+          <span style="font-size:11.5px;font-weight:600;color:#1a3a2a">✅ Correct answer:</span>
+          <div style="padding:5px 10px;border:1.5px solid #e0eae4;border-radius:7px;font-size:12.5px;background:white;color:#1e2d26">C — third option</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps" style="margin-top:22px">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Click + Add Question</h4>
+        <p>A new question block appears. Add at least 5 questions — more questions means a more thorough assessment.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Type the question in the text box at the top of each block</h4>
+        <p>Write a clear, unambiguous question. Example: <em>"What class of fire involves electrical equipment?"</em></p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Fill in all four answer options (A, B, C, D)</h4>
+        <p>Type one option in each box. All four options should be plausible — avoid obviously wrong answers.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Set the correct answer using the dropdown</h4>
+        <p>At the bottom of each question block, use the dropdown labelled <strong>✅ Correct answer</strong> to select which option is right — A (first), B (second), C (third) or D (fourth).</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>Repeat for all questions</h4>
+        <p>To remove a question, click the <strong>✕</strong> button in the top right of that question block.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">📊</div>
+    <div>
+      <h4>Pass Mark</h4>
+      <p>Learners need <strong>80%</strong> to pass and earn a certificate. For a 5-question assessment, they must get 4 out of 5 correct. For 10 questions, they need 8 out of 10.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 7 — ATTACHING A PDF
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="section-badge">📄 Section 7</div>
+  <h2>Attaching a PDF Document</h2>
+  <p>You can attach a PDF to any course — learners can scroll through it inside the course player. Great for workbooks, study guides or facilitator materials.</p>
+  <hr class="section-rule">
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Upload your PDF to Google Drive</h4>
+        <p>Go to <code>drive.google.com</code> → click <strong>+ New</strong> → <strong>File upload</strong> → select your PDF file.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Make the PDF public</h4>
+        <p>Right-click the uploaded PDF in Google Drive → <strong>Share</strong> → click <strong>Change to anyone with the link</strong> → click <strong>Done</strong>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Get the preview link</h4>
+        <p>Click the three dots on the file → <strong>Open in new window</strong>. Look at the URL bar — it will show something like:</p>
+        <code>https://drive.google.com/file/d/ABCDEF123/view?usp=sharing</code>
+        <p style="margin-top:7px">Change the end from <code>/view?usp=sharing</code> to <code>/preview</code> so it looks like:</p>
+        <code>https://drive.google.com/file/d/ABCDEF123/preview</code>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Paste the link into the Course Editor</h4>
+        <p>In the <strong>📄 Course PDF Document</strong> section of the Course Editor, paste the preview URL into the text box.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>Click "👁 Preview PDF" to verify it works</h4>
+        <p>The PDF will open in a viewer right inside the editor. You can scroll through the pages to confirm it loaded correctly. If it shows an error, check that the sharing settings are set to "Anyone with the link".</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF mockup -->
+  <div class="mock-wrap">
+    <div class="mock-bar">
+      <div class="mock-dot r"></div><div class="mock-dot y"></div><div class="mock-dot g"></div>
+      <div class="mock-url">PDF Viewer inside Course Editor</div>
+    </div>
+    <div class="mock-body" style="padding:0">
+      <div style="background:#0d2b52;padding:9px 14px;display:flex;align-items:center;justify-content:space-between">
+        <span style="color:rgba(255,255,255,.75);font-size:12px;font-weight:600">📄 Fire Safety Awareness - Workbook.pdf</span>
+        <div style="display:flex;gap:7px">
+          <div style="background:rgba(255,255,255,.12);color:white;padding:4px 10px;border-radius:5px;font-size:11px;font-family:'Syne',sans-serif;font-weight:700">◀</div>
+          <div style="background:rgba(255,255,255,.12);color:white;padding:4px 10px;border-radius:5px;font-size:11px;font-family:'Syne',sans-serif;font-weight:700">▶</div>
+          <div style="background:rgba(255,255,255,.12);color:white;padding:4px 10px;border-radius:5px;font-size:11px;font-family:'Syne',sans-serif;font-weight:700">✕ Close</div>
+        </div>
+      </div>
+      <div style="background:#525659;height:220px;display:flex;align-items:center;justify-content:center">
+        <div style="background:white;width:160px;height:180px;border-radius:4px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,.3)">
+          <div style="width:100%;height:8px;background:#1a3a2a;border-radius:2px;margin-bottom:8px"></div>
+          <div style="width:80%;height:5px;background:#e0eae4;border-radius:2px;margin-bottom:14px"></div>
+          <div style="width:100%;height:4px;background:#f0f4f8;border-radius:2px;margin-bottom:5px"></div>
+          <div style="width:100%;height:4px;background:#f0f4f8;border-radius:2px;margin-bottom:5px"></div>
+          <div style="width:75%;height:4px;background:#f0f4f8;border-radius:2px;margin-bottom:12px"></div>
+          <div style="width:100%;height:50px;background:#f5f7f5;border-radius:4px;border:1px solid #e0eae4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">✅</div>
+    <div>
+      <h4>PDF formats that work well</h4>
+      <ul>
+        <li>Course workbooks and learner guides</li>
+        <li>Legislation and regulation documents</li>
+        <li>Facilitator manuals and presenter notes</li>
+        <li>Safety data sheets (SDS)</li>
+        <li>Printable checklists and forms</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 8 — EDITING AN EXISTING COURSE
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s8">
+  <div class="section-badge">✏️ Section 8</div>
+  <h2>Editing an Existing Course</h2>
+  <p>You can change the price, description, image, modules or questions of any course at any time.</p>
+  <hr class="section-rule">
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Open the Course Editor and sign in</h4>
+        <p>Go to <code>https://lithala-lms.github.io/LMS/course-editor.html</code> and enter the password.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Click the course you want to edit in the left sidebar</h4>
+        <p>All courses appear in the left panel with a thumbnail image, title and price. The one you click will be highlighted in blue.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Make your changes in the form on the right</h4>
+        <p>All fields are pre-filled with the current data. Change only the fields you need to update — price, description, image, modules, questions, etc.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Click 💾 Save &amp; Publish Course</h4>
+        <p>Your changes take effect immediately on the live Courses page. Learners who are currently enrolled will also see the updated version.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div>
+      <h4>You cannot change the Course ID</h4>
+      <p>Once a course is saved, its ID is locked. The ID is what links learner progress and purchases to the course. If you need a completely different course, create a new one with a new ID instead of trying to repurpose an existing one.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 9 — DELETING A COURSE
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s9">
+  <div class="section-badge">🗑️ Section 9</div>
+  <h2>Deleting a Course</h2>
+  <p>Deleting a course removes it from the public Courses page. Existing learner data for that course is not deleted.</p>
+  <hr class="section-rule">
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Open the course you want to delete</h4>
+        <p>Click the course in the left sidebar to open it in the editor.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Scroll to the bottom and click 🗑 Delete This Course</h4>
+        <p>A confirmation message will appear asking you to confirm. Click OK to delete.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>The course is removed immediately</h4>
+        <p>It disappears from the public Courses page straight away. The course editor sidebar also updates.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout danger">
+    <div class="callout-icon">❌</div>
+    <div>
+      <h4>Deletion cannot be undone</h4>
+      <p>Once you delete a course from the Course Editor, it cannot be recovered. If you just want to hide a course temporarily, consider changing the price to a very high number or renaming it with "INACTIVE" in the title rather than deleting it.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 10 — ASSESSMENT RESULTS EMAILS
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s10">
+  <div class="section-badge">📧 Section 10</div>
+  <h2>Assessment Results Emails</h2>
+  <p>Every time a learner completes an assessment, three emails are sent automatically — one to the learner, and one each to both admin email addresses.</p>
+  <hr class="section-rule">
+
+  <div class="two-col">
+    <div class="info-card">
+      <h4>📧 Email goes to the learner</h4>
+      <ul>
+        <li>Their percentage score</li>
+        <li>Passed or Not Yet Competent</li>
+        <li>Certificate number (if passed)</li>
+        <li>Link to download their certificate</li>
+        <li>How to retake if they failed</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h4>📧 Email goes to both admins</h4>
+      <ul>
+        <li>Learner name and email</li>
+        <li>Course name</li>
+        <li>Score (e.g. 4/5 — 80%)</li>
+        <li>Passed or Failed status</li>
+        <li>Certificate number if passed</li>
+        <li>Link to the Google Sheet</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Email mockup -->
+  <div class="email-mock">
+    <div class="email-header-bar">
+      <strong>From:</strong> Lithala LMS &nbsp;·&nbsp;
+      <strong>To:</strong> info@lithala.com &nbsp;·&nbsp;
+      <strong>Subject:</strong> 🏆 PASS — Thabo Nkosi | Permit to Work | Lithala LMS
+    </div>
+    <div class="email-body-wrap">
+      <div class="email-hdr"><div class="el">LITHALA LMS — Admin Alert</div><div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px">Assessment Passed ✅</div></div>
+      <div class="email-content">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;background:white;border-radius:8px;overflow:hidden">
+          <tr style="background:#e3f2fd"><td style="padding:9px 14px;font-weight:700;color:#0d2b52;width:40%">Learner Name</td><td style="padding:9px 14px;color:#555">Thabo Nkosi</td></tr>
+          <tr><td style="padding:9px 14px;font-weight:700;color:#0d2b52;background:#e3f2fd">Email</td><td style="padding:9px 14px;color:#555">thabo.nkosi@company.co.za</td></tr>
+          <tr style="background:#e3f2fd"><td style="padding:9px 14px;font-weight:700;color:#0d2b52">Course</td><td style="padding:9px 14px;color:#555">Permit to Work (PTW)</td></tr>
+          <tr><td style="padding:9px 14px;font-weight:700;color:#0d2b52;background:#e3f2fd">Score</td><td style="padding:9px 14px;color:#2d6a4f;font-weight:700">5/5 (100%) — PASSED</td></tr>
+          <tr style="background:#e3f2fd"><td style="padding:9px 14px;font-weight:700;color:#0d2b52">Certificate No.</td><td style="padding:9px 14px;color:#1565c0;font-weight:700">LTH-2025-4782</td></tr>
+          <tr><td style="padding:9px 14px;font-weight:700;color:#0d2b52;background:#e3f2fd">Date &amp; Time</td><td style="padding:9px 14px;color:#555">22/04/2025 14:32</td></tr>
+        </table>
+        <div style="text-align:center;margin-top:18px"><div style="display:inline-block;background:#1565c0;color:white;padding:12px 28px;border-radius:8px;font-weight:700;font-size:13px">View in Google Sheet →</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">📬</div>
+    <div>
+      <h4>Check your spam folder</h4>
+      <p>If you are not receiving result emails, check your spam or junk folder in Gmail. Add <code>lithalalms@gmail.com</code> to your contacts to prevent emails from being filtered.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 11 — GOOGLE SHEET DATA
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s11">
+  <div class="section-badge">📊 Section 11</div>
+  <h2>Google Sheet Data</h2>
+  <p>All learner data is stored in a Google Sheet that you can view, search, filter and download at any time.</p>
+  <hr class="section-rule">
+
+  <div class="callout info">
+    <div class="callout-icon">🔗</div>
+    <div>
+      <h4>Open your Google Sheet</h4>
+      <p>Sign in to <code>lithalalms@gmail.com</code> and go to Google Drive, or use this direct link:<br>
+      <code>https://docs.google.com/spreadsheets/d/110-K93UME8_8z5pystKKc5yIsoAC1_OdKyt4KSs0oco</code></p>
+    </div>
+  </div>
+
+  <p style="font-size:14px;color:#5a7060;margin-bottom:14px;margin-top:10px">The sheet has <strong>5 tabs</strong> — each stores a different type of data:</p>
+
+  <!-- Tab 1: Users -->
+  <h4 style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin:18px 0 7px;display:flex;align-items:center;gap:7px">👥 Tab 1: Users — All Registered Learners</h4>
+  <table class="sheet-table">
+    <thead><tr><th>Column</th><th>What it means</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>UserID</td><td>Unique system ID for the learner</td><td>USR-1714900000000</td></tr>
+      <tr><td>Email</td><td>Their email address (also login)</td><td>thabo@company.co.za</td></tr>
+      <tr><td>Name</td><td>Full name from their profile</td><td>Thabo Nkosi</td></tr>
+      <tr><td>RegisteredAt</td><td>Date and time they first registered</td><td>2025-04-22T09:14:32</td></tr>
+      <tr><td>LastLogin</td><td>Most recent login date</td><td>2025-04-24T14:20:00</td></tr>
+      <tr><td>Status</td><td>Account status</td><td>active</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Tab 2: Purchases -->
+  <h4 style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin:18px 0 7px;display:flex;align-items:center;gap:7px">💳 Tab 2: Purchases — Every Course Bought</h4>
+  <table class="sheet-table">
+    <thead><tr><th>Column</th><th>What it means</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>PurchaseID</td><td>Unique reference for this purchase</td><td>PUR-1714900000001</td></tr>
+      <tr><td>Email</td><td>Who bought it</td><td>thabo@company.co.za</td></tr>
+      <tr><td>CourseID</td><td>Which course was bought</td><td>PTW001</td></tr>
+      <tr><td>CourseName</td><td>Full course name</td><td>Permit to Work (PTW)</td></tr>
+      <tr><td>Price</td><td>Amount paid</td><td>R 1599</td></tr>
+      <tr><td>PaymentRef</td><td>PayFast payment reference</td><td>PF-8827634</td></tr>
+      <tr><td>PurchasedAt</td><td>Date and time of purchase</td><td>2025-04-22T09:18:00</td></tr>
+      <tr><td>ExpiresAt</td><td>When access expires (12 months)</td><td>2026-04-22T09:18:00</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Tab 3: Results -->
+  <h4 style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin:18px 0 7px;display:flex;align-items:center;gap:7px">📈 Tab 3: Results — All Assessment Scores</h4>
+  <table class="sheet-table">
+    <thead><tr><th>Column</th><th>What it means</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>ResultID</td><td>Unique reference for this attempt</td><td>RES-1714900000002</td></tr>
+      <tr><td>Email</td><td>Who attempted the assessment</td><td>thabo@company.co.za</td></tr>
+      <tr><td>Name</td><td>Learner's full name</td><td>Thabo Nkosi</td></tr>
+      <tr><td>CourseName</td><td>Which course was assessed</td><td>Permit to Work (PTW)</td></tr>
+      <tr><td>Score</td><td>Number of correct answers</td><td>4</td></tr>
+      <tr><td>TotalQuestions</td><td>Total questions in the assessment</td><td>5</td></tr>
+      <tr><td>Percentage</td><td>Final percentage score</td><td>80%</td></tr>
+      <tr><td>Passed</td><td>Pass or fail (80% threshold)</td><td>Yes / No</td></tr>
+      <tr><td>CertificateNo</td><td>Certificate number if passed</td><td>LTH-2025-4782</td></tr>
+      <tr><td>SubmittedAt</td><td>Date and time of submission</td><td>2025-04-22T14:32:00</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Tab 4: Progress -->
+  <h4 style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin:18px 0 7px;display:flex;align-items:center;gap:7px">⏱ Tab 4: Progress — Module Completion Tracking</h4>
+  <table class="sheet-table">
+    <thead><tr><th>Column</th><th>What it means</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>Email</td><td>The learner</td><td>thabo@company.co.za</td></tr>
+      <tr><td>CourseID</td><td>Which course</td><td>PTW001</td></tr>
+      <tr><td>ModuleName</td><td>Which module they completed</td><td>Introduction to PTW Systems</td></tr>
+      <tr><td>Completed</td><td>Whether module is done</td><td>Yes</td></tr>
+      <tr><td>UpdatedAt</td><td>When they last accessed it</td><td>2025-04-22T13:55:00</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Tab 5: Deletion Requests -->
+  <h4 style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin:18px 0 7px;display:flex;align-items:center;gap:7px">🗑️ Tab 5: DeletionRequests — POPIA Data Requests</h4>
+  <p style="font-size:13px;color:#5a7060;margin-bottom:8px">When a learner requests deletion of their data, it appears here for admin approval.</p>
+  <table class="sheet-table">
+    <thead><tr><th>Column</th><th>What it means</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td>Email</td><td>Who requested deletion</td><td>thabo@company.co.za</td></tr>
+      <tr><td>Name</td><td>Their name</td><td>Thabo Nkosi</td></tr>
+      <tr><td>Reason</td><td>Why they want their data deleted</td><td>User request from dashboard</td></tr>
+      <tr><td>RequestedAt</td><td>When they submitted the request</td><td>2025-04-23T10:00:00</td></tr>
+      <tr><td>Status</td><td>Pending or Approved</td><td>Pending</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn" style="margin-top:18px">
+    <div class="callout-icon">⚠️</div>
+    <div>
+      <h4>POPIA — You must respond within 5 business days</h4>
+      <p>Under POPIA, you are legally required to process data deletion requests within 5 business days. When you see a Pending request in the DeletionRequests tab, approve it in the Admin Panel at <code>admin.html</code>. Approving will automatically delete all their data from every tab.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 12 — CERTIFICATES
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s12">
+  <div class="section-badge">🏆 Section 12</div>
+  <h2>Certificates</h2>
+  <p>When a learner passes with 80% or more, a certificate is automatically generated and delivered in three ways.</p>
+  <hr class="section-rule">
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num" style="background:linear-gradient(135deg,#d4a017,#f4c430);color:#0d2b52">1</div>
+      <div class="step-body">
+        <h4>Email — sent to the learner instantly</h4>
+        <p>An email with the certificate number, score and a download link is sent to the learner's email address the moment they pass.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:linear-gradient(135deg,#d4a017,#f4c430);color:#0d2b52">2</div>
+      <div class="step-body">
+        <h4>Email — sent to both admin addresses</h4>
+        <p>Both <code>info@lithala.com</code> and <code>lithalalms@gmail.com</code> receive a notification with the full result details and certificate number.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:linear-gradient(135deg,#d4a017,#f4c430);color:#0d2b52">3</div>
+      <div class="step-body">
+        <h4>Dashboard — downloadable PDF</h4>
+        <p>In the learner's dashboard under <strong>Certificates</strong>, they can click <strong>⬇ Download PDF</strong> to open the full printable certificate in a new tab, which they can save as a PDF using their browser's Print function.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:linear-gradient(135deg,#d4a017,#f4c430);color:#0d2b52">4</div>
+      <div class="step-body">
+        <h4>LinkedIn sharing</h4>
+        <p>The learner can click <strong>💼 LinkedIn</strong> from their dashboard to add the certificate directly to their LinkedIn profile's Licenses &amp; Certifications section.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">🔢</div>
+    <div>
+      <h4>Certificate numbering</h4>
+      <p>Certificates are automatically numbered in the format <code>LTH-YEAR-XXXX</code>, for example <code>LTH-2025-4782</code>. This number is recorded in the Google Sheet Results tab and in both admin emails. You can use it to verify a certificate if an employer or auditor contacts you.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 13 — ALL PASSWORDS & LINKS
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s13">
+  <div class="section-badge">🔐 Section 13</div>
+  <h2>All Passwords &amp; Links — Quick Reference</h2>
+  <p>A summary of everything in one place for quick reference.</p>
+  <hr class="section-rule">
+
+  <div class="cred-box">
+    <h3>🌐 All Site URLs</h3>
+    <div class="cred-grid">
+      <div class="cred-row">
+        <div class="cred-label">Homepage</div>
+        <div class="cred-val"><code>https://lithala-lms.github.io/LMS/index.html</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Course Catalogue</div>
+        <div class="cred-val"><code>https://lithala-lms.github.io/LMS/index3.html</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Learner Dashboard</div>
+        <div class="cred-val"><code>https://lithala-lms.github.io/LMS/dashboard3.html</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Course Editor <span class="cred-tag danger">Private</span></div>
+        <div class="cred-val"><code>https://lithala-lms.github.io/LMS/course-editor.html</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Admin Panel <span class="cred-tag danger">Private</span></div>
+        <div class="cred-val"><code>https://lithala-lms.github.io/LMS/admin.html</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Templates &amp; Docs</div>
+        <div class="cred-val"><code>https://lithala-lms.github.io/LMS/index4.html</code></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cred-box" style="margin-bottom:22px">
+    <h3>🔑 Passwords</h3>
+    <div class="cred-grid">
+      <div class="cred-row">
+        <div class="cred-label">Course Editor</div>
+        <div class="cred-val"><code>LithalaAdmin2025</code> <span class="cred-tag warn">Recommended: change this</span></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Admin Panel</div>
+        <div class="cred-val"><code>LithalaAdmin2025</code> <span class="cred-tag">(same password)</span></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Change password in</div>
+        <div class="cred-val">GitHub → <code>lms-config.js</code> → <code>ADMIN_PASSWORD</code> line</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cred-box">
+    <h3>📧 Email &amp; Google Accounts</h3>
+    <div class="cred-grid">
+      <div class="cred-row">
+        <div class="cred-label">Admin Email 1</div>
+        <div class="cred-val"><code>info@lithala.com</code> — receives all result notifications</div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Admin Email 2</div>
+        <div class="cred-val"><code>lithalalms@gmail.com</code> — receives all result notifications</div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Google Sheet Owner</div>
+        <div class="cred-val"><code>lithalalms@gmail.com</code></div>
+      </div>
+      <div class="cred-row">
+        <div class="cred-label">Google Sheet</div>
+        <div class="cred-val"><code>https://docs.google.com/spreadsheets/d/110-K93UME8_8z5pystKKc5yIsoAC1_OdKyt4KSs0oco</code></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SECTION 14 — TROUBLESHOOTING
+═══════════════════════════════════════════════════════════ -->
+<div class="section" id="s14">
+  <div class="section-badge">🔧 Section 14</div>
+  <h2>Troubleshooting</h2>
+  <p>Common issues and how to fix them.</p>
+  <hr class="section-rule">
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num" style="background:#e63946">!</div>
+      <div class="step-body">
+        <h4>"I saved a course but it's not showing on the Courses page"</h4>
+        <p>Try refreshing the Courses page (<kbd>Ctrl + R</kbd> or <kbd>⌘ R</kbd>). If it still doesn't appear, open the browser console (F12) and check for errors. Also verify the Course ID has no spaces or special characters.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:#e63946">!</div>
+      <div class="step-body">
+        <h4>"I'm not receiving result emails"</h4>
+        <p>Check your spam/junk folder first. The emails come from the Google Apps Script associated with your Google Sheet. Make sure the Apps Script has been deployed and re-deployed after any changes to <code>google-apps-script.js</code>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:#e63946">!</div>
+      <div class="step-body">
+        <h4>"The PDF is not loading in the viewer"</h4>
+        <p>Check that the Google Drive file sharing is set to <strong>"Anyone with the link can view"</strong> — not restricted. Also ensure you are using the <code>/preview</code> link format, not the <code>/view</code> format.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:#e63946">!</div>
+      <div class="step-body">
+        <h4>"The Course Editor password is not working"</h4>
+        <p>The password is set in the file <code>lms-config.js</code> on GitHub. Check that the file has been saved and uploaded correctly. The current default password is <code>LithalaAdmin2025</code>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:#e63946">!</div>
+      <div class="step-body">
+        <h4>"The Google Sheet is empty"</h4>
+        <p>The sheet only populates when real learners register and purchase courses. The Apps Script also needs to be deployed correctly. Open the Apps Script editor and check the deployment is still active under <strong>Deploy → Manage Deployments</strong>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num" style="background:#e63946">!</div>
+      <div class="step-body">
+        <h4>"A learner says they are not getting their certificate"</h4>
+        <p>Check the <strong>Results</strong> tab in the Google Sheet for their email address. Confirm the <strong>Passed</strong> column shows <strong>Yes</strong>. If it does, the certificate was issued — ask them to check their spam folder and also look in their Dashboard under the Certificates tab.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="margin-top:48px;background:linear-gradient(135deg,#0d2b52,#1a3a2a);border-radius:16px;padding:28px 28px;text-align:center;color:white">
+    <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#52b788;margin-bottom:4px">LITHALA <span style="color:#64b5f6">LMS</span></div>
+    <div style="font-size:10px;letter-spacing:3px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-bottom:16px">Admin User Guide</div>
+    <p style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;max-width:480px;margin:0 auto 16px">For technical support or questions about the platform, contact the Lithala team.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:13px;color:rgba(255,255,255,.7)">
+      <span>📧 info@lithala.com</span>
+      <span>📞 +27 (0) 82 421 4001</span>
+      <span>🌐 lithala.com</span>
+    </div>
+    <div style="margin-top:14px;font-size:11px;color:rgba(255,255,255,.3)">© 2025 Lithala Risk Solutions (Pty) Ltd · Level 1 B-BBEE</div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// Highlight active TOC item on scroll
+const sections = document.querySelectorAll('.section');
+const tocLinks  = document.querySelectorAll('.toc a');
+const observer  = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector('.toc a[href="#' + e.target.id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-60px 0px -40% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
