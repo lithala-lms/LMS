@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Admin Manual — Lithala LMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d2b52;--ocean:#1565c0;--sky:#2196f3;--forest:#1a3a2a;
+  --lime:#52b788;--gold:#d4a017;--cream:#faf8f4;--white:#fff;
+  --mist:#e0eae4;--ink:#1e2d26;--danger:#e63946;--purple:#7b1fa2;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.65}
+
+.cover{background:linear-gradient(135deg,#0d2b52 0%,#1a3a2a 100%);padding:72px 8% 80px;color:white;text-align:center;position:relative;overflow:hidden}
+.cover::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(33,150,243,.1) 1px,transparent 1px);background-size:36px 36px}
+.cover::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:44px;background:var(--cream);clip-path:ellipse(55% 100% at 50% 100%)}
+.cover-inner{position:relative;z-index:2}
+.cover-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:34px;color:#52b788;margin-bottom:3px}
+.cover-logo em{color:#64b5f6;font-style:normal}
+.cover-sub{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:36px}
+.cover h1{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.12;margin-bottom:14px}
+.cover h1 em{color:#64b5f6;font-style:normal}
+.cover p{font-size:16px;color:rgba(255,255,255,.7);max-width:600px;margin:0 auto 28px;line-height:1.7}
+.cover-meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.cover-meta span{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);padding:5px 14px;border-radius:20px;font-size:12px;color:rgba(255,255,255,.8)}
+.cover-warning{background:rgba(230,57,70,.2);border:1px solid rgba(230,57,70,.4);border-radius:10px;padding:13px 20px;margin:28px auto 0;max-width:500px;font-size:13px;color:#ffcdd2}
+
+.page-wrap{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+
+.toc{background:white;border-right:1px solid #f0f4f8;position:sticky;top:0;height:100vh;overflow-y:auto;padding:22px 0;scrollbar-width:thin}
+.toc-brand{padding:0 18px 16px;border-bottom:1px solid #f0f4f8;margin-bottom:10px}
+.toc-brand .name{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#0d2b52}
+.toc-brand .name em{color:#1565c0;font-style:normal}
+.toc-brand p{font-size:11px;color:#aaa;margin-top:2px}
+.toc-group{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ccc;padding:10px 18px 3px}
+.toc a{display:flex;align-items:baseline;gap:6px;padding:7px 18px;font-size:12.5px;color:#666;text-decoration:none;border-left:3px solid transparent;transition:all .15s;line-height:1.4}
+.toc a:hover,.toc a.active{background:#f0f7ff;color:#1565c0;border-left-color:#1565c0}
+.toc a .n{font-family:'Syne',sans-serif;font-weight:800;font-size:10px;color:#1565c0;flex-shrink:0}
+
+.content{padding:48px 6% 80px;max-width:920px}
+.section{margin-bottom:72px;scroll-margin-top:24px}
+.section-badge{display:inline-flex;align-items:center;gap:6px;background:#e3f2fd;color:#1565c0;border:1px solid rgba(21,101,192,.2);font-size:10px;font-weight:700;padding:4px 12px;border-radius:50px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.section h2{font-family:'Syne',sans-serif;font-size:clamp(20px,3vw,30px);font-weight:800;color:#0d2b52;margin-bottom:8px;line-height:1.2}
+.section>.lead{font-size:14.5px;color:#5a7060;margin-bottom:24px;max-width:700px;line-height:1.75}
+hr.rule{border:none;border-top:2px solid #f0f4f8;margin-bottom:28px}
+
+.cred-box{background:linear-gradient(145deg,#0d2b52,#1565c0);border-radius:16px;padding:24px 26px;color:white;margin-bottom:20px}
+.cred-box h3{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#90caf9;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.cred-rows{display:flex;flex-direction:column;gap:8px}
+.cr{display:flex;align-items:flex-start;gap:14px;background:rgba(255,255,255,.07);border-radius:9px;padding:11px 14px}
+.cr-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;min-width:120px;flex-shrink:0;margin-top:2px}
+.cr-val{font-size:13px;color:white;line-height:1.45;word-break:break-all}
+.cr-val code{background:rgba(33,150,243,.25);padding:1px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#90caf9}
+.badge{display:inline-block;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:6px}
+.badge-warn{background:rgba(212,160,23,.25);color:#fdd835}
+.badge-danger{background:rgba(230,57,70,.2);color:#ef9a9a}
+.badge-ok{background:rgba(82,183,136,.2);color:#80cbc4}
+
+.steps{display:flex;flex-direction:column;gap:14px;margin-bottom:22px}
+.step{display:flex;gap:16px;background:white;border-radius:14px;padding:20px 22px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04);align-items:flex-start}
+.step-n{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1565c0,#2196f3);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:white;flex-shrink:0}
+.step-n.green{background:linear-gradient(135deg,#2d6a4f,#52b788)}
+.step-n.gold{background:linear-gradient(135deg,#d4a017,#f4c430);color:#0d2b52}
+.step-n.purple{background:linear-gradient(135deg,#6a1b9a,#9c27b0)}
+.step-n.red{background:#e63946}
+.step-body h4{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#0d2b52;margin-bottom:5px}
+.step-body p{font-size:13px;color:#5a7060;line-height:1.65}
+.step-body ul{margin-top:7px;padding-left:17px;display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5a7060}
+.step-body code{background:#f0f4f8;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#0d2b52}
+.step-body .url{display:block;background:#0d1117;color:#58a6ff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 12px;border-radius:6px;margin-top:7px;word-break:break-all}
+
+.callout{display:flex;gap:12px;padding:15px 17px;border-radius:12px;margin-bottom:18px;align-items:flex-start}
+.callout.tip{background:#f0fff4;border-left:4px solid #52b788}
+.callout.warn{background:#fffbf0;border-left:4px solid #d4a017}
+.callout.info{background:#f0f7ff;border-left:4px solid #1565c0}
+.callout.danger{background:#fff5f5;border-left:4px solid #e63946}
+.callout-icon{font-size:19px;flex-shrink:0;margin-top:1px}
+.callout h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:3px}
+.callout.tip h4{color:#2d6a4f}.callout.warn h4{color:#b8860b}.callout.info h4{color:#1565c0}.callout.danger h4{color:#c62828}
+.callout p,.callout ul{font-size:13px;color:#5a7060;line-height:1.6}
+.callout ul{padding-left:16px;margin-top:4px}
+
+.code-block{background:#0d1117;border-radius:12px;overflow:hidden;margin:14px 0;font-family:'JetBrains Mono',monospace}
+.code-bar{background:#161b22;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05)}
+.code-bar span{font-size:11px;color:#8b949e}
+.code-copy{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#8b949e;font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.code-copy:hover{background:rgba(255,255,255,.12);color:white}
+.code-body{padding:18px 20px;font-size:13px;line-height:1.9;overflow-x:auto;color:#e6edf3}
+.c-green{color:#7ee787}.c-blue{color:#79c0ff}.c-orange{color:#ffab70}
+.c-purple{color:#d2a8ff}.c-grey{color:#8b949e}.c-yellow{color:#e3b341}
+
+.browser{border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid rgba(0,0,0,.08);margin:18px 0}
+.browser-bar{background:#f0f4f8;padding:10px 14px;display:flex;align-items:center;gap:7px;border-bottom:1px solid #e0eae4}
+.bdot{width:11px;height:11px;border-radius:50%}
+.bdot.r{background:#ff5f57}.bdot.y{background:#febc2e}.bdot.g{background:#28c840}
+.burl{flex:1;background:white;border:1px solid #e0eae4;border-radius:5px;padding:4px 12px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#555;margin:0 8px}
+
+.gh-header{background:#0d1117;padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.gh-logo{color:#e6edf3;font-family:'Syne',sans-serif;font-weight:800;font-size:15px}
+.gh-content{background:#0d1117;padding:16px 20px}
+.gh-repo-bar{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:13px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.gh-repo-name{color:#58a6ff;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600}
+.gh-repo-desc{color:#8b949e;font-size:12px;margin-top:3px}
+.gh-files{background:#161b22;border:1px solid #30363d;border-radius:8px;overflow:hidden}
+.gh-file-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #21262d;font-size:12.5px}
+.gh-file-row:last-child{border:none}
+.gh-file-row.hl{background:rgba(33,150,243,.08)}
+.gh-file-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.gh-file-name{color:#e6edf3;font-family:'JetBrains Mono',monospace;flex:1}
+.gh-file-time{color:#8b949e;font-size:11px}
+
+.settings-page{background:#0d1117;padding:14px 18px}
+.settings-section{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;margin-bottom:10px}
+.settings-section h4{color:#e6edf3;font-size:13px;font-weight:600;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #21262d}
+.settings-field{margin-bottom:8px}
+.settings-field label{display:block;font-size:11px;color:#8b949e;margin-bottom:4px}
+.settings-input{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#58a6ff;width:100%}
+.settings-input.hl{border-color:#58a6ff}
+.btn-gh{background:#21262d;border:1px solid #30363d;color:#e6edf3;padding:6px 14px;border-radius:6px;font-size:12.5px;cursor:default;display:inline-flex;align-items:center;gap:5px}
+.btn-gh.green{background:#238636;border-color:#2ea043;color:white}
+.btn-gh.blue{background:#1f6feb;border-color:#1f6feb;color:white}
+
+.dns-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:14px 0;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(13,43,82,.08)}
+.dns-table thead tr{background:#1a3a2a}
+.dns-table thead th{color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;padding:10px 14px;text-align:left}
+.dns-table tbody tr:nth-child(even){background:#f8faf5}
+.dns-table tbody td{padding:10px 14px;border-bottom:1px solid #f0f4f8;font-family:'JetBrains Mono',monospace;font-size:12px;color:#3d5a47}
+.dns-table tbody td:last-child{font-family:'DM Sans',sans-serif;font-size:12.5px}
+
+.arch-row{display:flex;align-items:center;gap:0;flex-wrap:wrap;background:white;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(13,43,82,.05);margin:16px 0}
+.arch-box{text-align:center;padding:12px 16px;min-width:120px}
+.arch-box .ai{font-size:28px;margin-bottom:5px}
+.arch-box h4{font-family:'Syne',sans-serif;font-size:11.5px;font-weight:700;color:#0d2b52;margin-bottom:3px}
+.arch-box p{font-size:10.5px;color:#888;line-height:1.4}
+.arch-arr{font-size:18px;color:#1565c0;padding:0 8px;flex-shrink:0}
+
+.file-tree{background:#1e1e1e;border-radius:12px;padding:18px 20px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:2;margin:14px 0}
+.ft-dir{color:#e6edf3}
+.ft-f{color:#79c0ff;margin-left:20px}
+.ft-f.imp{color:#7ee787;font-weight:600}
+.ft-f.cfg{color:#e3b341}
+.ft-f.new{color:#3fb950}
+.ft-c{color:#8b949e;margin-left:20px;font-size:11px}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.info-card{background:white;border-radius:12px;padding:18px;box-shadow:0 2px 10px rgba(13,43,82,.06);border:1px solid rgba(13,43,82,.04)}
+.info-card h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin-bottom:9px}
+.info-card p,.info-card li{font-size:13px;color:#5a7060;line-height:1.6}
+.info-card ul{padding-left:16px}
+
+.as-deploy{background:white;border-radius:8px;max-width:460px;margin:0 auto;box-shadow:0 4px 20px rgba(0,0,0,.18);overflow:hidden}
+.as-deploy-hdr{background:#4a4a4a;padding:10px 16px;color:#e8eaed;font-size:13px;font-weight:600}
+.as-deploy-body{padding:16px}
+.as-field{margin-bottom:11px}
+.as-field label{display:block;font-size:11px;color:#5f6368;margin-bottom:3px}
+.as-select{border:1px solid #dadce0;border-radius:4px;padding:7px 10px;font-size:13px;width:100%;background:white}
+.as-select.hl{border-color:#1a73e8}
+.as-url{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#1a73e8;word-break:break-all;margin-top:10px;line-height:1.5}
+.gf-btn{background:#1a73e8;color:white;border:none;padding:8px 18px;border-radius:4px;font-size:13px;cursor:default;display:inline-block;margin-top:8px}
+
+.gcloud-bar{background:#1a73e8;padding:11px 18px;display:flex;align-items:center;gap:12px}
+.gcloud-bar .gcl{color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:14px}
+.gcloud-bar .gcp{background:rgba(255,255,255,.15);color:white;font-size:12px;padding:4px 12px;border-radius:4px}
+.gcloud-content{background:#f8f9fa;padding:14px 16px}
+.gform{background:white;border:1px solid #e0e0e0;border-radius:8px;padding:14px}
+.gf-row{margin-bottom:11px}
+.gf-row label{display:block;font-size:11px;color:#5f6368;margin-bottom:3px;font-weight:500}
+.gf-input{border:1px solid #dadce0;border-radius:4px;padding:7px 11px;font-size:13px;color:#202124;width:100%}
+.gf-input.hl{border-color:#1a73e8;box-shadow:0 0 0 2px rgba(26,115,232,.2)}
+.uri-chip{background:#e8f0fe;border-radius:4px;padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#1a73e8;margin-bottom:5px;display:flex;justify-content:space-between}
+
+.pf-hdr{background:#1565c0;padding:11px 18px}
+.pfl{color:white;font-family:'Syne',sans-serif;font-weight:800;font-size:15px}
+.pf-content{background:#f5f7f5;padding:14px}
+.pf-card{background:white;border-radius:8px;border:1px solid #e0eae4;padding:14px;margin-bottom:8px}
+.pf-card h4{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#0d2b52;margin-bottom:8px}
+.pf-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f7f5;font-size:12.5px}
+.pf-key{color:#888}.pf-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:#1565c0;font-weight:600}
+
+code{background:#f0f4f8;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#0d2b52}
+kbd{background:#f0f4f8;border:1px solid #e0eae4;border-bottom:2px solid #e0eae4;border-radius:4px;padding:2px 7px;font-family:'JetBrains Mono',monospace;font-size:12px}
+.url-chip{display:inline-block;background:#0d1117;color:#58a6ff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:7px 13px;border-radius:6px;word-break:break-all;margin:4px 0;line-height:1.5}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.tag-green{background:rgba(82,183,136,.1);color:#2d6a4f}
+.tag-gold{background:rgba(212,160,23,.1);color:#d4a017}
+.tag-red{background:rgba(230,57,70,.08);color:#c62828}
+
+@media(max-width:950px){.page-wrap{grid-template-columns:1fr}.toc{display:none}.content{padding:28px 5% 60px}.two-col{grid-template-columns:1fr}.arch-row{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-logo">LITHALA <em>LMS</em></div>
+    <div class="cover-sub">Learning Management System</div>
+    <h1>Technical <em>Admin Manual</em></h1>
+    <p>Complete system handover — GitHub hosting, custom domain setup, Google Apps Script, Google OAuth, PayFast payments, and ongoing administration.</p>
+    <div class="cover-meta">
+      <span>🏗️ Architecture</span><span>🌐 Custom Domain</span><span>⚙️ Apps Script</span>
+      <span>🔐 OAuth</span><span>💳 PayFast</span><span>📊 Google Sheets</span>
+    </div>
+    <div class="cover-warning">🔒 <strong>CONFIDENTIAL</strong> — Contains passwords and API keys. Do not publish or share publicly.</div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+<!-- TOC -->
+<nav class="toc">
+  <div class="toc-brand"><div class="name">LITHALA <em>LMS</em></div><p>Technical Manual</p></div>
+  <div class="toc-group">Overview</div>
+  <a href="#s1"><span class="n">01</span> Architecture &amp; File Structure</a>
+  <a href="#s2"><span class="n">02</span> All Credentials &amp; Keys</a>
+  <div class="toc-group">GitHub &amp; Hosting</div>
+  <a href="#s3"><span class="n">03</span> GitHub Repository</a>
+  <a href="#s4"><span class="n">04</span> GitHub Pages Deployment</a>
+  <a href="#s5"><span class="n">05</span> Custom Domain (lms.lithala.com)</a>
+  <a href="#s6"><span class="n">06</span> Updating Files on GitHub</a>
+  <div class="toc-group">Backend</div>
+  <a href="#s7"><span class="n">07</span> Google Apps Script</a>
+  <a href="#s8"><span class="n">08</span> Google Sheet Setup</a>
+  <a href="#s9"><span class="n">09</span> Google OAuth (Gmail Login)</a>
+  <div class="toc-group">Payments</div>
+  <a href="#s10"><span class="n">10</span> PayFast Integration</a>
+  <div class="toc-group">Configuration</div>
+  <a href="#s11"><span class="n">11</span> lms-config.js Reference</a>
+  <a href="#s12"><span class="n">12</span> Admin Panel &amp; Course Editor</a>
+  <div class="toc-group">Maintenance</div>
+  <a href="#s13"><span class="n">13</span> Monthly Admin Checklist</a>
+  <a href="#s14"><span class="n">14</span> Troubleshooting</a>
+</nav>
+
+<!-- CONTENT -->
+<main class="content">
+
+<!-- S1 -->
+<div class="section" id="s1">
+  <div class="section-badge">🏗️ Section 01</div>
+  <h2>Architecture &amp; File Structure</h2>
+  <p class="lead">Lithala LMS is a fully static website hosted on GitHub Pages — free, no server, no monthly hosting bill. All data, emails and authentication run through Google Apps Script (a free Google service).</p>
+  <hr class="rule">
+
+  <div class="arch-row">
+    <div class="arch-box"><div class="ai">👤</div><h4>Learner Browser</h4><p>HTML/JS/CSS runs entirely in the browser</p></div>
+    <div class="arch-arr">→</div>
+    <div class="arch-box" style="background:#f0f7ff;border-radius:10px"><div class="ai">📂</div><h4>GitHub Pages</h4><p>Free static hosting — all files live here</p></div>
+    <div class="arch-arr">↔</div>
+    <div class="arch-box"><div class="ai">⚙️</div><h4>Apps Script</h4><p>Backend API — data, emails, auth</p></div>
+    <div class="arch-arr">↔</div>
+    <div class="arch-box"><div class="ai">📊</div><h4>Google Sheet</h4><p>Database — all learner data</p></div>
+  </div>
+  <div class="arch-row" style="margin-top:0">
+    <div class="arch-box"><div class="ai">🔐</div><h4>Google OAuth</h4><p>Gmail sign-in</p></div>
+    <div class="arch-arr">+</div>
+    <div class="arch-box"><div class="ai">💳</div><h4>PayFast</h4><p>SA payment gateway</p></div>
+    <div class="arch-arr">+</div>
+    <div class="arch-box"><div class="ai">📧</div><h4>Gmail API</h4><p>Result emails via Apps Script</p></div>
+    <div class="arch-arr">+</div>
+    <div class="arch-box"><div class="ai">🌐</div><h4>Custom Domain</h4><p>lms.lithala.com (optional)</p></div>
+  </div>
+
+  <h3 style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0d2b52;margin:24px 0 10px">📁 Repository File Structure</h3>
+  <div class="file-tree">
+    <div class="ft-dir">📁 LMS/  (GitHub repository)</div>
+    <div class="ft-f imp">├── index.html          <span style="color:#8b949e"># Homepage</span></div>
+    <div class="ft-f imp">├── index3.html         <span style="color:#8b949e"># Course Catalogue</span></div>
+    <div class="ft-f imp">├── index4.html         <span style="color:#8b949e"># Templates &amp; Documents</span></div>
+    <div class="ft-f imp">├── index5.html         <span style="color:#8b949e"># WhatsApp Learning</span></div>
+    <div class="ft-f imp">├── index6.html         <span style="color:#8b949e"># About &amp; Contact</span></div>
+    <div class="ft-f imp">├── dashboard3.html     <span style="color:#8b949e"># Learner Dashboard</span></div>
+    <div class="ft-f imp">├── certificate.html    <span style="color:#8b949e"># Certificate viewer &amp; print</span></div>
+    <div class="ft-f">├── admin.html          <span style="color:#8b949e"># Admin data viewer (password protected)</span></div>
+    <div class="ft-f">├── course-editor.html  <span style="color:#8b949e"># Course manager (password protected)</span></div>
+    <div class="ft-f">├── user-guide.html     <span style="color:#8b949e"># Staff user manual</span></div>
+    <div class="ft-f">├── admin-manual.html   <span style="color:#8b949e"># This document</span></div>
+    <div class="ft-f cfg">├── lms-config.js       <span style="color:#8b949e"># ⚠ MAIN CONFIG — all settings &amp; courses</span></div>
+    <div class="ft-f cfg">├── auth.js             <span style="color:#8b949e"># Google OAuth &amp; PayFast</span></div>
+    <div class="ft-f cfg">├── wa-learning.js      <span style="color:#8b949e"># WhatsApp course content</span></div>
+    <div class="ft-f">├── shared.css</div>
+    <div class="ft-f">├── logo.png            <span style="color:#8b949e"># Upload your Lithala logo here</span></div>
+    <div class="ft-f new">└── CNAME               <span style="color:#8b949e"># Auto-created when custom domain is set</span></div>
+    <div class="ft-c">google-apps-script.js  ← Paste into Apps Script editor — NOT uploaded to GitHub</div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div><h4>The most important file: lms-config.js</h4>
+    <p>All configuration lives here — the Apps Script URL, Sheet ID, Google Client ID, admin password, PayFast keys and all course definitions. When anything needs updating, start here.</p></div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div class="section" id="s2">
+  <div class="section-badge">🔐 Section 02</div>
+  <h2>All Credentials &amp; Keys</h2>
+  <p class="lead">Every password, URL and API key for the complete system. Keep this document offline and secure.</p>
+  <hr class="rule">
+
+  <div class="cred-box">
+    <h3>🐙 GitHub</h3>
+    <div class="cred-rows">
+      <div class="cr"><div class="cr-lbl">Organisation</div><div class="cr-val"><code>lithala-lms</code></div></div>
+      <div class="cr"><div class="cr-lbl">Repository</div><div class="cr-val"><code>lithala-lms/LMS</code></div></div>
+      <div class="cr"><div class="cr-lbl">Live URL</div><div class="cr-val"><code>https://lithala-lms.github.io/LMS</code></div></div>
+    </div>
+  </div>
+
+  <div class="cred-box">
+    <h3>⚙️ Google Apps Script (Backend API)</h3>
+    <div class="cred-rows">
+      <div class="cr"><div class="cr-lbl">Deployment URL</div><div class="cr-val"><code>https://script.google.com/macros/s/AKfycbxaOdiL483GanWD5GpPcye_xO3M3_w2BX0peW88kNpBETxY65nCg9Gbg8tMduoWuUJ4/exec</code></div></div>
+      <div class="cr"><div class="cr-lbl">Google Account</div><div class="cr-val"><code>lithalalms@gmail.com</code></div></div>
+      <div class="cr"><div class="cr-lbl">Important</div><div class="cr-val">Every time you redeploy, the URL changes. Update <code>SCRIPT_URL</code> in lms-config.js.</div></div>
+    </div>
+  </div>
+
+  <div class="cred-box">
+    <h3>📊 Google Sheet (Database)</h3>
+    <div class="cred-rows">
+      <div class="cr"><div class="cr-lbl">Sheet ID</div><div class="cr-val"><code>110-K93UME8_8z5pystKKc5yIsoAC1_OdKyt4KSs0oco</code></div></div>
+      <div class="cr"><div class="cr-lbl">Owner Account</div><div class="cr-val"><code>lithalalms@gmail.com</code></div></div>
+      <div class="cr"><div class="cr-lbl">Direct URL</div><div class="cr-val"><code>https://docs.google.com/spreadsheets/d/110-K93UME8_8z5pystKKc5yIsoAC1_OdKyt4KSs0oco</code></div></div>
+    </div>
+  </div>
+
+  <div class="cred-box">
+    <h3>🔐 Google OAuth (Gmail Login)</h3>
+    <div class="cred-rows">
+      <div class="cr"><div class="cr-lbl">Client ID</div><div class="cr-val"><code>811534121376-d1v193e3fe2oj1pft03dbe12731co904.apps.googleusercontent.com</code></div></div>
+      <div class="cr"><div class="cr-lbl">Cloud Console</div><div class="cr-val"><code>console.cloud.google.com</code> → sign in with <code>lithalalms@gmail.com</code></div></div>
+    </div>
+  </div>
+
+  <div class="cred-box">
+    <h3>💳 PayFast</h3>
+    <div class="cred-rows">
+      <div class="cr"><div class="cr-lbl">Merchant ID</div><div class="cr-val"><code>YOUR_PAYFAST_MERCHANT_ID</code> <span class="badge badge-danger">Not yet set</span></div></div>
+      <div class="cr"><div class="cr-lbl">Merchant Key</div><div class="cr-val"><code>YOUR_PAYFAST_MERCHANT_KEY</code> <span class="badge badge-danger">Not yet set</span></div></div>
+      <div class="cr"><div class="cr-lbl">Dashboard</div><div class="cr-val"><code>https://www.payfast.co.za/merchant</code></div></div>
+      <div class="cr"><div class="cr-lbl">Current Mode</div><div class="cr-val">SANDBOX (test mode) — no real payments <span class="badge badge-warn">Go live: change SANDBOX to false</span></div></div>
+    </div>
+  </div>
+
+  <div class="cred-box">
+    <h3>🛡️ Admin Access</h3>
+    <div class="cred-rows">
+      <div class="cr"><div class="cr-lbl">Password</div><div class="cr-val"><code>LithalaAdmin2025</code> <span class="badge badge-warn">Change before going live</span></div></div>
+      <div class="cr"><div class="cr-lbl">Set in</div><div class="cr-val"><code>lms-config.js</code> → <code>ADMIN_PASSWORD</code></div></div>
+      <div class="cr"><div class="cr-lbl">Result Emails</div><div class="cr-val"><code>info@lithala.com</code> and <code>lithalalms@gmail.com</code></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 -->
+<div class="section" id="s3">
+  <div class="section-badge">🐙 Section 03</div>
+  <h2>GitHub Repository</h2>
+  <p class="lead">All site files live in the GitHub repository. GitHub Pages serves them as a live website automatically. Here is what the repository looks like and how to navigate it.</p>
+  <hr class="rule">
+
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="bdot r"></div><div class="bdot y"></div><div class="bdot g"></div>
+      <div class="burl">github.com/lithala-lms/LMS</div>
+    </div>
+    <div class="gh-header">
+      <div class="gh-logo">🐙 GitHub — lithala-lms / LMS</div>
+      <div style="display:flex;gap:8px"><div class="btn-gh">⭐ Star</div><div class="btn-gh green">↑ Upload files</div></div>
+    </div>
+    <div class="gh-content">
+      <div class="gh-repo-bar">
+        <div><div class="gh-repo-name">lithala-lms / LMS</div><div class="gh-repo-desc">Lithala Risk Solutions — Learning Management System</div></div>
+      </div>
+      <div class="gh-files">
+        <div class="gh-file-row hl"><div class="gh-file-icon">⚙️</div><div class="gh-file-name" style="color:#e3b341">lms-config.js</div><div class="gh-file-time">Main config file</div></div>
+        <div class="gh-file-row hl"><div class="gh-file-icon">⚙️</div><div class="gh-file-name" style="color:#e3b341">auth.js</div><div class="gh-file-time">Google OAuth + PayFast</div></div>
+        <div class="gh-file-row"><div class="gh-file-icon">📄</div><div class="gh-file-name">index.html</div><div class="gh-file-time">Homepage</div></div>
+        <div class="gh-file-row"><div class="gh-file-icon">📄</div><div class="gh-file-name">dashboard3.html</div><div class="gh-file-time">Learner dashboard</div></div>
+        <div class="gh-file-row"><div class="gh-file-icon">📄</div><div class="gh-file-name">certificate.html</div><div class="gh-file-time">Certificate viewer</div></div>
+        <div class="gh-file-row" style="background:rgba(63,185,80,.04)"><div class="gh-file-icon">🌐</div><div class="gh-file-name" style="color:#3fb950">CNAME</div><div class="gh-file-time">Custom domain (auto-created)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">🔗</div>
+    <div><h4>To access the repository</h4>
+    <p>Go to <code>github.com</code> → sign in → click your profile → Your repositories → click <strong>LMS</strong>. Or go directly: <code>github.com/lithala-lms/LMS</code></p></div>
+  </div>
+</div>
+
+<!-- S4 -->
+<div class="section" id="s4">
+  <div class="section-badge">🌐 Section 04</div>
+  <h2>GitHub Pages Deployment</h2>
+  <p class="lead">GitHub Pages publishes the repository as a live website. If it ever needs to be re-enabled, follow these steps.</p>
+  <hr class="rule">
+
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Open the repository on GitHub.com</h4><p>Go to <code>github.com/lithala-lms/LMS</code> and sign in.</p></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Click "Settings" tab at the top</h4><p>The Settings tab is in the repository navigation bar next to Code, Issues, Pull requests.</p></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body"><h4>Click "Pages" in the left sidebar</h4><p>Under <strong>Code and automation</strong> in the left menu.</p></div></div>
+    <div class="step"><div class="step-n">4</div><div class="step-body"><h4>Set source: Deploy from branch → main → / (root) → Save</h4></div></div>
+  </div>
+
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="bdot r"></div><div class="bdot y"></div><div class="bdot g"></div>
+      <div class="burl">github.com/lithala-lms/LMS/settings/pages</div>
+    </div>
+    <div class="settings-page">
+      <div class="settings-section">
+        <h4>GitHub Pages</h4>
+        <div style="background:#1a4a1a;border:1px solid #2ea043;border-radius:7px;padding:11px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+          <span>✅</span>
+          <div><div style="color:#3fb950;font-size:12.5px;font-weight:600">Your site is live at</div>
+          <div style="color:#58a6ff;font-family:'JetBrains Mono',monospace;font-size:12px">https://lithala-lms.github.io/LMS</div></div>
+        </div>
+        <div class="settings-field"><label>Source</label><div class="settings-input hl" style="color:#e6edf3">Deploy from a branch</div></div>
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <div style="flex:1"><label style="font-size:11px;color:#8b949e;display:block;margin-bottom:4px">Branch</label><div class="settings-input" style="color:#e6edf3">main</div></div>
+          <div style="flex:1"><label style="font-size:11px;color:#8b949e;display:block;margin-bottom:4px">Folder</label><div class="settings-input" style="color:#e6edf3">/ (root)</div></div>
+        </div>
+        <div style="margin-top:10px"><div class="btn-gh green">Save</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S5 -->
+<div class="section" id="s5">
+  <div class="section-badge">🌍 Section 05</div>
+  <h2>Custom Domain — lms.lithala.com</h2>
+  <p class="lead">Point <code>lms.lithala.com</code> to the GitHub Pages site so learners can access it on the Lithala domain. This requires a DNS record change and one GitHub setting.</p>
+  <hr class="rule">
+
+  <div class="two-col">
+    <div class="info-card">
+      <h4>What you need</h4>
+      <ul>
+        <li>Login to your domain registrar (Domains.co.za, Afrihost, Hetzner, Xneelo, etc.)</li>
+        <li>Ability to add DNS records</li>
+        <li>GitHub repository Settings access</li>
+        <li>Allow 24–48 hours for DNS to propagate</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h4>Two options</h4>
+      <ul>
+        <li><strong>Subdomain</strong> <span class="tag tag-green">Recommended</span><br><code>lms.lithala.com</code> → easiest</li>
+        <li style="margin-top:8px"><strong>Root domain</strong> <span class="tag tag-gold">Advanced</span><br><code>lithala.com</code> → replaces main site</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0d2b52;margin:20px 0 14px">Option A — Subdomain: lms.lithala.com <span class="tag tag-green">Recommended</span></h3>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n green">1</div>
+      <div class="step-body">
+        <h4>Log in to your domain registrar</h4>
+        <p>Log in and find <strong>DNS Management</strong> or <strong>DNS Records</strong> for <code>lithala.com</code>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n green">2</div>
+      <div class="step-body">
+        <h4>Add a CNAME record exactly as shown below</h4>
+        <table class="dns-table" style="margin-top:10px">
+          <thead><tr><th>Type</th><th>Host / Name</th><th>Value / Points to</th><th>TTL</th></tr></thead>
+          <tbody><tr><td>CNAME</td><td>lms</td><td>lithala-lms.github.io</td><td>3600</td></tr></tbody>
+        </table>
+        <p style="margin-top:8px;font-size:12.5px;color:#666"><strong>Host</strong> = just <code>lms</code> — the registrar adds .lithala.com automatically.<br>
+        <strong>Value</strong> = <code>lithala-lms.github.io</code> — no trailing slash, no /LMS at the end.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n green">3</div>
+      <div class="step-body">
+        <h4>Set the custom domain on GitHub Pages</h4>
+        <p>Go to repository → Settings → Pages → Custom domain → type <code>lms.lithala.com</code> → Save. GitHub creates a CNAME file in your repo automatically.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n green">4</div>
+      <div class="step-body">
+        <h4>Tick "Enforce HTTPS" on GitHub Pages</h4>
+        <p>After DNS propagates (up to 48h), the Enforce HTTPS checkbox becomes available. Tick it for the padlock icon and secure connection.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n green">5</div>
+      <div class="step-body">
+        <h4>Update SITE_URL in lms-config.js</h4>
+        <code>SITE_URL: 'https://lms.lithala.com'</code>
+        <p style="margin-top:7px">Also add <code>https://lms.lithala.com</code> to Google OAuth authorised origins — see Section 09.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="bdot r"></div><div class="bdot y"></div><div class="bdot g"></div>
+      <div class="burl">github.com/lithala-lms/LMS/settings/pages — Custom domain</div>
+    </div>
+    <div class="settings-page">
+      <div class="settings-section">
+        <h4>Custom domain</h4>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <div class="settings-input hl" style="color:#58a6ff">lms.lithala.com</div>
+          <div class="btn-gh blue">Save</div>
+        </div>
+        <div style="background:#1a4a1a;border:1px solid #2ea043;border-radius:6px;padding:10px 13px;margin-bottom:10px;font-size:12px;color:#3fb950">✅ DNS check successful — lms.lithala.com is configured correctly</div>
+        <div style="display:flex;align-items:center;gap:9px">
+          <div style="width:15px;height:15px;background:#2ea043;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:white">✓</div>
+          <span style="font-size:12.5px;color:#e6edf3">Enforce HTTPS — enabled</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#0d2b52;margin:28px 0 14px">Option B — Root domain: lithala.com <span class="tag tag-gold">Advanced — replaces main site</span></h3>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div><h4>This replaces your existing lithala.com website</h4>
+    <p>Only do this if you want the LMS to be your primary website. If you have an existing WordPress or other site, it will stop working.</p></div>
+  </div>
+
+  <p style="font-size:14px;color:#5a7060;margin-bottom:12px">Add these <strong>4 A records</strong> in your DNS (instead of the CNAME above):</p>
+  <table class="dns-table">
+    <thead><tr><th>Type</th><th>Host / Name</th><th>IP Address</th><th>TTL</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td>@ or blank</td><td>185.199.108.153</td><td>3600</td></tr>
+      <tr><td>A</td><td>@ or blank</td><td>185.199.109.153</td><td>3600</td></tr>
+      <tr><td>A</td><td>@ or blank</td><td>185.199.110.153</td><td>3600</td></tr>
+      <tr><td>A</td><td>@ or blank</td><td>185.199.111.153</td><td>3600</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:13px;color:#888;margin-top:6px">Then set Custom domain on GitHub to <code>lithala.com</code> and update <code>SITE_URL</code> in lms-config.js.</p>
+</div>
+
+<!-- S6 -->
+<div class="section" id="s6">
+  <div class="section-badge">📤 Section 06</div>
+  <h2>Updating Files on GitHub</h2>
+  <p class="lead">When any file needs changing — price update, bug fix, new page — upload the new version to GitHub. The live site updates within 1–2 minutes.</p>
+  <hr class="rule">
+
+  <h3 style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#0d2b52;margin-bottom:14px">Method 1 — Edit directly on GitHub (quickest for small changes)</h3>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Go to github.com/lithala-lms/LMS</h4></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Click the file you want to change (e.g. lms-config.js)</h4></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body"><h4>Click the pencil ✏️ icon (Edit this file)</h4><p>Opens an in-browser code editor.</p></div></div>
+    <div class="step"><div class="step-n">4</div><div class="step-body"><h4>Make changes → scroll down → click "Commit changes"</h4><p>Add a short description of what you changed and click Commit. Live within 2 minutes.</p></div></div>
+  </div>
+
+  <h3 style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#0d2b52;margin:22px 0 14px">Method 2 — Upload a full file (for larger changes)</h3>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Go to the repository on GitHub</h4></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Click "Add file" → "Upload files"</h4></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body"><h4>Drag and drop your updated files</h4><p>You can upload multiple at once. GitHub replaces existing files with the same name.</p></div></div>
+    <div class="step"><div class="step-n">4</div><div class="step-body"><h4>Add a description and click "Commit changes"</h4><p>The site updates within 1–2 minutes.</p></div></div>
+  </div>
+
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="bdot r"></div><div class="bdot y"></div><div class="bdot g"></div>
+      <div class="burl">github.com/lithala-lms/LMS/upload/main</div>
+    </div>
+    <div class="gh-content">
+      <div style="border:2px dashed #30363d;border-radius:8px;padding:32px;text-align:center;margin-bottom:14px">
+        <div style="font-size:32px;margin-bottom:10px">📁</div>
+        <div style="color:#e6edf3;font-size:14px;font-weight:600;margin-bottom:6px">Drag files here to upload</div>
+        <div class="btn-gh blue" style="margin:10px auto;display:inline-block">Choose files</div>
+      </div>
+      <div style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px">
+        <div style="color:#8b949e;font-size:12px;margin-bottom:7px">Commit message</div>
+        <div class="settings-input" style="color:#e6edf3;margin-bottom:8px">Update lms-config.js — add PayFast merchant credentials</div>
+        <div class="btn-gh green">Commit changes</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S7 -->
+<div class="section" id="s7">
+  <div class="section-badge">⚙️ Section 07</div>
+  <h2>Google Apps Script — The Backend</h2>
+  <p class="lead">Apps Script receives data from the website, writes to Google Sheets and sends emails. It is deployed as a Web App and given a URL. Every time you change the code, you must create a new deployment and update the URL in lms-config.js.</p>
+  <hr class="rule">
+
+  <div class="callout danger">
+    <div class="callout-icon">🚨</div>
+    <div><h4>Critical: New deployment required after every code change</h4>
+    <p>Saving the Apps Script does NOT update the live endpoint. You must Deploy → New Deployment after changes, then copy the new URL into lms-config.js on GitHub.</p></div>
+  </div>
+
+  <div class="steps">
+    <div class="step"><div class="step-n purple">1</div><div class="step-body"><h4>Open the Google Sheet</h4><p>Go to sheets.google.com and open the Lithala LMS sheet, signed in as <code>lithalalms@gmail.com</code>.</p></div></div>
+    <div class="step"><div class="step-n purple">2</div><div class="step-body"><h4>Click Extensions → Apps Script</h4><p>Opens the Apps Script editor in a new tab.</p></div></div>
+    <div class="step"><div class="step-n purple">3</div><div class="step-body"><h4>Paste the updated code from google-apps-script.js</h4><p>Delete all existing code, paste the new code, click Save (💾).</p></div></div>
+    <div class="step"><div class="step-n purple">4</div><div class="step-body"><h4>Click "Deploy" → "New deployment"</h4></div></div>
+    <div class="step"><div class="step-n purple">5</div><div class="step-body"><h4>Configure the deployment</h4>
+      <ul>
+        <li><strong>Type:</strong> Web app</li>
+        <li><strong>Execute as:</strong> Me (lithalalms@gmail.com)</li>
+        <li><strong>Who has access:</strong> Anyone</li>
+      </ul>
+    </div></div>
+    <div class="step"><div class="step-n purple">6</div><div class="step-body"><h4>Copy the Web App URL and update lms-config.js</h4><p>The URL looks like <code>https://script.google.com/macros/s/XXXX/exec</code>. Copy it and update <code>SCRIPT_URL</code> in lms-config.js on GitHub.</p></div></div>
+  </div>
+
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="bdot r"></div><div class="bdot y"></div><div class="bdot g"></div>
+      <div class="burl">script.google.com — Deploy as Web App</div>
+    </div>
+    <div style="background:#1e1e2e;padding:16px">
+      <div class="as-deploy">
+        <div class="as-deploy-hdr">⚙️ New deployment</div>
+        <div class="as-deploy-body">
+          <div class="as-field"><label>Type</label><select class="as-select hl"><option>Web app</option></select></div>
+          <div class="as-field"><label>Execute as</label><select class="as-select"><option>Me (lithalalms@gmail.com)</option></select></div>
+          <div class="as-field"><label>Who has access</label><select class="as-select hl"><option>Anyone</option></select></div>
+          <div class="gf-btn">Deploy</div>
+          <div class="as-url">https://script.google.com/macros/s/AKfycbxaOdiL483GanWD5GpPcye_xO3M3_w2BX0peW88kNpBETxY65nCg9Gbg8tMduoWuUJ4/exec<br>← Copy this URL into lms-config.js SCRIPT_URL</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8 -->
+<div class="section" id="s8">
+  <div class="section-badge">📊 Section 08</div>
+  <h2>Google Sheet Setup</h2>
+  <p class="lead">The Google Sheet is the database. All tabs are created automatically when the first learner registers. Here is how to access it and what to check if data is missing.</p>
+  <hr class="rule">
+
+  <div class="steps">
+    <div class="step"><div class="step-n green">1</div><div class="step-body"><h4>Open the Sheet</h4><p>Log in to <code>lithalalms@gmail.com</code> → go to <code>sheets.google.com</code>.</p><div class="url-chip" style="margin-top:8px">https://docs.google.com/spreadsheets/d/110-K93UME8_8z5pystKKc5yIsoAC1_OdKyt4KSs0oco</div></div></div>
+    <div class="step"><div class="step-n green">2</div><div class="step-body"><h4>The 5 tabs created automatically</h4>
+      <ul>
+        <li><strong>Users</strong> — every registered learner</li>
+        <li><strong>Purchases</strong> — every course bought</li>
+        <li><strong>Progress</strong> — module completion per learner</li>
+        <li><strong>Results</strong> — all assessment scores &amp; certificates</li>
+        <li><strong>DeletionRequests</strong> — POPIA data removal requests</li>
+      </ul>
+    </div></div>
+    <div class="step"><div class="step-n green">3</div><div class="step-body"><h4>If tabs are missing</h4><p>They are created on first use. Register a test account on the site — this triggers tab creation. The headers are automatically added in green (Lithala green).</p></div></div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div><h4>Sheet ID — strip everything after the ID</h4>
+    <p>The Sheet ID in lms-config.js must be <strong>only the ID</strong>.<br>
+    ❌ Wrong: <code>110-K93UME8.../edit?usp=sharing</code><br>
+    ✅ Right: <code>110-K93UME8_8z5pystKKc5yIsoAC1_OdKyt4KSs0oco</code></p></div>
+  </div>
+</div>
+
+<!-- S9 -->
+<div class="section" id="s9">
+  <div class="section-badge">🔐 Section 09</div>
+  <h2>Google OAuth — Gmail Login</h2>
+  <p class="lead">When you add a custom domain (e.g. lms.lithala.com), you must add it to the OAuth authorised origins in Google Cloud Console, otherwise Google login will be blocked on the new domain.</p>
+  <hr class="rule">
+
+  <div class="steps">
+    <div class="step"><div class="step-n gold">1</div><div class="step-body"><h4>Go to Google Cloud Console</h4><p><code>console.cloud.google.com</code> → sign in with <code>lithalalms@gmail.com</code>.</p></div></div>
+    <div class="step"><div class="step-n gold">2</div><div class="step-body"><h4>Select the Lithala LMS project from the dropdown</h4></div></div>
+    <div class="step"><div class="step-n gold">3</div><div class="step-body"><h4>APIs &amp; Services → Credentials → click the OAuth 2.0 Client ID ✏️</h4></div></div>
+    <div class="step"><div class="step-n gold">4</div><div class="step-body"><h4>Add the new domain to "Authorised JavaScript origins"</h4>
+      <ul>
+        <li>Click <strong>+ Add URI</strong></li>
+        <li>Add: <code>https://lms.lithala.com</code></li>
+        <li>Keep: <code>https://lithala-lms.github.io</code></li>
+        <li>Click <strong>Save</strong></li>
+      </ul>
+    </div></div>
+  </div>
+
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="bdot r"></div><div class="bdot y"></div><div class="bdot g"></div>
+      <div class="burl">console.cloud.google.com — OAuth 2.0 Credentials</div>
+    </div>
+    <div class="gcloud-bar"><div class="gcl">Google Cloud</div><div class="gcp">Lithala LMS ▾</div></div>
+    <div class="gcloud-content">
+      <div class="gform">
+        <h4 style="font-size:13px;font-weight:600;color:#202124;margin-bottom:14px">Edit OAuth 2.0 Client ID — Lithala LMS Web</h4>
+        <div class="gf-row">
+          <label>Authorised JavaScript origins — add your domain here</label>
+          <div style="border:1px solid #1a73e8;border-radius:6px;padding:10px;background:#f8f9ff">
+            <div class="uri-chip">https://lithala-lms.github.io <span style="color:#5f6368;cursor:default">✕</span></div>
+            <div class="uri-chip" style="border:2px solid #1a73e8">https://lms.lithala.com ← new domain <span style="color:#5f6368">✕</span></div>
+            <div style="margin-top:8px;font-size:12px;color:#1a73e8;cursor:default">+ Add URI</div>
+          </div>
+        </div>
+        <div class="gf-btn">Save</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S10 -->
+<div class="section" id="s10">
+  <div class="section-badge">💳 Section 10</div>
+  <h2>PayFast Integration</h2>
+  <p class="lead">PayFast is the South African payment gateway. Currently in sandbox (test) mode. To accept real payments, create a PayFast merchant account and add your credentials.</p>
+  <hr class="rule">
+
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Register at payfast.co.za → merchant account</h4><p>You need your SA ID number, bank details and CIPC company registration number. Approval can take 2–5 business days.</p></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Get Merchant ID and Merchant Key</h4><p>In your PayFast dashboard: <strong>Settings → Integration</strong>. Both credentials are shown there.</p></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body"><h4>Update lms-config.js on GitHub</h4></div></div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-bar"><span>lms-config.js — PayFast section</span></div>
+    <div class="code-body">
+<span class="c-orange">PAYFAST</span>: {<br>
+&nbsp;&nbsp;<span class="c-blue">MERCHANT_ID</span>:  <span class="c-yellow">'10012345'</span>,          <span class="c-grey">// Replace with your real Merchant ID</span><br>
+&nbsp;&nbsp;<span class="c-blue">MERCHANT_KEY</span>: <span class="c-yellow">'abcdef0123456789'</span>,     <span class="c-grey">// Replace with your real Merchant Key</span><br>
+&nbsp;&nbsp;<span class="c-blue">PASSPHRASE</span>:   <span class="c-yellow">'YourPassphrase'</span>,       <span class="c-grey">// Set in PayFast dashboard → Integration</span><br>
+&nbsp;&nbsp;<span class="c-blue">SANDBOX</span>:      <span class="c-purple">false</span>,                  <span class="c-grey">// Change true → false to go live</span><br>
+},
+    </div>
+  </div>
+
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="bdot r"></div><div class="bdot y"></div><div class="bdot g"></div>
+      <div class="burl">payfast.co.za — Merchant Dashboard → Settings → Integration</div>
+    </div>
+    <div class="pf-hdr"><div class="pfl">💳 PayFast Merchant Dashboard</div></div>
+    <div class="pf-content">
+      <div class="pf-card">
+        <h4>Integration Details</h4>
+        <div class="pf-row"><div class="pf-key">Merchant ID</div><div class="pf-val">10012345</div></div>
+        <div class="pf-row"><div class="pf-key">Merchant Key</div><div class="pf-val">abcdef0123456789</div></div>
+        <div class="pf-row"><div class="pf-key">Notify URL (ITN)</div><div class="pf-val" style="font-size:10px">https://script.google.com/.../exec?action=payfastNotify</div></div>
+        <div class="pf-row"><div class="pf-key">Return URL</div><div class="pf-val" style="font-size:10px">https://lms.lithala.com/dashboard3.html</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout danger">
+    <div class="callout-icon">🚨</div>
+    <div><h4>SANDBOX: true means no real money</h4>
+    <p>While <code>SANDBOX: true</code> is set in lms-config.js, all payments are simulated — no real money changes hands. Only set <code>SANDBOX: false</code> after thorough testing.</p></div>
+  </div>
+</div>
+
+<!-- S11 -->
+<div class="section" id="s11">
+  <div class="section-badge">⚙️ Section 11</div>
+  <h2>lms-config.js — Full Reference</h2>
+  <p class="lead">The single most important file. All configuration lives here. Edit on GitHub, commit, live within 2 minutes.</p>
+  <hr class="rule">
+
+  <div class="code-block">
+    <div class="code-bar"><span>lms-config.js — annotated reference</span><button class="code-copy">Copy</button></div>
+    <div class="code-body">
+<span class="c-green">const</span> <span class="c-blue">LMS</span> = {<br>
+<br>
+&nbsp;&nbsp;<span class="c-grey">// ─── BACKEND ─────────────────────────────────────────────</span><br>
+&nbsp;&nbsp;<span class="c-orange">SCRIPT_URL</span>: <span class="c-yellow">'https://script.google.com/macros/s/XXX/exec'</span>,<br>
+&nbsp;&nbsp;<span class="c-grey">// Update every time you redeploy the Apps Script ↑</span><br>
+<br>
+&nbsp;&nbsp;<span class="c-orange">SHEET_ID</span>: <span class="c-yellow">'110-K93UME8_8z5pystKKc5yIsoAC1_OdKyt4KSs0oco'</span>,<br>
+&nbsp;&nbsp;<span class="c-grey">// Just the ID — no /edit?usp=sharing ↑</span><br>
+<br>
+&nbsp;&nbsp;<span class="c-orange">SITE_URL</span>: <span class="c-yellow">'https://lms.lithala.com'</span>,<br>
+&nbsp;&nbsp;<span class="c-grey">// Update when custom domain is live ↑</span><br>
+<br>
+&nbsp;&nbsp;<span class="c-orange">GOOGLE_CLIENT_ID</span>: <span class="c-yellow">'811534121376-d1v193...apps.googleusercontent.com'</span>,<br>
+<br>
+&nbsp;&nbsp;<span class="c-orange">ADMIN_PASSWORD</span>: <span class="c-yellow">'LithalaAdmin2025'</span>,   <span class="c-grey">// ← Change this</span><br>
+&nbsp;&nbsp;<span class="c-orange">ADMIN_EMAILS</span>: [<span class="c-yellow">'info@lithala.com'</span>, <span class="c-yellow">'lithalalms@gmail.com'</span>],<br>
+<br>
+&nbsp;&nbsp;<span class="c-orange">PAYFAST</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-blue">MERCHANT_ID</span>:  <span class="c-yellow">'YOUR_ID'</span>,  <span class="c-grey">// from payfast.co.za</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-blue">MERCHANT_KEY</span>: <span class="c-yellow">'YOUR_KEY'</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-blue">SANDBOX</span>:      <span class="c-purple">false</span>,      <span class="c-grey">// true = test, false = live</span><br>
+&nbsp;&nbsp;},<br>
+<br>
+&nbsp;&nbsp;<span class="c-orange">COURSES</span>: [ <span class="c-grey">/* 8 course objects + any you add via course-editor.html */</span> ]<br>
+};
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div><h4>When to update lms-config.js</h4>
+    <ul>
+      <li>After redeploying Apps Script → update <code>SCRIPT_URL</code></li>
+      <li>After setting up custom domain → update <code>SITE_URL</code></li>
+      <li>When adding PayFast → update <code>PAYFAST</code> block</li>
+      <li>To change admin password → update <code>ADMIN_PASSWORD</code></li>
+      <li>To change result email addresses → update <code>ADMIN_EMAILS</code></li>
+    </ul></div>
+  </div>
+</div>
+
+<!-- S12 -->
+<div class="section" id="s12">
+  <div class="section-badge">🛡️ Section 12</div>
+  <h2>Admin Panel &amp; Course Editor</h2>
+  <p class="lead">Two password-protected pages — hidden from the public site — give non-technical control over the system.</p>
+  <hr class="rule">
+
+  <div class="two-col">
+    <div class="info-card">
+      <h4>⚙️ Admin Panel</h4>
+      <div class="url-chip" style="font-size:11px;margin-bottom:10px">admin.html</div>
+      <ul>
+        <li>View all learners and purchases</li>
+        <li>View all assessment scores</li>
+        <li>Approve POPIA deletion requests</li>
+        <li>Export any tab as CSV</li>
+        <li>Shows system configuration status</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h4>✏️ Course Editor</h4>
+      <div class="url-chip" style="font-size:11px;margin-bottom:10px">course-editor.html</div>
+      <ul>
+        <li>Add new courses — no coding</li>
+        <li>Edit price, image, description</li>
+        <li>Add/remove modules &amp; questions</li>
+        <li>Attach PDF documents</li>
+        <li>Delete courses</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">🔒</div>
+    <div><h4>These pages are hidden — not linked from the public site</h4>
+    <p>Nobody can find them by browsing the site. Only people who know the direct URL and the password can access them. Bookmark them and share only with trusted staff.</p></div>
+  </div>
+</div>
+
+<!-- S13 -->
+<div class="section" id="s13">
+  <div class="section-badge">📅 Section 13</div>
+  <h2>Monthly Admin Checklist</h2>
+  <p class="lead">Routine tasks to keep the system healthy and data clean.</p>
+  <hr class="rule">
+
+  <div class="steps">
+    <div class="step"><div class="step-n green">✓</div><div class="step-body"><h4>Check for pending POPIA deletion requests</h4><p>Open Admin Panel → Deletion Requests tab. Process any Pending requests within 5 business days (POPIA legal requirement).</p></div></div>
+    <div class="step"><div class="step-n green">✓</div><div class="step-body"><h4>Export and back up Google Sheet data</h4><p>Open each tab → File → Download as CSV. Store monthly backups securely.</p></div></div>
+    <div class="step"><div class="step-n green">✓</div><div class="step-body"><h4>Check Apps Script execution logs for errors</h4><p>Apps Script editor → left sidebar → Executions. Look for red Failed entries and investigate.</p></div></div>
+    <div class="step"><div class="step-n green">✓</div><div class="step-body"><h4>Review certificates nearing expiry (quarterly)</h4><p>Check Results tab — look for certificates issued more than 20 months ago and contact those learners about renewal.</p></div></div>
+    <div class="step"><div class="step-n green">✓</div><div class="step-body"><h4>Full end-to-end test (quarterly)</h4><p>Create a test account, purchase a course (sandbox), complete assessment, verify email arrives at both admin addresses and certificate is generated.</p></div></div>
+  </div>
+</div>
+
+<!-- S14 -->
+<div class="section" id="s14">
+  <div class="section-badge">🔧 Section 14</div>
+  <h2>Troubleshooting Reference</h2>
+  <p class="lead">Common issues with root cause and fix.</p>
+  <hr class="rule">
+
+  <div class="steps">
+    <div class="step"><div class="step-n red">!</div><div class="step-body"><h4>Site shows old content after uploading</h4><p><strong>Fix:</strong> Hard refresh — <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Windows) or <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Mac). On mobile, clear browser cache.</p></div></div>
+    <div class="step"><div class="step-n red">!</div><div class="step-body"><h4>Google Login: "Error 400 — redirect_uri_mismatch"</h4><p><strong>Cause:</strong> New domain not added to OAuth authorised origins. <strong>Fix:</strong> Section 09 — add domain in Google Cloud Console.</p></div></div>
+    <div class="step"><div class="step-n red">!</div><div class="step-body"><h4>Data not saving to Google Sheet</h4><p><strong>Cause:</strong> SCRIPT_URL in lms-config.js is outdated. <strong>Fix:</strong> Redeploy Apps Script, copy new URL, update lms-config.js.</p></div></div>
+    <div class="step"><div class="step-n red">!</div><div class="step-body"><h4>No result emails received</h4><p><strong>Cause 1:</strong> Wrong SCRIPT_URL. <strong>Cause 2:</strong> Apps Script daily email quota hit (100/day on free Gmail). <strong>Fix:</strong> Upgrade to Google Workspace (R180/user/month) for higher quota.</p></div></div>
+    <div class="step"><div class="step-n red">!</div><div class="step-body"><h4>Custom domain shows GitHub 404</h4><p><strong>Cause 1:</strong> DNS not propagated yet — wait 48h. <strong>Cause 2:</strong> CNAME points to wrong value — must be <code>lithala-lms.github.io</code> NOT <code>lithala-lms.github.io/LMS</code>. <strong>Cause 3:</strong> CNAME file deleted from repo — re-set custom domain in GitHub Pages settings.</p></div></div>
+    <div class="step"><div class="step-n red">!</div><div class="step-body"><h4>PayFast payments not confirmed in Sheet</h4><p><strong>Cause:</strong> ITN Notify URL in PayFast dashboard is wrong. <strong>Fix:</strong> Log in to PayFast → Settings → Integration → update Notify URL with current Apps Script URL.</p></div></div>
+    <div class="step"><div class="step-n red">!</div><div class="step-body"><h4>Admin panel password not working</h4><p><strong>Fix:</strong> Check <code>ADMIN_PASSWORD</code> in lms-config.js on GitHub. The password is case-sensitive.</p></div></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="margin-top:56px;background:linear-gradient(135deg,#0d2b52,#1a3a2a);border-radius:18px;padding:32px;color:white;text-align:center">
+    <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#52b788;margin-bottom:3px">LITHALA <span style="color:#64b5f6">LMS</span></div>
+    <div style="font-size:10px;letter-spacing:3px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:16px">Technical Admin Manual</div>
+    <p style="font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;max-width:500px;margin:0 auto 18px">For technical support, system handover or urgent issues, contact the development team or Lithala management.</p>
+    <div style="display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-size:13px;color:rgba(255,255,255,.7)">
+      <span>📧 info@lithala.com</span>
+      <span>📧 lithalalms@gmail.com</span>
+      <span>📞 +27 (0) 82 421 4001</span>
+    </div>
+    <div style="margin-top:14px;font-size:11px;color:rgba(255,255,255,.3)">🔒 CONFIDENTIAL — © 2025 Lithala Risk Solutions (Pty) Ltd</div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const secs = document.querySelectorAll('.section');
+const links = document.querySelectorAll('.toc a');
+new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(a => a.classList.remove('active'));
+      const a = document.querySelector('.toc a[href="#' + e.target.id + '"]');
+      if (a) a.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-50px 0px -45% 0px' }).observe ? secs.forEach(s => new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { links.forEach(a => a.classList.remove('active')); const a = document.querySelector('.toc a[href="#' + e.target.id + '"]'); if (a) a.classList.add('active'); } });
+}, { threshold: 0.2, rootMargin: '-50px 0px -45% 0px' }).observe(s)) : null;
+
+document.querySelectorAll('.code-copy').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.color = '#7ee787';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000);
+  });
+});
+</script>
+</body>
+</html>
